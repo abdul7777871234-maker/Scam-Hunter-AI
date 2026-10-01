@@ -16,7 +16,7 @@ DARK = {
     "BG": "#050811", "PANEL": "#0B1120", "PANEL2": "#0F172A",
     "INPUT": "#111827", "TEXT": "#F8FAFC", "MUTED": "#A7B3C7",
     "SELECT_BG": "#1E293B", "SELECT_TEXT": "#FFFFFF", "SELECT_ARROW": "#E2E8F0", "SELECT_BORDER": "#475569",
-    "BORDER": "rgba(148,163,184,0.20)", "HOVER": "#172033",
+    "BORDER": "rgba(148,163,184,0.14)", "HOVER": "#141C2E",
     "MENU": "#0B1120", "MENUHOVER": "#172033", "SCHEME": "dark",
 }
 LIGHT = {
