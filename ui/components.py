@@ -40,9 +40,16 @@ def stat_strip(stats):
             )
 
 def risk_meter(scan):
-    if not scan: return
-    level=scan.get("level","none"); score=scan.get("score",0)
-    st.markdown(f'<div class="card"><b>Instant scan: {html.escape(level.title())}</b> · Signal score <b>{score}/100</b><br><span class="muted">{html.escape(scan.get("headline",""))}</span></div>',unsafe_allow_html=True)
+    if not scan:
+        return
+    level = scan.get("level", "none")
+    score = max(0, min(100, int(scan.get("score", 0) or 0)))
+    labels = {"high": "High signal", "medium": "Moderate signal", "low": "Low signal", "none": "No automatic signals"}
+    label = labels.get(level, level.title())
+    st.markdown(
+        f'<div class="risk-meter-card"><div class="risk-meter-top"><div><span class="risk-meter-title">⚡ Instant Scan</span><span class="risk-meter-level">{html.escape(label)}</span></div><strong>{score}/100</strong></div><div class="risk-meter-track"><div class="risk-meter-fill" style="width:{score}%;"></div></div><div class="risk-meter-scale"><span>0</span><span>50</span><span>100</span></div><div class="risk-meter-note">{html.escape(scan.get("headline",""))} · Heuristic hint only — not proof of fraud.</div></div>',
+        unsafe_allow_html=True,
+    )
 
 def scan_details(scan):
     if not scan: return
