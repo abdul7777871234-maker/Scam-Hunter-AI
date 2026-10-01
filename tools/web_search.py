@@ -122,38 +122,9 @@ class WebSearch:
 
     def _search_bing_html(self, query: str) -> list:
         import requests
-        from html.parser import HTMLParser
+        import xml.etree.ElementTree as ET
 
-        class BingParser(HTMLParser):
-            def __init__(self):
-                super().__init__()
-                self.results = []
-                self.current = None
-                self.capture = None
-
-            def handle_starttag(self, tag, attrs):
-                attrs = dict(attrs)
-                classes = set((attrs.get("class") or "").split())
-                if tag == "li" and "b_algo" in classes:
-                    self.current = {"title": "", "url": "", "snippet": ""}
-                elif self.current and tag == "a" and not self.current["url"]:
-                    self.current["url"] = attrs.get("href") or ""
-                    self.capture = "title"
-                elif self.current and tag == "p":
-                    self.capture = "snippet"
-
-            def handle_data(self, data):
-                if self.current and self.capture:
-                    self.current[self.capture] += data
-
-            def handle_endtag(self, tag):
-                if self.current and tag == "li":
-                    if self.current["url"]:
-                        self.results.append(self.current)
-                    self.current = None
-                    self.capture = None
-
-        url = "https://www.bing.com/search?q=" + quote_plus(query)
+        url = "https://www.bing.com/search?format=rss&q=" + quote_plus(query)
         response = requests.get(
             url,
             timeout=12,
@@ -167,18 +138,27 @@ class WebSearch:
         )
         response.raise_for_status()
 
-        parser = BingParser()
-        parser.feed(response.text)
+        root = ET.fromstring(response.content)
+        results = []
 
-        for item in parser.results:
-            item["title"] = unescape(
-                re.sub(r"\\s+", " ", item["title"])
-            ).strip()
-            item["snippet"] = unescape(
-                re.sub(r"\\s+", " ", item["snippet"])
-            ).strip()
+        for item in root.findall(".//item"):
+            title = item.findtext("title") or ""
+            link = item.findtext("link") or ""
+            description = item.findtext("description") or ""
 
-        return self._normalize(parser.results)
+            if link:
+                results.append(
+                    {
+                        "title": unescape(title).strip(),
+                        "url": unescape(link).strip(),
+                        "snippet": unescape(description).strip(),
+                    }
+                )
+
+            if len(results) >= max(1, int(self.settings.max_web_results)):
+                break
+
+        return self._normalize(results)
 
     def _search_duckduckgo_html(self, query: str) -> list:
         import requests
