@@ -25,9 +25,10 @@ from tools.indicators import format_signals, scan_text
 from tools.report import build_report
 from agents.orchestrator import InvestigationOrchestrator
 from ui.theme import apply_theme
-from ui.sidebar import render as render_sidebar, render_footer, render_provider_status
+from ui.sidebar import render as render_sidebar, render_footer
 from ui.components import (
     hero,
+    stat_strip,
     risk_meter,
     scan_details,
     source_card,
@@ -425,7 +426,23 @@ def process_attachments(uploaded_files: list) -> tuple[list[str], list[str]]:
 
 hero(compact=bool(S.messages))
 
-render_provider_status(bool(settings.groq_api_key), bool(settings.gemini_api_key))
+# Dashboard stats sit directly below the hero.
+_configured_providers = [
+    name
+    for name, enabled in (
+        ("Groq", bool(settings.groq_api_key)),
+        ("Gemini", bool(settings.gemini_api_key)),
+    )
+    if enabled
+]
+stat_strip(
+    [
+        ("Knowledge passages", f"{kb.store.count:,} passages"),
+        ("Reference documents", f"{len(kb.manifest):,}"),
+        ("AI engines", " + ".join(_configured_providers) if _configured_providers else "None"),
+        ("Mode", mode),
+    ]
+)
 
 # -------------------------------------------------------------------
 # CHAT HISTORY
