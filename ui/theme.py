@@ -795,6 +795,39 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [d
   opacity:1!important;
 }
 
+
+/* DARK SIDEBAR SELECTBOX OVERRIDE
+   Targeted only at the four sidebar selectboxes; preserves Light palette. */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="ststSelectbox"] [data-baseweb="select"] [role="button"] {
+  background:var(--sh-select-bg)!important;
+  background-color:var(--sh-select-bg)!important;
+  background-image:none!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+  border-color:var(--sh-select-border)!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  color-scheme:var(--sh-scheme)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] *,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] p,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input {
+  background:transparent!important;
+  background-color:transparent!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+  opacity:1!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
+  color:var(--sh-select-arrow)!important;
+  fill:var(--sh-select-arrow)!important;
+  opacity:1!important;
+}
+
 </style>
 """
 
