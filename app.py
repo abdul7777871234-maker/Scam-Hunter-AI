@@ -34,7 +34,7 @@ from ui.components import (
     source_card,
 )
 from ui.verdict import extract_verdict, badge_html
-from ui.history_store import new_id, valid_uid, load_chats, save_chat
+from ui.history_store import new_id, load_chats, save_chat
 
 # -------------------------------------------------------------------
 # PAGE CONFIGURATION
@@ -62,15 +62,11 @@ S.setdefault("answer_cache", {})
 S.setdefault("last_result", None)
 
 # -------------------------------------------------------------------
-# BROWSER ID
+# SESSION-ONLY HISTORY ID
 # -------------------------------------------------------------------
 
-if not valid_uid(S.get("uid")):
-    url_uid = st.query_params.get("u")
-    S.uid = url_uid if valid_uid(url_uid) else new_id()
-
-if st.query_params.get("u") != S.uid:
-    st.query_params["u"] = S.uid
+if not isinstance(S.get("uid"), str):
+    S.uid = new_id()
 
 uid = S.uid
 
@@ -381,6 +377,7 @@ def process_attachments(uploaded_files: list) -> tuple[list[str], list[str]]:
                 uploaded.name,
                 settings.max_upload_mb,
                 size_bytes=len(data),
+                data=data,
             )
             suffix = Path(safe_name).suffix.lower()
 
@@ -420,10 +417,27 @@ def process_attachments(uploaded_files: list) -> tuple[list[str], list[str]]:
                     f"<<<IMAGE\n{result.text.strip()[:4000]}\nIMAGE>>>"
                 )
 
-        except Exception as exc:
-            notes.append(f"{getattr(uploaded, 'name', 'file')}: {exc}")
+        except Exception:
+            notes.append(
+                f"{getattr(uploaded, 'name', 'file')}: "
+                "The file could not be processed safely."
+            )
 
     return blocks, notes
+
+
+# -------------------------------------------------------------------
+# REQUEST ABUSE GUARD
+# -------------------------------------------------------------------
+
+def allow_investigation() -> bool:
+    now = time.monotonic()
+    attempts = S.setdefault("investigation_attempts", [])
+    attempts[:] = [stamp for stamp in attempts if now - stamp < 60]
+    if len(attempts) >= 12:
+        return False
+    attempts.append(now)
+    return True
 
 
 # -------------------------------------------------------------------
@@ -516,23 +530,29 @@ if submission:
     uploaded_files = list(submission.files or [])
 
     if prompt or uploaded_files:
-        live_turn = True
+        if not allow_investigation():
+            st.warning(
+                "Too many investigations in a short period. "
+                "Please wait about a minute and try again."
+            )
+        else:
+            live_turn = True
 
-        attachment_names = [getattr(f, "name", "file") for f in uploaded_files]
-        display_prompt = prompt
+            attachment_names = [getattr(f, "name", "file") for f in uploaded_files]
+            display_prompt = prompt
 
-        if attachment_names:
+            if attachment_names:
             display_prompt = (
                 (prompt + "\n\n" if prompt else "")
                 + "📎 "
                 + ", ".join(attachment_names)
             )
 
-        S.messages.append({"role": "user", "content": display_prompt})
-        save_chat(uid, S.chat_id, S.messages)
+            S.messages.append({"role": "user", "content": display_prompt})
+            save_chat(uid, S.chat_id, S.messages)
 
-        with st.chat_message("user"):
-            st.markdown(display_prompt)
+            with st.chat_message("user"):
+                st.markdown(display_prompt)
 
         empty_result = {
             "answer": "",
