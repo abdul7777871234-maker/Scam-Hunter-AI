@@ -33,6 +33,23 @@ IMAGE_MIME = {
 
 ALLOWED_TYPES = TEXT_TYPES | IMAGE_TYPES
 
+MAGIC_SIGNATURES = {
+    ".pdf": (b"%PDF-",),
+    ".png": (b"\x89PNG\r\n\x1a\n",),
+    ".jpg": (b"\xff\xd8\xff",),
+    ".jpeg": (b"\xff\xd8\xff",),
+    ".docx": (b"PK\x03\x04", b"PK\x05\x06", b"PK\x07\x08"),
+}
+
+
+def _magic_matches(suffix: str, data: bytes) -> bool:
+    signatures = MAGIC_SIGNATURES.get(suffix)
+    if not signatures:
+        return True
+    if suffix == ".webp":
+        return len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP"
+    return any(data.startswith(signature) for signature in signatures)
+
 
 # ============================================================
 # UPLOAD VALIDATION
@@ -79,6 +96,9 @@ def validate_upload(
                 f"File is too large. Maximum allowed size is "
                 f"{max_mb} MB."
             )
+
+    if data is not None and not _magic_matches(suffix, data):
+        raise ValueError("File content does not match its declared type.")
 
     # --------------------------------------------------------
     # Sanitize filename
@@ -203,9 +223,7 @@ def _extract_pdf(
         )
 
     except Exception as exc:
-        raise ValueError(
-            f"Could not read PDF: {exc}"
-        ) from exc
+        raise ValueError("The PDF could not be read. It may be malformed or unsupported.") from exc
 
 
 # ============================================================
@@ -241,9 +259,7 @@ def _extract_docx(
         )
 
     except Exception as exc:
-        raise ValueError(
-            f"Could not read DOCX: {exc}"
-        ) from exc
+        raise ValueError("The DOCX could not be read. It may be malformed or unsupported.") from exc
 
 
 # ============================================================
