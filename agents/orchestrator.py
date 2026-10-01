@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 class InvestigationOrchestrator:
     def __init__(self, router, retriever, web_search, settings):
         self.router = router
@@ -28,134 +27,54 @@ class InvestigationOrchestrator:
         self.judge = JudgeAgent(router)
         self.response = ResponseAgent(router)
 
-    # ---------------------------------------------------------
-    # FAST / QUICK CHECK
-    # ---------------------------------------------------------
-
-    def run_quick(self, user_text: str) -> dict:
-        """
-        Fast investigation path.
-
-        Only uses:
-        1. FAISS/RAG retrieval
-        2. One evidence-analysis LLM call
-        3. One final-response LLM call
-
-        This intentionally skips:
-        classifier, web research, pattern agent,
-        contradiction agent, judge and critic.
-        """
-
+    def run_quick(self, user_text: str, mode="Quick Check", style="Balanced", language="English", signals="") -> dict:
         events = []
-
-        # 1. Local knowledge-base retrieval
         rag = self.rag.run(user_text)
         events.append("Knowledge base searched")
-
-        evidence_items = rag.get("evidence", [])
-        rag_items = rag.get("items", [])
-
-        # 2. Single analysis call
-        evidence = self.evidence.run(
-            user_text,
-            rag,
-            {"items": [], "cached": False},
-        )
+        evidence = self.evidence.run(user_text, rag, {"items": [], "cached": False})
         events.append("Evidence analyzed")
-
         analysis = evidence.get("analysis", "")
-        evidence_items = evidence.get("evidence", evidence_items)
-
-        # 3. Single final response call
+        evidence_items = evidence.get("evidence", rag.get("evidence", []))
         final = self.response.run(
-            user_text,
-            analysis,
-            "",
-            "",
-            evidence_items,
+            user_text, analysis, "", "", evidence_items,
+            mode=mode, style=style, language=language, signals=signals
         )
         events.append("Fast response generated")
-
         return {
             "answer": final,
             "events": events,
-            "classification": {
-                "mode": "quick",
-                "requires_rag": True,
-                "requires_web": False,
-            },
-            "rag": {
-                "items": rag_items,
-                "evidence": evidence_items,
-            },
-            "web": {
-                "items": [],
-                "cached": False,
-            },
+            "classification": {"mode": "quick", "requires_rag": True, "requires_web": False},
+            "rag": {"items": rag.get("items", []), "evidence": evidence_items},
+            "web": {"items": [], "cached": False},
             "analysis": analysis,
         }
 
-    # ---------------------------------------------------------
-    # FULL / DEEP INVESTIGATION
-    # ---------------------------------------------------------
-
-    def run(self, user_text: str) -> dict:
+    def run(self, user_text: str, mode="Deep Investigation", style="Balanced", language="English", signals="") -> dict:
         events = []
-
         classification = self.classifier.run(user_text)
         events.append("Input classified")
-
-        if classification.get("requires_rag", True):
-            rag = self.rag.run(user_text)
-        else:
-            rag = {"items": [], "evidence": []}
-
+        rag = self.rag.run(user_text) if classification.get("requires_rag", True) else {"items": [], "evidence": []}
         events.append("Knowledge base searched")
-
         web = {"items": [], "cached": False}
-
         if classification.get("requires_web", False):
             web = self.web.run(user_text[:2500])
             events.append("Web research completed")
-
-        evidence = self.evidence.run(
-            user_text,
-            rag,
-            web,
-        )
+        evidence = self.evidence.run(user_text, rag, web)
         events.append("Evidence analyzed")
-
-        pattern = self.pattern.run(
-            user_text,
-            evidence["analysis"],
-        )
+        pattern = self.pattern.run(user_text, evidence["analysis"])
         events.append("Scam patterns analyzed")
-
-        contradiction = self.contradiction.run(
-            evidence["evidence"],
-        )
+        contradiction = self.contradiction.run(evidence["evidence"])
         events.append("Contradictions checked")
-
-        judge = self.judge.run(
-            pattern,
-            contradiction,
-            evidence["evidence"],
-        )
+        judge = self.judge.run(pattern, contradiction, evidence["evidence"])
         events.append("Evidence reviewed")
 
         draft = self.response.run(
-            user_text,
-            pattern,
-            contradiction,
-            judge,
-            evidence["evidence"],
+            user_text, pattern, contradiction, judge, evidence["evidence"],
+            mode=mode, style=style, language=language, signals=signals
         )
         events.append("Response synthesized")
 
-        critique = self.critic.run(
-            draft,
-            evidence["evidence"],
-        )
+        critique = self.critic.run(draft, evidence["evidence"])
         events.append("Final quality check completed")
 
         final = self.response.run(
@@ -164,8 +83,8 @@ class InvestigationOrchestrator:
             contradiction,
             judge,
             evidence["evidence"],
+            mode=mode, style=style, language=language, signals=signals
         )
-
         return {
             "answer": final,
             "events": events,
