@@ -121,14 +121,11 @@ def apply_theme(dark: bool, accent: str):
         box-shadow: none !important;
     }
 
-    /* Header icons (star, pencil, menu) visible in light mode */
+    /* Header icons: color only, never fill child shapes */
     [data-testid="stHeader"] svg,
-    [data-testid="stHeader"] svg *,
     [data-testid="stToolbar"] svg,
-    [data-testid="stToolbar"] svg *,
-    [data-testid="stMainMenu"] svg,
-    [data-testid="stMainMenu"] svg * {
-        fill: var(--text) !important;
+    [data-testid="stMainMenu"] svg {
+        fill: currentColor !important;
         color: var(--text) !important;
     }
 
@@ -137,9 +134,7 @@ def apply_theme(dark: bool, accent: str):
         background: var(--hover) !important;
     }
 
-    [data-testid="stHeader"] button:hover svg,
-    [data-testid="stHeader"] button:hover svg * {
-        fill: var(--accent) !important;
+    [data-testid="stHeader"] button:hover svg {
         color: var(--accent) !important;
     }
 
@@ -257,6 +252,19 @@ def apply_theme(dark: bool, accent: str):
     }
 
 
+    /* Selectbox: maximum specificity so nothing can override it */
+    html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"],
+    html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+    html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
+    html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"] > div {
+        background: var(--input-bg) !important;
+        background-color: var(--input-bg) !important;
+        background-image: none !important;
+        color: var(--text) !important;
+        border-color: var(--border) !important;
+    }
+
+
     /* =========================================================
        BUTTONS
     ========================================================= */
@@ -340,22 +348,19 @@ def apply_theme(dark: bool, accent: str):
     }
 
     /* "+" attach icon and send arrow */
-    div[data-testid="stChatInput"] svg,
-    div[data-testid="stChatInput"] svg *,
-    div[data-testid="stChatInput"] button {
-        color: var(--muted) !important;
-        fill: var(--muted) !important;
-    }
-
     div[data-testid="stChatInput"] button {
         background: var(--panel2) !important;
+        color: var(--muted) !important;
         border-radius: 10px !important;
     }
 
-    div[data-testid="stChatInput"] button:hover svg,
-    div[data-testid="stChatInput"] button:hover svg * {
+    div[data-testid="stChatInput"] svg {
+        fill: currentColor !important;
+        color: inherit !important;
+    }
+
+    div[data-testid="stChatInput"] button:hover {
         color: var(--accent) !important;
-        fill: var(--accent) !important;
     }
 
 
@@ -601,3 +606,15 @@ def apply_theme(dark: bool, accent: str):
     )
 
     st.markdown(css, unsafe_allow_html=True)
+
+
+def render_footer():
+    """Footer HTML on a single unindented string, so Markdown never treats it as a code block."""
+    html = (
+        '<div class="card footer-card"><span class="muted">'
+        '\U0001F512 Evidence is treated as untrusted data.<br><br>'
+        'ScamHunter AI provides investigation support and does not guarantee '
+        'the authenticity or safety of any person, site, message, or offer.'
+        '</span></div>'
+    )
+    st.markdown(html, unsafe_allow_html=True)
