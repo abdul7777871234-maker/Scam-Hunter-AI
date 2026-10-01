@@ -172,11 +172,28 @@ def extract_verdict(result: dict, answer: str) -> dict:
     }
 
 
-def badge_html(verdict: dict) -> str:
+def badge_html(verdict: dict, score: int | float | None = None) -> str:
     info = LEVELS.get(verdict.get("level"))
     if not info:
         return ""
-    c = info["color"]
+
+    # Keep the verdict text/category unchanged; only the indicator color
+    # follows the actual 0–100 heuristic score when it is available.
+    if score is not None:
+        try:
+            value = max(0, min(100, float(score)))
+            if value >= 80:
+                c = "#EF4444"   # red
+            elif value >= 60:
+                c = "#F97316"   # orange
+            elif value >= 40:
+                c = "#F59E0B"   # yellow/orange
+            else:
+                c = "#22C55E"   # green
+        except (TypeError, ValueError):
+            c = info["color"]
+    else:
+        c = info["color"]
     category = html.escape(verdict.get("category") or "")
     title = html.escape(info["label"])
     if category:
