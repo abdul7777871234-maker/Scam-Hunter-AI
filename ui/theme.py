@@ -25,7 +25,7 @@ LIGHT = {
 
 # Tokens are written @@NAME@@ so one token can never be a substring of another
 # (the old .replace("HOVER") also rewrote the inside of "MENUHOVER").
-CSS = """
+CSS = 
 <style>
 :root{
   --sh-accent:@@ACCENT@@; --sh-bg:@@BG@@; --sh-panel:@@PANEL@@; --sh-panel2:@@PANEL2@@;
