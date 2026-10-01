@@ -1235,6 +1235,62 @@ html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageConten
   line-height:1.65!important;
 }
 
+
+
+/* FINAL SIDEBAR SELECTBOX PALETTE — theme owns the visible BaseWeb control. */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] {
+  position:relative!important;
+  background:transparent!important;
+  background-color:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  color:var(--sh-select-text)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div {
+  min-height:44px!important;
+  background:var(--sh-select-bg)!important;
+  background-color:var(--sh-select-bg)!important;
+  background-image:none!important;
+  border:1px solid var(--sh-select-border)!important;
+  border-radius:14px!important;
+  box-shadow:none!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div:hover,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:hover > div {
+  border-color:var(--sh-accent)!important;
+  background:var(--sh-hover)!important;
+  background-color:var(--sh-hover)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [data-aria-hidden="true"] {
+  background:transparent!important;
+  background-color:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] p {
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
+  display:block!important;
+  color:var(--sh-select-arrow)!important;
+  fill:var(--sh-select-arrow)!important;
+  stroke:var(--sh-select-arrow)!important;
+  opacity:1!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg path,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg polyline,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg line {
+  fill:var(--sh-select-arrow)!important;
+  stroke:var(--sh-select-arrow)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]::after {
+  display:none!important;
+}
 </style>
 """
 
