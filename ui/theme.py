@@ -86,13 +86,39 @@ def apply_theme(dark: bool, accent: str):
             border-bottom: 1px solid var(--border);
         }}
 
+        /* text/icon color only (no fill override: it painted the menu icon as a black square) */
         [data-testid="stToolbar"],
         [data-testid="stToolbar"] *,
         [data-testid="stHeader"] button,
-        [data-testid="stHeader"] a,
-        [data-testid="stHeader"] svg {{
+        [data-testid="stHeader"] a {{
             color: var(--text) !important;
-            fill: var(--text) !important;
+        }}
+
+        [data-testid="stToolbar"] {{
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            right: 1rem !important;
+        }}
+
+        [data-testid="stToolbar"] button,
+        [data-testid="stMainMenu"] button,
+        [data-testid="stHeader"] button {{
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }}
+
+        [data-testid="stToolbar"] svg,
+        [data-testid="stMainMenu"] svg {{
+            fill: currentColor !important;
+        }}
+
+        [data-testid="stToolbar"] svg rect {{
+            fill: none !important;
         }}
 
         [data-testid="stHeader"] button:hover {{
@@ -139,7 +165,11 @@ def apply_theme(dark: bool, accent: str):
         [data-testid="stSidebarCollapseButton"] *,
         [data-testid="stSidebarCollapsedControl"] * {{
             color: var(--text) !important;
-            fill: var(--text) !important;
+        }}
+
+        [data-testid="stSidebarCollapseButton"] button,
+        [data-testid="stSidebarCollapsedControl"] button {{
+            background: transparent !important;
         }}
 
 
@@ -234,6 +264,43 @@ def apply_theme(dark: bool, accent: str):
             color: var(--accent) !important;
         }}
 
+
+        /* ================= POPOVER (Delete saved history) ================= */
+
+        div[data-testid="stPopover"] > div > button,
+        div[data-testid="stPopover"] button,
+        button[data-testid="stPopoverButton"] {{
+            background: var(--panel) !important;
+            background-color: var(--panel) !important;
+            color: var(--text) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+            box-shadow: none !important;
+        }}
+
+        div[data-testid="stPopover"] button *,
+        button[data-testid="stPopoverButton"] * {{
+            color: var(--text) !important;
+            background: transparent !important;
+        }}
+
+        div[data-testid="stPopover"] button:hover,
+        button[data-testid="stPopoverButton"]:hover {{
+            background: var(--hover) !important;
+            border-color: var(--accent) !important;
+        }}
+
+        div[data-testid="stPopoverBody"],
+        div[data-testid="stPopoverBody"] * {{
+            background-color: var(--panel) !important;
+            color: var(--text) !important;
+        }}
+
+        div[data-testid="stPopoverBody"] button {{
+            background: var(--panel2) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+        }}
 
         /* ================= CHAT INPUT + BOTTOM BAR ================= */
 
