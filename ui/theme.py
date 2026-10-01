@@ -269,7 +269,7 @@ html body .stApp [data-baseweb="select"] svg{color:@@MUTED@@!important;fill:@@MU
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="stSelectbox"] > div > div > div {
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div {
   background:@@INPUT@@!important;background-color:@@INPUT@@!important;background-image:none!important;
   color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;border-color:@@BORDER@@!important;
   box-shadow:none!important;opacity:1!important;
