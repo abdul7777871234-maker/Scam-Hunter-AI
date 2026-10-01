@@ -249,12 +249,9 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [r
   border-color:var(--sh-select-border)!important;
 }
 /* Sidebar selectboxes: one source of truth for Light/Dark surfaces. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] {
   min-height:42px!important;
+  position:relative!important;
   background:var(--sh-select-bg)!important;
   background-color:var(--sh-select-bg)!important;
   background-image:none!important;
@@ -265,6 +262,34 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [d
   box-shadow:none!important;
   opacity:1!important;
   color-scheme:var(--sh-scheme)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
+  min-height:40px!important;
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  border-radius:11px!important;
+  box-shadow:none!important;
+  outline:none!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]::after {
+  content:"";
+  position:absolute;
+  right:13px;
+  top:50%;
+  width:7px;
+  height:7px;
+  border-right:2px solid var(--sh-select-arrow);
+  border-bottom:2px solid var(--sh-select-arrow);
+  transform:translateY(-65%) rotate(45deg);
+  pointer-events:none;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
+  display:none!important;
 }
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] p,
