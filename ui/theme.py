@@ -1119,6 +1119,51 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [d
   display:none!important;
 }
 
+/* Sidebar selectbox: final BaseWeb surface and arrow lock. */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [data-aria-hidden="true"] {
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  outline:none!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] {
+  background:var(--sh-select-bg)!important;
+  background-color:var(--sh-select-bg)!important;
+  border:1px solid var(--sh-select-border)!important;
+  color:var(--sh-select-text)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] * {
+  background:transparent!important;
+  background-color:transparent!important;
+  border-color:transparent!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]::after {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  right:13px!important;
+  top:50%!important;
+  width:7px!important;
+  height:7px!important;
+  border-right:2px solid var(--sh-select-arrow)!important;
+  border-bottom:2px solid var(--sh-select-arrow)!important;
+  transform:translateY(-65%) rotate(45deg)!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  pointer-events:none!important;
+  z-index:30!important;
+}
+
 /* Risk meter — green / yellow / orange / red */
 .risk-meter-card {
   --risk:#22C55E;
