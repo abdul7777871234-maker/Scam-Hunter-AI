@@ -8,11 +8,11 @@ PAGE_W = 612
 PAGE_H = 792
 MARGIN = 42
 
-NAVY = (0.035, 0.055, 0.10)
-PANEL = (0.075, 0.095, 0.16)
-PANEL_2 = (0.055, 0.072, 0.13)
-TEXT = (0.94, 0.96, 0.99)
-MUTED = (0.58, 0.64, 0.73)
+NAVY = WHITE
+PANEL = (0.95, 0.96, 0.98)
+PANEL_2 = (0.985, 0.985, 0.985)
+TEXT = (0.05, 0.05, 0.05)
+MUTED = (0.28, 0.28, 0.28)
 CYAN = (0.10, 0.78, 0.96)
 BLUE = (0.20, 0.42, 1.00)
 GREEN = (0.20, 0.78, 0.45)
@@ -115,24 +115,16 @@ def _risk_label(verdict=None, scan=None):
     return level.replace("_", " ").upper() if level else "REVIEW"
 
 
-def _draw_watermark(cmd):
-    # Subtle centered brand watermark. Kept light enough that report text remains clear.
-    cmd.append("q")
-    cmd.append("0.075 0.105 0.17 rg")
-    cmd.append("BT /F2 46 Tf 0.8 Tc 0.98 0.17 -0.17 0.98 178 365 Tm (SCAMHUNTER AI) Tj ET")
-    cmd.append("Q")
-
-
 def _draw_header(cmd, generated, mode, language):
-    _rect(cmd, 0, PAGE_H - 94, PAGE_W, 94, NAVY)
+    _rect(cmd, 0, PAGE_H - 94, PAGE_W, 94, WHITE)
     # Shield-style brand mark drawn with simple vector geometry.
     cmd.append(
         f"{_rgb(CYAN)} rg "
         "58 733 m 58 760 l 74 769 l 90 760 l 90 733 "
         "c 0 -14 -12 -25 -16 -28 c -4 3 -16 14 -16 28 h 0 f"
     )
-    cmd.append(f"{_rgb(NAVY)} rg 70 735 m 70 752 l 78 757 l 78 735 l 74 729 l 70 735 f")
-    cmd.append(_text(cmd, 106, 748, "SCAMHUNTER AI", 20, WHITE, "F2"))
+    cmd.append(f"{_rgb(TEXT)} rg 70 735 m 70 752 l 78 757 l 78 735 l 74 729 l 70 735 f")
+    cmd.append(_text(cmd, 106, 748, "SCAMHUNTER AI", 20, TEXT, "F2"))
     cmd.append(_text(cmd, 106, 730, "AI-POWERED SCAM INVESTIGATION REPORT", 8.5, CYAN, "F2"))
     cmd.append(_text(cmd, 430, 750, "CONFIDENTIAL", 8, MUTED, "F2"))
     cmd.append(_text(cmd, 430, 734, generated, 7.5, MUTED, "F1"))
@@ -146,7 +138,6 @@ def _draw_footer(cmd, page_no, page_count):
 
 
 def _build_page(commands, page_no, page_count, generated, mode, language):
-    _draw_watermark(commands)
     _draw_header(commands, generated, mode, language)
     _draw_footer(commands, page_no, page_count)
 
@@ -324,8 +315,8 @@ def _make_pdf(pages):
         )
 
     objects.extend(streams)
-    objects.append(b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
-    objects.append(b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>")
+    objects.append(b"<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman >>")
+    objects.append(b"<< /Type /Font /Subtype /Type1 /BaseFont /Times-Bold >>")
 
     offsets = [0]
     for number, obj in enumerate(objects, 1):
