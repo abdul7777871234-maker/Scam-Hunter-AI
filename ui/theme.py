@@ -31,6 +31,7 @@ CSS = """
   --sh-accent:@@ACCENT@@; --sh-bg:@@BG@@; --sh-panel:@@PANEL@@; --sh-panel2:@@PANEL2@@;
   --sh-input:@@INPUT@@; --sh-text:@@TEXT@@; --sh-muted:@@MUTED@@; --sh-border:@@BORDER@@;
   --sh-hover:@@HOVER@@; --sh-menu:@@MENU@@; --sh-menu-hover:@@MENUHOVER@@;
+  --sh-input-bg:@@INPUT@@; --sh-input-text:@@TEXT@@; --sh-input-arrow:@@MUTED@@;
   color-scheme:@@SCHEME@@;
 }
 
@@ -392,6 +393,97 @@ div[data-baseweb="popover"] [role="option"]:hover,div[data-baseweb="popover"] [r
   .stat-card{min-height:76px;padding:12px 10px;}
   .sample-query-title{margin-top:18px;}
 }
+
+/* ================================================================
+   FINAL UI-ONLY PATCH
+   Theme-aware sidebar selects + safe hero/stat-card spacing.
+================================================================ */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div > div > div {
+  background:var(--sh-input-bg)!important;
+  background-color:var(--sh-input-bg)!important;
+  background-image:none!important;
+  color:var(--sh-input-text)!important;
+  -webkit-text-fill-color:var(--sh-input-text)!important;
+  border:1px solid var(--sh-border)!important;
+  border-radius:12px!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  color-scheme:var(--sh-input-text)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] span,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] input {
+  background:transparent!important;
+  background-color:transparent!important;
+  color:var(--sh-input-text)!important;
+  -webkit-text-fill-color:var(--sh-input-text)!important;
+  opacity:1!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] svg {
+  background:transparent!important;
+  color:var(--sh-input-arrow)!important;
+  fill:var(--sh-input-arrow)!important;
+  opacity:1!important;
+}
+
+/* BaseWeb renders the opened menu in a portal, outside the sidebar. */
+body > div[data-baseweb="popover"],
+body > div[data-baseweb="popover"] > div,
+body > div[data-baseweb="popover"] [data-baseweb="menu"],
+body > div[data-baseweb="popover"] ul[role="listbox"],
+body > div[data-baseweb="popover"] li[role="option"] {
+  background:var(--sh-menu)!important;
+  background-color:var(--sh-menu)!important;
+  color:var(--sh-text)!important;
+  border-color:var(--sh-border)!important;
+}
+body > div[data-baseweb="popover"] [role="option"],
+body > div[data-baseweb="popover"] [role="option"] > div,
+body > div[data-baseweb="popover"] [role="option"] span {
+  background:transparent!important;
+  background-color:transparent!important;
+  color:var(--sh-text)!important;
+  -webkit-text-fill-color:var(--sh-text)!important;
+}
+body > div[data-baseweb="popover"] [role="option"]:hover,
+body > div[data-baseweb="popover"] [role="option"][aria-selected="true"],
+body > div[data-baseweb="popover"] li[role="option"]:hover {
+  background:var(--sh-menu-hover)!important;
+  background-color:var(--sh-menu-hover)!important;
+  color:var(--sh-accent)!important;
+  -webkit-text-fill-color:var(--sh-accent)!important;
+}
+
+/* Give the hero its own layout space; no transforms/negative margins. */
+.hero {
+  position:relative!important;
+  height:auto!important;
+  min-height:0!important;
+  margin-top:0!important;
+  margin-bottom:1.5rem!important;
+  padding-bottom:42px!important;
+  overflow:visible!important;
+  transform:none!important;
+}
+.hero + div {
+  margin-top:0!important;
+}
+.stat-card {
+  position:relative!important;
+  transform:none!important;
+  margin-top:0!important;
+  overflow:hidden!important;
+}
+@media (max-width:900px) {
+  .hero {
+    margin-bottom:1.25rem!important;
+    padding:30px 20px!important;
+  }
+  .hero-title {font-size:36px!important;letter-spacing:-1.5px!important;}
+}
+
 </style>
 """
 
