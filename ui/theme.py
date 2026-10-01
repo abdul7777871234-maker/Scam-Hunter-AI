@@ -188,485 +188,9 @@ section[data-testid="stFileUploaderDropzone"] *{color:var(--sh-text)!important;}
 ::-webkit-scrollbar-thumb:hover{background:var(--sh-accent);}
 
 /* =====================================================================
-   HARD OVERRIDES: literal colors (no var()), extra specificity.
-   These win even if Streamlit's native dark theme or another stylesheet
-   fights the rules above. This is what removes the black spots.
-===================================================================== */
-html body .stApp [data-testid="stHeader"],
-html body .stApp header{background:@@BG@@!important;background-color:@@BG@@!important;}
-html body .stApp [data-testid="stHeader"] *{color:@@TEXT@@!important;}
-html body .stApp [data-testid="stHeader"] svg{color:@@TEXT@@!important;fill:currentColor!important;}
-
-html body .stApp [data-testid="stBottom"],
-html body .stApp [data-testid="stBottom"]>div,
-html body .stApp [data-testid="stBottomBlockContainer"]{background:@@BG@@!important;background-color:@@BG@@!important;}
-html body .stApp [data-testid="stChatInput"],
-html body .stApp [data-testid="stChatInput"]>div,
-html body .stApp [data-testid="stChatInput"] [data-baseweb="textarea"],
-html body .stApp [data-testid="stChatInput"] [data-baseweb="base-input"]{background:@@PANEL@@!important;background-color:@@PANEL@@!important;}
-html body .stApp [data-testid="stChatInput"] textarea{color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;}
-html body .stApp [data-testid="stChatInput"] button{background:@@PANEL2@@!important;color:@@MUTED@@!important;}
-html body .stApp [data-testid="stChatInput"] svg{color:@@MUTED@@!important;fill:currentColor!important;}
-
-html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"],
-html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"] div,
-html body .stApp [data-baseweb="select"]>div{background:@@INPUT@@!important;background-color:@@INPUT@@!important;background-image:none!important;}
-html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"] *{color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;}
-html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"] svg{color:@@MUTED@@!important;fill:currentColor!important;}
-
-html body div[data-baseweb="popover"],
-html body div[data-baseweb="popover"] *:not(svg):not(path),
-html body ul[role="listbox"],
-html body ul[role="listbox"] li{background:@@MENU@@!important;background-color:@@MENU@@!important;color:@@TEXT@@!important;}
-html body ul[role="listbox"] li:hover,
-html body ul[role="listbox"] li[aria-selected="true"]{background:@@MENUHOVER@@!important;color:@@ACCENT@@!important;}
-
-html body .stApp [data-testid="stSidebar"] button,
-html body .stApp [data-testid="stSidebar"] [data-testid="stExpander"],
-html body .stApp [data-testid="stSidebar"] [data-testid="stExpander"] summary{background:@@PANEL@@!important;background-color:@@PANEL@@!important;color:@@TEXT@@!important;}
-html body .stApp [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] svg{color:@@TEXT@@!important;fill:currentColor!important;}
-
-/* ---- round 2: sidebar labels, bottom bar, select arrow ---- */
-html body .stApp section[data-testid="stSidebar"] label,
-html body .stApp section[data-testid="stSidebar"] label p,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] *,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
-html body .stApp section[data-testid="stSidebar"] h1,
-html body .stApp section[data-testid="stSidebar"] h2,
-html body .stApp section[data-testid="stSidebar"] h3{color:@@TEXT@@!important;opacity:1!important;}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] *{color:@@MUTED@@!important;opacity:1!important;}
-
-html body .stApp [data-testid*="Bottom"],
-html body .stApp [class*="stBottom"],
-html body .stApp [class*="ChatFloating"],
-html body .stApp [data-testid="stBottom"] > div > div,
-html body .stApp [data-testid="stBottomBlockContainer"] > div{background:@@BG@@!important;background-color:@@BG@@!important;}
-html body .stApp [data-testid="stChatInput"] > div,
-html body .stApp [data-testid="stChatInput"] > div > div{background:@@PANEL@@!important;background-color:@@PANEL@@!important;}
-html body .stApp [data-testid="stChatInput"] textarea,
-html body .stApp [data-testid="stChatInputTextArea"]{background:@@PANEL@@!important;background-color:@@PANEL@@!important;color:@@TEXT@@!important;}
-
-html body .stApp [data-baseweb="select"] *:not(svg):not(path){background-color:@@INPUT@@!important;background-image:none!important;}
-html body .stApp [data-baseweb="select"] svg{background:transparent!important;fill:@@MUTED@@!important;color:@@MUTED@@!important;}
-
-/* ---- round 3: selectbox black value area ---- */
-html body .stApp [data-baseweb="select"],
-html body .stApp [data-baseweb="select"] *{color-scheme:@@SCHEME@@!important;}
-html body .stApp [data-baseweb="select"] > div,
-html body .stApp [data-baseweb="select"] > div > div,
-html body .stApp [data-baseweb="select"] > div > div > div,
-html body .stApp [data-baseweb="select"] input,
-html body .stApp [data-baseweb="select"] [value]{
-  background:@@INPUT@@!important;background-color:@@INPUT@@!important;background-image:none!important;
-  box-shadow:inset 0 0 0 100px @@INPUT@@!important;
-  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;opacity:1!important;filter:none!important;}
-html body .stApp [data-baseweb="select"] > div::before,
-html body .stApp [data-baseweb="select"] > div::after{background:transparent!important;display:none!important;}
-html body .stApp [data-baseweb="select"] > div{border:1px solid @@BORDER@@!important;border-radius:12px!important;overflow:hidden;}
-html body .stApp [data-baseweb="select"] svg{color:@@MUTED@@!important;fill:@@MUTED@@!important;}
-
-/* ---- FINAL THEME LOCK: sidebar select controls + dropdown menus ---- */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div {
-  background:@@INPUT@@!important;background-color:@@INPUT@@!important;background-image:none!important;
-  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;border-color:@@BORDER@@!important;
-  box-shadow:none!important;opacity:1!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
-  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;fill:@@MUTED@@!important;
-}
-html body div[data-baseweb="popover"],
-html body div[data-baseweb="popover"] > div,
-html body div[data-baseweb="popover"] [data-baseweb="menu"],
-html body div[data-baseweb="popover"] ul[role="listbox"] {
-  background:@@MENU@@!important;background-color:@@MENU@@!important;color:@@TEXT@@!important;
-  border-color:@@BORDER@@!important;box-shadow:0 18px 50px rgba(0,0,0,.16)!important;
-}
-html body div[data-baseweb="popover"] [role="option"],
-html body div[data-baseweb="popover"] li[role="option"],
-html body div[data-baseweb="popover"] [role="option"] * {
-  background:@@MENU@@!important;background-color:@@MENU@@!important;color:@@TEXT@@!important;
-  -webkit-text-fill-color:@@TEXT@@!important;
-}
-html body div[data-baseweb="popover"] [role="option"]:hover,
-html body div[data-baseweb="popover"] [role="option"][aria-selected="true"],
-html body div[data-baseweb="popover"] li[role="option"]:hover {
-  background:@@MENUHOVER@@!important;background-color:@@MENUHOVER@@!important;color:@@ACCENT@@!important;
-  -webkit-text-fill-color:@@ACCENT@@!important;
-}
-.sidebar-provider-card {
-  display:flex;align-items:center;gap:10px;padding:10px 11px;margin:7px 0 4px;
-  border:1px solid var(--sh-border);border-radius:11px;background:var(--sh-panel2);color:var(--sh-text)!important;
-}
-.sidebar-provider-dot {width:8px;height:8px;min-width:8px;border-radius:50%;background:var(--sh-accent);box-shadow:0 0 10px var(--sh-accent);}
-.sidebar-provider-title {color:var(--sh-text)!important;font-size:11px;font-weight:800;}
-.sidebar-provider-list {margin-top:2px;color:var(--sh-muted)!important;font-size:10px;}
-.sidebar-provider-offline .sidebar-provider-dot {background:var(--sh-muted);box-shadow:none;}
-/* ---- FINAL BASEWEB PORTAL OVERRIDE: light/dark dropdowns ---- */
-body > div [data-baseweb="popover"],
-body > div [data-baseweb="popover"] > div,
-body > div [data-baseweb="popover"] [data-baseweb="menu"],
-body > div [data-baseweb="popover"] ul[role="listbox"],
-body > div [data-baseweb="popover"] li[role="option"] {
-  background:@@MENU@@ !important;
-  background-color:@@MENU@@ !important;
-  color:@@TEXT@@ !important;
-  color-scheme:@@SCHEME@@ !important;
-  border-color:@@BORDER@@ !important;
-}
-body > div [data-baseweb="popover"] [role="option"],
-body > div [data-baseweb="popover"] [role="option"] span,
-body > div [data-baseweb="popover"] [role="option"] div,
-body > div [data-baseweb="popover"] li[role="option"] * {
-  background:transparent !important;
-  background-color:transparent !important;
-  color:@@TEXT@@ !important;
-  -webkit-text-fill-color:@@TEXT@@ !important;
-}
-body > div [data-baseweb="popover"] [role="option"]:hover,
-body > div [data-baseweb="popover"] [role="option"][aria-selected="true"],
-body > div [data-baseweb="popover"] li[role="option"]:hover {
-  background:@@MENUHOVER@@ !important;
-  background-color:@@MENUHOVER@@ !important;
-  color:@@ACCENT@@ !important;
-}
-body > div [data-baseweb="popover"] [role="option"]:hover *,
-body > div [data-baseweb="popover"] [role="option"][aria-selected="true"] * {
-  background:transparent !important;
-  color:@@ACCENT@@ !important;
-  -webkit-text-fill-color:@@ACCENT@@ !important;
-}
-/* The trigger itself must follow the active palette, including nested BaseWeb wrappers. */
-html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"] > div > div > div {
-  background:@@INPUT@@ !important;
-  background-color:@@INPUT@@ !important;
-  box-shadow:none !important;
-  color:@@TEXT@@ !important;
-  -webkit-text-fill-color:@@TEXT@@ !important;
-  color-scheme:@@SCHEME@@ !important;
-}
-
-/* ---- DASHBOARD SPACING + RESPONSIVE SAMPLE QUERIES ---- */
-.stat-card{min-height:82px;width:100%;padding:14px 12px;border:1px solid var(--sh-border);border-radius:14px;background:var(--sh-panel)!important;overflow:hidden;}
-.stat-label{color:var(--sh-muted)!important;font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;line-height:1.25;white-space:normal;overflow-wrap:anywhere;}
-.stat-value{color:var(--sh-text)!important;font-size:19px;font-weight:800;line-height:1.25;margin-top:6px;white-space:normal;overflow-wrap:anywhere;}
-.sample-query-title{margin:22px 0 8px;color:var(--sh-muted)!important;font-size:10px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;}
-div.stButton>button{white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.25!important;min-height:44px!important;height:auto!important;padding:9px 12px!important;}
-div.stButton>button p{white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.25!important;margin:0!important;}
-/* ---- SIDEBAR BASEWEB SELECT ---- */
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div,
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [aria-haspopup="listbox"]{
-  background:@@INPUT@@!important;background-color:@@INPUT@@!important;background-image:none!important;
-  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;color-scheme:@@SCHEME@@!important;
-  border-color:@@BORDER@@!important;box-shadow:none!important;opacity:1!important;filter:none!important;
-}
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input,
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] div{
-  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;
-}
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg{
-  background:transparent!important;color:@@MUTED@@!important;fill:@@MUTED@@!important;
-}
-/* Dropdowns render in a portal outside the sidebar DOM. */
-div[data-baseweb="popover"],div[data-baseweb="popover"] > div,div[data-baseweb="popover"] [role="listbox"]{
-  background:@@MENU@@!important;background-color:@@MENU@@!important;color:@@TEXT@@!important;
-  color-scheme:@@SCHEME@@!important;border:1px solid @@BORDER@@!important;
-}
-div[data-baseweb="popover"] [role="option"],div[data-baseweb="popover"] [role="option"] > div,
-div[data-baseweb="popover"] [role="option"] span{
-  background:transparent!important;background-color:transparent!important;color:@@TEXT@@!important;
-  -webkit-text-fill-color:@@TEXT@@!important;
-}
-div[data-baseweb="popover"] [role="option"]:hover,div[data-baseweb="popover"] [role="option"][aria-selected="true"]{
-  background:@@MENUHOVER@@!important;background-color:@@MENUHOVER@@!important;color:@@ACCENT@@!important;
-}
-@media (max-width:900px){
-  .stat-value{font-size:16px;}
-  .stat-card{min-height:76px;padding:12px 10px;}
-  .sample-query-title{margin-top:18px;}
-}
-
-/* ================================================================
-   INSTANT SCAN METER
-================================================================ */
-.risk-meter-card{
-  margin:12px 0 10px;padding:15px 16px;border:1px solid var(--sh-border);
-  border-radius:16px;background:var(--sh-panel)!important;
-}
-.risk-meter-top{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--sh-text)!important;}
-.risk-meter-top strong{font-size:18px;color:var(--sh-accent)!important;}
-.risk-meter-title{font-size:13px;font-weight:800;color:var(--sh-text)!important;}
-.risk-meter-level{margin-left:8px;font-size:11px;color:var(--sh-muted)!important;}
-.risk-meter-track{height:9px;margin-top:11px;border-radius:999px;overflow:hidden;background:var(--sh-panel2)!important;border:1px solid var(--sh-border);}
-.risk-meter-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sh-accent),#ef4444)!important;transition:width .25s ease;}
-.risk-meter-scale{display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--sh-muted)!important;}
-.risk-meter-note{margin-top:9px;font-size:10px;line-height:1.45;color:var(--sh-muted)!important;}
-
-/* ================================================================
-   FINAL UI-ONLY PATCH
-   Theme-aware sidebar selects + safe hero/stat-card spacing.
-================================================================ */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div > div > div {
-  background:var(--sh-input-bg)!important;
-  background-color:var(--sh-input-bg)!important;
-  background-image:none!important;
-  color:var(--sh-input-text)!important;
-  -webkit-text-fill-color:var(--sh-input-text)!important;
-  border:1px solid var(--sh-border)!important;
-  border-radius:12px!important;
-  box-shadow:none!important;
-  opacity:1!important;
-  color-scheme:@@SCHEME@@!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] span,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] input {
-  background:transparent!important;
-  background-color:transparent!important;
-  color:var(--sh-input-text)!important;
-  -webkit-text-fill-color:var(--sh-input-text)!important;
-  opacity:1!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] svg {
-  background:transparent!important;
-  color:var(--sh-input-arrow)!important;
-  fill:var(--sh-input-arrow)!important;
-  opacity:1!important;
-}
-
-/* BaseWeb renders the opened menu in a portal, outside the sidebar. */
-body > div[data-baseweb="popover"],
-body > div[data-baseweb="popover"] > div,
-body > div[data-baseweb="popover"] [data-baseweb="menu"],
-body > div[data-baseweb="popover"] ul[role="listbox"],
-body > div[data-baseweb="popover"] li[role="option"] {
-  background:var(--sh-menu)!important;
-  background-color:var(--sh-menu)!important;
-  color:var(--sh-text)!important;
-  border-color:var(--sh-border)!important;
-}
-body > div[data-baseweb="popover"] [role="option"],
-body > div[data-baseweb="popover"] [role="option"] > div,
-body > div[data-baseweb="popover"] [role="option"] span {
-  background:transparent!important;
-  background-color:transparent!important;
-  color:var(--sh-text)!important;
-  -webkit-text-fill-color:var(--sh-text)!important;
-}
-body > div[data-baseweb="popover"] [role="option"]:hover,
-body > div[data-baseweb="popover"] [role="option"][aria-selected="true"],
-body > div[data-baseweb="popover"] li[role="option"]:hover {
-  background:var(--sh-menu-hover)!important;
-  background-color:var(--sh-menu-hover)!important;
-  color:var(--sh-accent)!important;
-  -webkit-text-fill-color:var(--sh-accent)!important;
-}
-
-/* FINAL SELECTBOX CALIBRATION: keep sidebar BaseWeb select surfaces locked to the active theme. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div > div > div {
-  background:var(--sh-select-bg)!important;
-  background-color:var(--sh-select-bg)!important;
-  background-image:none!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-  border:1px solid var(--sh-select-border)!important;
-  border-radius:12px!important;
-  box-shadow:none!important;
-  opacity:1!important;
-  color-scheme:@@SCHEME@@!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] span,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] input {
-  background:transparent!important;
-  background-color:transparent!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] svg {
-  background:transparent!important;
-  color:var(--sh-select-arrow)!important;
-  fill:var(--sh-select-arrow)!important;
-  opacity:1!important;
-}
-
-/* BaseWeb renders the opened menu in a portal outside the sidebar. */
-html body div[data-baseweb="popover"],
-html body div[data-baseweb="popover"] > div,
-html body div[data-baseweb="popover"] [data-baseweb="menu"],
-html body div[data-baseweb="popover"] ul[role="listbox"],
-html body div[data-baseweb="popover"] li[role="option"] {
-  background:var(--sh-menu)!important;
-  background-color:var(--sh-menu)!important;
-  color:var(--sh-text)!important;
-  border-color:var(--sh-border)!important;
-  color-scheme:@@SCHEME@@!important;
-}
-html body div[data-baseweb="popover"] [role="option"],
-html body div[data-baseweb="popover"] [role="option"] > div,
-html body div[data-baseweb="popover"] [role="option"] span {
-  background:transparent!important;
-  background-color:transparent!important;
-  color:var(--sh-text)!important;
-  -webkit-text-fill-color:var(--sh-text)!important;
-}
-html body div[data-baseweb="popover"] [role="option"]:hover,
-html body div[data-baseweb="popover"] [role="option"][aria-selected="true"],
-html body div[data-baseweb="popover"] li[role="option"]:hover {
-  background:var(--sh-menu-hover)!important;
-  background-color:var(--sh-menu-hover)!important;
-  color:var(--sh-accent)!important;
-  -webkit-text-fill-color:var(--sh-accent)!important;
-}
-html body div[data-baseweb="popover"] [role="option"]:hover *,
-html body div[data-baseweb="popover"] [role="option"][aria-selected="true"] * {
-  background:transparent!important;
-  color:var(--sh-accent)!important;
-  -webkit-text-fill-color:var(--sh-accent)!important;
-}
-
-/* Give the hero its own layout space; no transforms/negative margins. */
-.hero {
-  position:relative!important;
-  height:auto!important;
-  min-height:0!important;
-  margin-top:0!important;
-  margin-bottom:1.5rem!important;
-  padding-bottom:42px!important;
-  overflow:visible!important;
-  transform:none!important;
-}
-.hero + div {
-  margin-top:0!important;
-}
-.stat-card {
-  position:relative!important;
-  transform:none!important;
-  margin-top:0!important;
-  overflow:hidden!important;
-}
-@media (max-width:900px) {
-  .hero {
-    margin-bottom:1.25rem!important;
-    padding:30px 20px!important;
-  }
-  .hero-title {font-size:36px!important;letter-spacing:-1.5px!important;}
-}
-
-/* =====================================================================
-   FINAL SIDEBAR DROPDOWN COLOR LOCK
-   Applies to all three sidebar selectboxes in both Light and Dark themes.
-   Streamlit/BaseWeb may render the open menu in a portal outside the sidebar,
-   so both in-sidebar and portal surfaces are explicitly theme-locked.
-===================================================================== */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div {
-  background:@@INPUT@@!important;
-  background-color:@@INPUT@@!important;
-  color:@@TEXT@@!important;
-  -webkit-text-fill-color:@@TEXT@@!important;
-  border:1px solid @@BORDER@@!important;
-  border-radius:12px!important;
-  box-shadow:none!important;
-  opacity:1!important;
-  color-scheme:@@SCHEME@@!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input {
-  background:transparent!important;
-  background-color:transparent!important;
-  color:@@TEXT@@!important;
-  -webkit-text-fill-color:@@TEXT@@!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
-  background:transparent!important;
-  color:@@MUTED@@!important;
-  fill:@@MUTED@@!important;
-}
-
-/* Open dropdown: BaseWeb portal can live directly under body or inside
-   another portal wrapper, so cover both structures. */
-html body div[data-baseweb="popover"],
-html body div[data-baseweb="popover"] > div,
-html body div[data-baseweb="popover"] [data-baseweb="menu"],
-html body div[data-baseweb="popover"] ul[role="listbox"],
-html body div[data-baseweb="popover"] li[role="option"] {
-  background:@@MENU@@!important;
-  background-color:@@MENU@@!important;
-  color:@@TEXT@@!important;
-  border-color:@@BORDER@@!important;
-  color-scheme:@@SCHEME@@!important;
-}
-html body div[data-baseweb="popover"] [role="option"],
-html body div[data-baseweb="popover"] [role="option"] > div,
-html body div[data-baseweb="popover"] [role="option"] span {
-  background:transparent!important;
-  background-color:transparent!important;
-  color:@@TEXT@@!important;
-  -webkit-text-fill-color:@@TEXT@@!important;
-}
-html body div[data-baseweb="popover"] [role="option"]:hover,
-html body div[data-baseweb="popover"] [role="option"][aria-selected="true"],
-html body div[data-baseweb="popover"] li[role="option"]:hover {
-  background:@@MENUHOVER@@!important;
-  background-color:@@MENUHOVER@@!important;
-  color:@@ACCENT@@!important;
-  -webkit-text-fill-color:@@ACCENT@@!important;
-}
-html body div[data-baseweb="popover"] [role="option"]:hover *,
-html body div[data-baseweb="popover"] [role="option"][aria-selected="true"] * {
-  background:transparent!important;
-  color:@@ACCENT@@!important;
-  -webkit-text-fill-color:@@ACCENT@@!important;
-}
-
-/* FINAL SIDEBAR SELECT CALIBRATION */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] [role="button"] {
-  background:@@SELECT_BG@@!important;
-  background-color:@@SELECT_BG@@!important;
-  background-image:none!important;
-  color:@@SELECT_TEXT@@!important;
-  -webkit-text-fill-color:@@SELECT_TEXT@@!important;
-  border-color:@@SELECT_BORDER@@!important;
-  box-shadow:none!important;
-  color-scheme:@@SCHEME@@!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] span,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] input,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] [role="button"] * {
-  background:transparent!important;
-  background-color:transparent!important;
-  color:@@SELECT_TEXT@@!important;
-  -webkit-text-fill-color:@@SELECT_TEXT@@!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] svg {
-  background:transparent!important;
-  color:@@SELECT_ARROW@@!important;
-  fill:@@SELECT_ARROW@@!important;
-}
-/* FINAL NATIVE BOX THEME LOCK
-   Streamlit/BaseWeb can apply its own light surface to nested controls.
-   Keep every interactive box tied to the active Light/Dark palette. */
+   
+/* CLEAN THEME CONTROL LOCK
+   Streamlit/BaseWeb native controls are bound to the active palette. */
 html body .stApp input,
 html body .stApp textarea,
 html body .stApp [data-baseweb="input"],
@@ -675,7 +199,9 @@ html body .stApp [data-baseweb="textarea"],
 html body .stApp [data-baseweb="textarea"] > div,
 html body .stApp [data-testid="stTextInput"] input,
 html body .stApp [data-testid="stTextArea"] textarea,
-html body .stApp [data-testid="stNumberInput"] input {
+html body .stApp [data-testid="stNumberInput"] input,
+html body .stApp [data-testid="stDateInput"] input,
+html body .stApp [data-testid="stTimeInput"] input {
   background:var(--sh-input)!important;
   background-color:var(--sh-input)!important;
   color:var(--sh-text)!important;
@@ -683,7 +209,6 @@ html body .stApp [data-testid="stNumberInput"] input {
   border-color:var(--sh-border)!important;
   color-scheme:var(--sh-scheme)!important;
 }
-
 html body .stApp [data-testid="stTextInput"] > div,
 html body .stApp [data-testid="stTextArea"] > div,
 html body .stApp [data-testid="stNumberInput"] > div,
@@ -692,60 +217,44 @@ html body .stApp [data-testid="stTimeInput"] > div {
   background:var(--sh-input)!important;
   background-color:var(--sh-input)!important;
   border-color:var(--sh-border)!important;
-  color:var(--sh-text)!important;
 }
-
-html body .stApp [data-testid="stFileUploaderDropzone"],
-html body .stApp section[data-testid="stFileUploaderDropzone"] {
+html body .stApp section[data-testid="stFileUploaderDropzone"],
+html body .stApp [data-testid="stFileUploaderDropzone"] {
   background:var(--sh-input)!important;
   background-color:var(--sh-input)!important;
   color:var(--sh-text)!important;
   border-color:var(--sh-border)!important;
 }
-
-html body .stApp [data-testid="stFileUploaderDropzone"] *,
-html body .stApp [data-testid="stTextInput"] *,
-html body .stApp [data-testid="stTextArea"] *,
-html body .stApp [data-testid="stNumberInput"] * {
+html body .stApp [data-testid="stFileUploaderDropzone"] * {
   color:var(--sh-text)!important;
 }
 
-html body .stApp [data-baseweb="select"],
-html body .stApp [data-baseweb="select"] > div,
-html body .stApp [data-baseweb="select"] > div > div {
-  background:var(--sh-select-bg)!important;
-  background-color:var(--sh-select-bg)!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-  border-color:var(--sh-select-border)!important;
-  color-scheme:var(--sh-scheme)!important;
-}
-
-
-/* FINAL SIDEBAR DARK THEME CALIBRATION
-   Match the sidebar controls to the same balanced dark palette used by the
-   fixed Light theme: deep surface, high-contrast text, visible but soft border. */
+/* Sidebar selectboxes: one source of truth for Light/Dark surfaces. */
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div {
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
+  min-height:42px!important;
   background:var(--sh-select-bg)!important;
   background-color:var(--sh-select-bg)!important;
+  background-image:none!important;
   color:var(--sh-select-text)!important;
   -webkit-text-fill-color:var(--sh-select-text)!important;
   border:1px solid var(--sh-select-border)!important;
   border-radius:12px!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+  box-shadow:none!important;
   opacity:1!important;
   color-scheme:var(--sh-scheme)!important;
 }
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] p,
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input,
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] * {
   background:transparent!important;
+  background-color:transparent!important;
   color:var(--sh-select-text)!important;
   -webkit-text-fill-color:var(--sh-select-text)!important;
-  opacity:1!important;
 }
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
   background:transparent!important;
@@ -758,76 +267,71 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [d
   border-color:var(--sh-accent)!important;
 }
 
-html body div[data-baseweb="popover"] [role="listbox"],
-html body div[data-baseweb="popover"] [role="option"] {
+/* BaseWeb opens select menus in a portal outside the sidebar. */
+html body div[data-baseweb="popover"],
+html body div[data-baseweb="popover"] > div,
+html body div[data-baseweb="popover"] [data-baseweb="menu"],
+html body div[data-baseweb="popover"] ul[role="listbox"],
+html body div[data-baseweb="popover"] li[role="option"] {
+  background:var(--sh-menu)!important;
+  background-color:var(--sh-menu)!important;
+  color:var(--sh-text)!important;
+  border-color:var(--sh-border)!important;
   color-scheme:var(--sh-scheme)!important;
 }
-
-
-/* SIDEBAR SELECTBOX TEXT/SURFACE LOCK
-   Keeps the four sidebar selectors readable in both themes.
-   Uses existing theme tokens only; no layout/state/backend changes. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
-  background:var(--sh-select-bg)!important;
-  background-color:var(--sh-select-bg)!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-  border-color:var(--sh-select-border)!important;
-  opacity:1!important;
-  box-shadow:none!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] *,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] p,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input {
+html body div[data-baseweb="popover"] [role="option"],
+html body div[data-baseweb="popover"] [role="option"] > div,
+html body div[data-baseweb="popover"] [role="option"] span {
   background:transparent!important;
   background-color:transparent!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-  opacity:1!important;
+  color:var(--sh-text)!important;
+  -webkit-text-fill-color:var(--sh-text)!important;
 }
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
-  color:var(--sh-select-arrow)!important;
-  fill:var(--sh-select-arrow)!important;
-  opacity:1!important;
+html body div[data-baseweb="popover"] [role="option"]:hover,
+html body div[data-baseweb="popover"] [role="option"][aria-selected="true"],
+html body div[data-baseweb="popover"] li[role="option"]:hover {
+  background:var(--sh-menu-hover)!important;
+  background-color:var(--sh-menu-hover)!important;
+  color:var(--sh-accent)!important;
+  -webkit-text-fill-color:var(--sh-accent)!important;
 }
-
-
-/* DARK SIDEBAR SELECTBOX OVERRIDE
-   Targeted only at the four sidebar selectboxes; preserves Light palette. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
-  background:var(--sh-select-bg)!important;
-  background-color:var(--sh-select-bg)!important;
-  background-image:none!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-  border-color:var(--sh-select-border)!important;
-  box-shadow:none!important;
-  opacity:1!important;
-  color-scheme:var(--sh-scheme)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] *,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] p,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input {
+html body div[data-baseweb="popover"] [role="option"]:hover *,
+html body div[data-baseweb="popover"] [role="option"][aria-selected="true"] * {
   background:transparent!important;
-  background-color:transparent!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-  opacity:1!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
-  color:var(--sh-select-arrow)!important;
-  fill:var(--sh-select-arrow)!important;
-  opacity:1!important;
+  color:var(--sh-accent)!important;
+  -webkit-text-fill-color:var(--sh-accent)!important;
 }
 
+/* Sidebar action buttons follow the active palette. */
+html body .stApp section[data-testid="stSidebar"] button {
+  color:var(--sh-text)!important;
+}
+html body .stApp section[data-testid="stSidebar"] button:hover {
+  color:var(--sh-accent)!important;
+}
+
+/* Preserve hero spacing without transforms or negative offsets. */
+.hero {
+  position:relative!important;
+  height:auto!important;
+  min-height:0!important;
+  margin-top:0!important;
+  margin-bottom:1.5rem!important;
+  padding-bottom:42px!important;
+  overflow:visible!important;
+  transform:none!important;
+}
+.hero + div { margin-top:0!important; }
+.stat-card {
+  position:relative!important;
+  transform:none!important;
+  margin-top:0!important;
+  overflow:hidden!important;
+}
+@media (max-width:900px) {
+  .hero { margin-bottom:1.25rem!important; padding:30px 20px!important; }
+  .hero-title { font-size:36px!important; letter-spacing:-1.5px!important; }
+}
 </style>
 """
 
