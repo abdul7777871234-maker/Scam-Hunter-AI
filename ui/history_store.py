@@ -79,6 +79,19 @@ def save_chat(uid: str, chat_id: str, messages: list) -> None:
         pass  # history is best-effort; never break the app
 
 
+def delete_chat(uid: str, chat_id: str) -> None:
+    if not valid_uid(uid) or not chat_id:
+        return
+    chats = load_chats(uid)
+    remaining = [chat for chat in chats if chat.get("id") != chat_id]
+    if len(remaining) == len(chats):
+        return
+    try:
+        _write(uid, remaining[:MAX_CHATS])
+    except OSError:
+        pass
+
+
 def delete_all(uid: str) -> None:
     if valid_uid(uid):
         try:
