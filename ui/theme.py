@@ -427,7 +427,7 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] di
   border-radius:12px!important;
   box-shadow:none!important;
   opacity:1!important;
-  color-scheme:var(--sh-scheme)!important;
+  color-scheme:@@SCHEME@@!important;
 }
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] span,
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] input {
@@ -548,6 +548,75 @@ body > div[data-baseweb="popover"] [role="option"][aria-selected="true"] span {
     padding:30px 20px!important;
   }
   .hero-title {font-size:36px!important;letter-spacing:-1.5px!important;}
+}
+
+/* =====================================================================
+   FINAL SIDEBAR DROPDOWN COLOR LOCK
+   Applies to all three sidebar selectboxes in both Light and Dark themes.
+   Streamlit/BaseWeb may render the open menu in a portal outside the sidebar,
+   so both in-sidebar and portal surfaces are explicitly theme-locked.
+===================================================================== */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div {
+  background:@@INPUT@@!important;
+  background-color:@@INPUT@@!important;
+  color:@@TEXT@@!important;
+  -webkit-text-fill-color:@@TEXT@@!important;
+  border:1px solid @@BORDER@@!important;
+  border-radius:12px!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  color-scheme:@@SCHEME@@!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input {
+  background:transparent!important;
+  background-color:transparent!important;
+  color:@@TEXT@@!important;
+  -webkit-text-fill-color:@@TEXT@@!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
+  background:transparent!important;
+  color:@@MUTED@@!important;
+  fill:@@MUTED@@!important;
+}
+
+/* Open dropdown: BaseWeb portal can live directly under body or inside
+   another portal wrapper, so cover both structures. */
+html body div[data-baseweb="popover"],
+html body div[data-baseweb="popover"] > div,
+html body div[data-baseweb="popover"] [data-baseweb="menu"],
+html body div[data-baseweb="popover"] ul[role="listbox"],
+html body div[data-baseweb="popover"] li[role="option"] {
+  background:@@MENU@@!important;
+  background-color:@@MENU@@!important;
+  color:@@TEXT@@!important;
+  border-color:@@BORDER@@!important;
+  color-scheme:@@SCHEME@@!important;
+}
+html body div[data-baseweb="popover"] [role="option"],
+html body div[data-baseweb="popover"] [role="option"] > div,
+html body div[data-baseweb="popover"] [role="option"] span {
+  background:transparent!important;
+  background-color:transparent!important;
+  color:@@TEXT@@!important;
+  -webkit-text-fill-color:@@TEXT@@!important;
+}
+html body div[data-baseweb="popover"] [role="option"]:hover,
+html body div[data-baseweb="popover"] [role="option"][aria-selected="true"],
+html body div[data-baseweb="popover"] li[role="option"]:hover {
+  background:@@MENUHOVER@@!important;
+  background-color:@@MENUHOVER@@!important;
+  color:@@ACCENT@@!important;
+  -webkit-text-fill-color:@@ACCENT@@!important;
+}
+html body div[data-baseweb="popover"] [role="option"]:hover *,
+html body div[data-baseweb="popover"] [role="option"][aria-selected="true"] * {
+  background:transparent!important;
+  color:@@ACCENT@@!important;
+  -webkit-text-fill-color:@@ACCENT@@!important;
 }
 
 </style>
