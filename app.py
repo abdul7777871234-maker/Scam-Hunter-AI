@@ -604,7 +604,17 @@ if submission:
                 # before the investigation UI/pipeline is shown.
                 intent = {"intent": "scam_analysis", "requires_rag": True, "requires_web": False}
                 if not uploaded_files:
-                    intent = orchestrator.detect_intent(prompt)
+                    classifier = getattr(orchestrator, "classifier", None)
+                if classifier is not None and callable(getattr(classifier, "run", None)):
+                    try:
+                        intent = classifier.run(prompt)
+                    except Exception:
+                        # Conservative fallback: if routing fails, analyze rather than
+                        # risk silently treating suspicious content as ordinary chat.
+                        intent = {"intent": "scam_analysis", "requires_rag": True, "requires_web": False}
+                else:
+                    # Defensive fallback for stale/incompatible runtime objects.
+                    intent = {"intent": "scam_analysis", "requires_rag": True, "requires_web": False}
 
                 if intent.get("intent") == "normal_chat":
                     try:
