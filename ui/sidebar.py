@@ -1,11 +1,14 @@
 import streamlit as st
+
 from ui.theme import ACCENTS
+from ui.history_store import load_chats, new_id, delete_all
+from ui.verdict import LEVELS
 
 
 def render():
-    # Initialise state first so every widget below can rely on it
+    """Top part of the sidebar (controls). Returns (mode, style, accent)."""
+
     st.session_state.setdefault("dark", True)
-    st.session_state.setdefault("history", [])
     st.session_state.setdefault("messages", [])
 
     with st.sidebar:
@@ -53,24 +56,62 @@ def render():
                 st.session_state.dark = True
                 st.rerun()
 
-        st.caption(f"Active: {'Dark' if st.session_state.dark else 'Light'} · {accent}")
-        st.divider()
+        st.caption(
+            f"Active: {'Dark' if st.session_state.dark else 'Light'} · {accent}"
+        )
 
+    return mode, style, accent
+
+
+def _last_dot(chat: dict) -> str:
+    for m in reversed(chat.get("messages", [])):
+        level = (m.get("verdict") or {}).get("level")
+        if level in LEVELS:
+            return LEVELS[level]["emoji"]
+    return "⚪"
+
+
+def render_footer(uid: str, kb_status: str):
+    """Bottom part of the sidebar. Call at the END of app.py so the saved
+    chat list is always up to date."""
+
+    with st.sidebar:
+        st.divider()
         st.markdown("**KNOWLEDGE BASE**")
-        st.caption(st.session_state.get("kb_status", "Not initialized"))
+        st.caption(kb_status)
         st.divider()
 
         st.markdown("**RECENT INVESTIGATIONS**")
-        history = st.session_state.history
-        if history:
-            for h in history[-5:][::-1]:
-                st.caption(h[:65] + ("…" if len(h) > 65 else ""))
+        chats = load_chats(uid)
+
+        if chats:
+            current = st.session_state.get("chat_id")
+            for chat in chats[:10]:
+                title = chat.get("title", "Chat")
+                label = f"{_last_dot(chat)} {title}"
+                if chat.get("id") == current:
+                    label = "▸ " + label
+                if st.button(
+                    label,
+                    key=f"open_{chat['id']}",
+                    use_container_width=True,
+                ):
+                    st.session_state.load_chat_id = chat["id"]
+                    st.rerun()
+            st.caption("Bookmark this page to get your saved chats back later.")
         else:
             st.caption("No investigations yet.")
 
-        if st.button("Clear Chat History", use_container_width=True, key="btn_clear"):
-            st.session_state.history = []
+        if st.button("Clear Chat", use_container_width=True, key="btn_clear"):
+            # Clears the screen only. Saved chats stay in the list above.
             st.session_state.messages = []
+            st.session_state.chat_id = new_id()
             st.rerun()
 
-    return mode, style, accent
+        with st.popover("Delete saved history", use_container_width=True):
+            st.caption("This permanently deletes all saved chats for this browser link.")
+            if st.button("Yes, delete everything", key="btn_delete_all"):
+                delete_all(uid)
+                st.session_state.messages = []
+                st.session_state.chat_id = new_id()
+                st.rerun()
