@@ -1019,9 +1019,14 @@ html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageConten
 /* SELECTBOX DROPDOWN SURFACE — menu background only; option rows remain native. */
 html body div[data-baseweb="popover"],
 html body div[data-baseweb="popover"] > div,
+html body div[data-baseweb="popover"] > div > div,
 html body div[data-baseweb="menu"],
 html body div[data-baseweb="menu"] > div,
-html body ul[role="listbox"] {
+html body div[data-baseweb="menu"] > div > div,
+html body ul[role="listbox"],
+html body div[role="listbox"],
+html body div[role="listbox"] > div,
+html body div[role="listbox"] > ul {
   background:var(--sh-menu)!important;
   background-color:var(--sh-menu)!important;
   color:var(--sh-text)!important;
