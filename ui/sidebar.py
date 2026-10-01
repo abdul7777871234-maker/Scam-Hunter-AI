@@ -199,6 +199,29 @@ def _last_dot(chat: dict) -> str:
     return "⚪"
 
 
+def render_provider_status(groq: bool = False, gemini: bool = False):
+    """Render AI provider availability inside the sidebar."""
+    providers = [name for name, enabled in (("Groq", groq), ("Gemini", gemini)) if enabled]
+    with st.sidebar:
+        st.markdown('<div class="sidebar-section-title">AI PROVIDERS</div>', unsafe_allow_html=True)
+        if providers:
+            safe = html.escape(", ".join(providers))
+            st.markdown(
+                f"""<div class="sidebar-provider-card"><span class="sidebar-provider-dot"></span>
+                <div><div class="sidebar-provider-title">AI providers configured</div>
+                <div class="sidebar-provider-list">{safe}</div></div></div>""",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                """<div class="sidebar-provider-card sidebar-provider-offline">
+                <span class="sidebar-provider-dot"></span><div>
+                <div class="sidebar-provider-title">No AI provider configured</div>
+                <div class="sidebar-provider-list">Instant scan remains available</div>
+                </div></div>""",
+                unsafe_allow_html=True,
+            )
+
 def render_footer(
     uid: str,
     kb_status: str,
