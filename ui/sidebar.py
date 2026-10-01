@@ -3,142 +3,74 @@ from ui.theme import ACCENTS
 
 
 def render():
-    # Keep theme state available before rendering controls
-    if "dark" not in st.session_state:
-        st.session_state.dark = False
+    # Initialise state first so every widget below can rely on it
+    st.session_state.setdefault("dark", True)
+    st.session_state.setdefault("history", [])
+    st.session_state.setdefault("messages", [])
 
     with st.sidebar:
-
-        # ---------------------------------------------------------
-        # BRAND
-        # ---------------------------------------------------------
-        st.markdown(
-            """
-            <div style="
-                font-weight:800;
-                font-size:18px;
-                letter-spacing:.4px;
-                margin-bottom:4px;
-            ">
-                🛡️ SCAMHUNTER AI
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
+        st.markdown("### 🛡️ SCAMHUNTER AI")
         st.caption("AI-powered scam investigation assistant")
         st.divider()
 
-        # ---------------------------------------------------------
-        # INVESTIGATION SETTINGS
-        # ---------------------------------------------------------
         mode = st.selectbox(
             "INVESTIGATION MODE",
             ["Quick Check", "Deep Investigation"],
             index=0,
-            key="investigation_mode",
+            key="mode",
         )
-
         style = st.selectbox(
             "RESPONSE STYLE",
             ["Concise", "Balanced", "Detailed"],
             index=1,
-            key="response_style",
+            key="style",
         )
-
         accent = st.selectbox(
             "ACCENT COLOR",
-            list(ACCENTS.keys()),
-            index=0,
-            key="accent_color",
+            list(ACCENTS),
+            index=list(ACCENTS).index("Amber"),
+            key="accent",
         )
 
-        # ---------------------------------------------------------
-        # THEME
-        # ---------------------------------------------------------
         st.markdown("**THEME**")
-
         c1, c2 = st.columns(2)
-
         with c1:
             if st.button(
                 "☀ Light",
                 use_container_width=True,
-                key="theme_light",
+                key="btn_light",
+                type="primary" if not st.session_state.dark else "secondary",
             ):
                 st.session_state.dark = False
                 st.rerun()
-
         with c2:
             if st.button(
                 "🌙 Dark",
                 use_container_width=True,
-                key="theme_dark",
+                key="btn_dark",
+                type="primary" if st.session_state.dark else "secondary",
             ):
                 st.session_state.dark = True
                 st.rerun()
 
-        current_theme = "Dark" if st.session_state.dark else "Light"
-
-        st.caption(
-            f"Active: {current_theme} · {accent}"
-        )
-
+        st.caption(f"Active: {'Dark' if st.session_state.dark else 'Light'} · {accent}")
         st.divider()
 
-        # ---------------------------------------------------------
-        # KNOWLEDGE BASE
-        # ---------------------------------------------------------
         st.markdown("**KNOWLEDGE BASE**")
-
-        kb_status = st.session_state.get(
-            "kb_status",
-            "Not initialized",
-        )
-
-        st.caption(kb_status)
-
+        st.caption(st.session_state.get("kb_status", "Not initialized"))
         st.divider()
 
-        # ---------------------------------------------------------
-        # RECENT INVESTIGATIONS
-        # ---------------------------------------------------------
         st.markdown("**RECENT INVESTIGATIONS**")
-
-        history = st.session_state.get(
-            "history",
-            [],
-        )
-
+        history = st.session_state.history
         if history:
-            for index, item in enumerate(
-                history[-5:][::-1]
-            ):
-                text = str(item)
-
-                if len(text) > 65:
-                    text = text[:65] + "…"
-
-                st.caption(
-                    f"{index + 1}. {text}"
-                )
+            for h in history[-5:][::-1]:
+                st.caption(h[:65] + ("…" if len(h) > 65 else ""))
         else:
-            st.caption(
-                "No investigations yet."
-            )
+            st.caption("No investigations yet.")
 
-        st.divider()
-
-        # ---------------------------------------------------------
-        # CLEAR HISTORY
-        # ---------------------------------------------------------
-        if st.button(
-            "Clear Chat History",
-            use_container_width=True,
-            key="clear_history",
-        ):
+        if st.button("Clear Chat History", use_container_width=True, key="btn_clear"):
             st.session_state.history = []
             st.session_state.messages = []
             st.rerun()
 
-        return mode, style, accent
+    return mode, style, accent
