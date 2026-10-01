@@ -649,6 +649,372 @@ html body .stApp [data-testid="stDownloadButton"] button:hover {
   }
 }
 
+
+/* =====================================================================
+   3D WORLD-CLASS VISUAL LAYER — visual only
+   Premium motion, depth, glass, ambient lighting and 3D interaction.
+   No application logic/state/API/RAG behavior is changed.
+   ===================================================================== */
+
+/* Animated ambient canvas */
+html body .stApp {
+  background:
+    radial-gradient(circle at 8% 12%, @@ACCENT@@12 0, transparent 25%),
+    radial-gradient(circle at 92% 8%, #7C3AED10 0, transparent 24%),
+    radial-gradient(circle at 50% 100%, @@ACCENT@@0B 0, transparent 32%),
+    var(--sh-bg)!important;
+  background-size:140% 140%,130% 130%,150% 150%,100% 100%!important;
+  animation:shAmbient 18s ease-in-out infinite alternate!important;
+}
+@keyframes shAmbient {
+  0% { background-position:0% 0%,100% 0%,50% 100%,0 0; }
+  50% { background-position:18% 12%,82% 18%,42% 82%,0 0; }
+  100% { background-position:5% 22%,96% 5%,58% 92%,0 0; }
+}
+
+/* Subtle futuristic grid */
+html body .stApp [data-testid="stMain"] {
+  position:relative!important;
+}
+html body .stApp [data-testid="stMain"]::before {
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:.18;
+  background-image:
+    linear-gradient(@@ACCENT@@08 1px,transparent 1px),
+    linear-gradient(90deg,@@ACCENT@@08 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:linear-gradient(to bottom,black,transparent 78%);
+  -webkit-mask-image:linear-gradient(to bottom,black,transparent 78%);
+}
+html body .stApp [data-testid="stMain"] > div {
+  position:relative;
+  z-index:1;
+}
+
+/* Hero becomes the visual centerpiece */
+.hero {
+  position:relative!important;
+  isolation:isolate!important;
+  min-height:300px!important;
+  overflow:hidden!important;
+  border:1px solid @@ACCENT@@35!important;
+  background:
+    radial-gradient(circle at 50% 18%,@@ACCENT@@18 0,transparent 30%),
+    radial-gradient(circle at 12% 90%,#7C3AED10 0,transparent 30%),
+    linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  box-shadow:
+    0 30px 90px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 0 70px @@ACCENT@@0B!important;
+  transform-style:preserve-3d!important;
+  perspective:1000px!important;
+}
+.hero::before {
+  content:"";
+  position:absolute;
+  width:360px;
+  height:360px;
+  left:50%;
+  top:-190px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  border:1px solid @@ACCENT@@25;
+  box-shadow:
+    0 0 0 35px @@ACCENT@@05,
+    0 0 0 70px @@ACCENT@@04,
+    0 0 90px @@ACCENT@@14;
+  animation:shOrbit 9s linear infinite!important;
+  pointer-events:none;
+}
+.hero::after {
+  content:"";
+  position:absolute;
+  width:110px;
+  height:110px;
+  right:8%;
+  top:18%;
+  border-radius:32px;
+  background:
+    radial-gradient(circle at 30% 25%,rgba(255,255,255,.30),transparent 22%),
+    linear-gradient(145deg,@@ACCENT@@42,@@ACCENT@@08);
+  border:1px solid @@ACCENT@@55;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    0 25px 60px @@ACCENT@@18,
+    0 0 45px @@ACCENT@@12;
+  transform:rotateX(58deg) rotateZ(38deg);
+  animation:shFloat3D 6s ease-in-out infinite!important;
+  pointer-events:none;
+}
+@keyframes shOrbit {
+  from { transform:translateX(-50%) rotate(0deg); }
+  to { transform:translateX(-50%) rotate(360deg); }
+}
+@keyframes shFloat3D {
+  0%,100% { margin-top:0; transform:rotateX(58deg) rotateZ(38deg) translateZ(0); }
+  50% { margin-top:18px; transform:rotateX(70deg) rotateZ(52deg) translateZ(18px); }
+}
+.hero > * { position:relative!important; z-index:2!important; }
+.hero-logo {
+  position:relative!important;
+  width:76px!important;
+  height:76px!important;
+  border-radius:24px!important;
+  border:1px solid @@ACCENT@@70!important;
+  background:
+    radial-gradient(circle at 35% 25%,rgba(255,255,255,.24),transparent 22%),
+    linear-gradient(145deg,@@ACCENT@@32,@@ACCENT@@08)!important;
+  box-shadow:
+    0 18px 50px @@ACCENT@@25,
+    inset 0 1px 0 rgba(255,255,255,.20)!important;
+  transform:translateZ(35px) rotateX(8deg)!important;
+  animation:shLogoFloat 4s ease-in-out infinite!important;
+}
+@keyframes shLogoFloat {
+  0%,100% { transform:translateY(0) translateZ(35px) rotateX(8deg) rotateY(-4deg); }
+  50% { transform:translateY(-8px) translateZ(48px) rotateX(12deg) rotateY(5deg); }
+}
+.hero-title {
+  text-shadow:0 0 32px @@ACCENT@@18!important;
+  transform:translateZ(24px)!important;
+}
+.hero-description { transform:translateZ(16px)!important; }
+.hero-badge {
+  box-shadow:0 0 24px @@ACCENT@@18,inset 0 1px 0 rgba(255,255,255,.08)!important;
+  backdrop-filter:blur(12px)!important;
+}
+
+/* Premium glass stat deck */
+.stat-card {
+  position:relative!important;
+  overflow:hidden!important;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.055),transparent 55%),
+    linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+  border:1px solid rgba(255,255,255,.09)!important;
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.13),
+    inset 0 1px 0 rgba(255,255,255,.08)!important;
+  transform-style:preserve-3d!important;
+}
+.stat-card::before {
+  content:"";
+  position:absolute;
+  width:120px;
+  height:120px;
+  right:-55px;
+  top:-55px;
+  border-radius:50%;
+  background:@@ACCENT@@16;
+  filter:blur(5px);
+  animation:shPulse 4s ease-in-out infinite alternate;
+}
+@keyframes shPulse {
+  from { transform:scale(.85); opacity:.45; }
+  to { transform:scale(1.15); opacity:.85; }
+}
+.stat-card:hover {
+  transform:translateY(-7px) rotateX(2deg) rotateY(-1deg)!important;
+  border-color:@@ACCENT@@55!important;
+  box-shadow:0 26px 60px rgba(0,0,0,.20),0 0 35px @@ACCENT@@10!important;
+}
+
+/* Glassmorphism chat */
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] {
+  position:relative!important;
+  overflow:hidden!important;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.045),transparent 60%),
+    var(--sh-panel)!important;
+  backdrop-filter:blur(16px)!important;
+  -webkit-backdrop-filter:blur(16px)!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:
+    0 16px 42px rgba(0,0,0,.11),
+    inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+html body .stApp [data-testid="stChatMessage"]:hover [data-testid="stChatMessageContent"] {
+  transform:translateY(-2px)!important;
+  border-color:@@ACCENT@@35!important;
+  box-shadow:0 20px 48px rgba(0,0,0,.15),0 0 28px @@ACCENT@@08!important;
+  transition:all .22s ease!important;
+}
+
+/* 3D pipeline */
+.pipeline-card {
+  position:relative!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 0% 0%,@@ACCENT@@0C,transparent 28%),
+    linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  box-shadow:0 22px 55px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+.pipeline-step {
+  position:relative!important;
+  overflow:hidden!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.04),var(--sh-panel))!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.05)!important;
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease!important;
+}
+.pipeline-step::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(110deg,transparent 20%,@@ACCENT@@12 48%,transparent 72%);
+  transform:translateX(-110%);
+  animation:shScan 4.5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes shScan {
+  0%,35% { transform:translateX(-110%); }
+  65%,100% { transform:translateX(110%); }
+}
+.pipeline-step:hover {
+  transform:translateX(5px) translateZ(8px)!important;
+  border-color:@@ACCENT@@55!important;
+  box-shadow:0 14px 30px rgba(0,0,0,.13),0 0 22px @@ACCENT@@08!important;
+}
+
+/* Verdict / risk card gets a cinematic glow */
+.verdict-card {
+  position:relative!important;
+  overflow:hidden!important;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.045),transparent 60%),
+    linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  box-shadow:0 20px 48px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+.verdict-card::after {
+  content:"";
+  position:absolute;
+  inset:auto -15% -65% 30%;
+  height:180px;
+  background:radial-gradient(circle,@@ACCENT@@16,transparent 68%);
+  pointer-events:none;
+  animation:shGlow 5s ease-in-out infinite alternate;
+}
+@keyframes shGlow {
+  from { transform:translateX(-4%); opacity:.35; }
+  to { transform:translateX(8%); opacity:.85; }
+}
+
+/* Source cards feel like floating evidence tiles */
+.source-card,.source {
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.04),transparent 58%),
+    var(--sh-panel)!important;
+  box-shadow:0 15px 36px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.05)!important;
+  backdrop-filter:blur(12px)!important;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important;
+}
+.source-card:hover,.source:hover {
+  transform:translateY(-4px) translateX(2px)!important;
+  box-shadow:0 22px 48px rgba(0,0,0,.15),0 0 25px @@ACCENT@@09!important;
+}
+
+/* Sidebar becomes a premium control cockpit */
+section[data-testid="stSidebar"] {
+  box-shadow:12px 0 45px rgba(0,0,0,.08)!important;
+}
+.sidebar-brand-logo {
+  position:relative!important;
+  overflow:hidden!important;
+  box-shadow:0 12px 35px @@ACCENT@@20,inset 0 1px 0 rgba(255,255,255,.12)!important;
+  animation:shLogoFloat 5s ease-in-out infinite!important;
+}
+.sidebar-brand-logo::after {
+  content:"";
+  position:absolute;
+  width:140%;
+  height:30%;
+  left:-20%;
+  top:35%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+  transform:rotate(-35deg);
+  animation:shShimmer 3.8s linear infinite;
+}
+@keyframes shShimmer {
+  from { transform:translateX(-80%) rotate(-35deg); }
+  to { transform:translateX(120%) rotate(-35deg); }
+}
+.sidebar-status-card {
+  background:linear-gradient(145deg,rgba(255,255,255,.05),var(--sh-panel2))!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.09)!important;
+}
+
+/* Chat composer as a floating command bar */
+html body .stApp [data-testid="stChatInput"] > div {
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.055),transparent 65%),
+    linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  backdrop-filter:blur(22px)!important;
+  -webkit-backdrop-filter:blur(22px)!important;
+  border:1px solid @@ACCENT@@30!important;
+  box-shadow:
+    0 20px 55px rgba(0,0,0,.18),
+    0 0 35px @@ACCENT@@08,
+    inset 0 1px 0 rgba(255,255,255,.09)!important;
+}
+html body .stApp [data-testid="stChatInput"] > div:focus-within {
+  transform:translateY(-2px)!important;
+  border-color:@@ACCENT@@88!important;
+  box-shadow:
+    0 24px 65px rgba(0,0,0,.20),
+    0 0 0 4px @@ACCENT@@0D,
+    0 0 45px @@ACCENT@@12,
+    inset 0 1px 0 rgba(255,255,255,.12)!important;
+}
+
+/* Buttons become tactile premium controls */
+html body .stApp div.stButton > button,
+html body .stApp [data-testid="stDownloadButton"] button {
+  position:relative!important;
+  overflow:hidden!important;
+  background:linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  box-shadow:0 9px 25px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.07)!important;
+}
+html body .stApp div.stButton > button::after,
+html body .stApp [data-testid="stDownloadButton"] button::after {
+  content:"";
+  position:absolute;
+  top:0;
+  left:-120%;
+  width:80%;
+  height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.14),transparent);
+  transform:skewX(-18deg);
+  transition:left .55s ease;
+  pointer-events:none;
+}
+html body .stApp div.stButton > button:hover::after,
+html body .stApp [data-testid="stDownloadButton"] button:hover::after {
+  left:140%;
+}
+
+/* Expanders become glass panels */
+html body .stApp [data-testid="stExpander"] {
+  background:linear-gradient(145deg,rgba(255,255,255,.035),var(--sh-panel))!important;
+  box-shadow:0 14px 35px rgba(0,0,0,.09),inset 0 1px 0 rgba(255,255,255,.05)!important;
+  backdrop-filter:blur(12px)!important;
+}
+
+/* Respect reduced-motion accessibility */
+@media (prefers-reduced-motion:reduce) {
+  html body .stApp,
+  .hero::before,.hero::after,.hero-logo,
+  .stat-card::before,.pipeline-step::after,.verdict-card::after,
+  .sidebar-brand-logo,.sidebar-brand-logo::after {
+    animation:none!important;
+  }
+  .hero-logo,.stat-card,.pipeline-step { transform:none!important; }
+}
+
 </style>
 """
 
