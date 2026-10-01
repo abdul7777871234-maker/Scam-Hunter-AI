@@ -1,3 +1,4 @@
+```python
 import streamlit as st
 
 
@@ -40,7 +41,9 @@ def apply_theme(dark: bool, accent: str):
         f"""
         <style>
 
-        /* ================= GLOBAL ================= */
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
 
         :root {{
             --accent: {a};
@@ -56,29 +59,47 @@ def apply_theme(dark: bool, accent: str):
             color-scheme: {scheme};
         }}
 
-        html, body, .stApp, [data-testid="stAppViewContainer"] {{
+        html,
+        body,
+        .stApp,
+        [data-testid="stAppViewContainer"] {{
             background: var(--bg) !important;
             color: var(--text);
         }}
 
         .stApp {{
             background:
-                radial-gradient(circle at 50% -10%, {a}18 0, transparent 32%),
+                radial-gradient(
+                    circle at 50% -10%,
+                    {a}18 0,
+                    transparent 32%
+                ),
                 var(--bg) !important;
         }}
 
         .block-container {{
             max-width: 1320px;
-            padding-top: 4.5rem;      /* keeps hero clear of the header */
+            padding-top: 4.5rem;
             padding-bottom: 8rem;
         }}
 
-        h1, h2, h3, h4, h5, h6, label, p, span, li {{
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        label,
+        p,
+        span,
+        li {{
             color: inherit;
         }}
 
 
-        /* ================= TOP HEADER / TOOLBAR ================= */
+        /* =========================================================
+           TOP HEADER / TOOLBAR
+        ========================================================= */
 
         header[data-testid="stHeader"],
         [data-testid="stHeader"] {{
@@ -86,7 +107,6 @@ def apply_theme(dark: bool, accent: str):
             border-bottom: 1px solid var(--border);
         }}
 
-        /* text/icon color only (no fill override: it painted the menu icon as a black square) */
         [data-testid="stToolbar"],
         [data-testid="stToolbar"] *,
         [data-testid="stHeader"] button,
@@ -131,7 +151,9 @@ def apply_theme(dark: bool, accent: str):
         }}
 
 
-        /* ================= SIDEBAR ================= */
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
 
         section[data-testid="stSidebar"],
         section[data-testid="stSidebar"] > div {{
@@ -148,12 +170,15 @@ def apply_theme(dark: bool, accent: str):
         section[data-testid="stSidebar"] h2,
         section[data-testid="stSidebar"] h3,
         section[data-testid="stSidebar"] strong,
-        section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
+        section[data-testid="stSidebar"]
+        [data-testid="stMarkdownContainer"] p {{
             color: var(--text) !important;
         }}
 
-        section[data-testid="stSidebar"] [data-testid="stCaptionContainer"],
-        section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] *,
+        section[data-testid="stSidebar"]
+        [data-testid="stCaptionContainer"],
+        section[data-testid="stSidebar"]
+        [data-testid="stCaptionContainer"] *,
         section[data-testid="stSidebar"] small {{
             color: var(--muted) !important;
         }}
@@ -173,7 +198,9 @@ def apply_theme(dark: bool, accent: str):
         }}
 
 
-        /* ================= SELECTBOX ================= */
+        /* =========================================================
+           SELECTBOX
+        ========================================================= */
 
         div[data-baseweb="select"] > div {{
             background: var(--input-bg) !important;
@@ -204,7 +231,6 @@ def apply_theme(dark: bool, accent: str):
             color: var(--muted) !important;
         }}
 
-        /* dropdown menu */
         div[data-baseweb="popover"],
         div[data-baseweb="popover"] > div,
         div[data-baseweb="menu"],
@@ -238,7 +264,9 @@ def apply_theme(dark: bool, accent: str):
         }}
 
 
-        /* ================= BUTTONS ================= */
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
 
         div.stButton > button {{
             background: var(--panel) !important;
@@ -265,7 +293,9 @@ def apply_theme(dark: bool, accent: str):
         }}
 
 
-        /* ================= POPOVER (Delete saved history) ================= */
+        /* =========================================================
+           POPOVER
+        ========================================================= */
 
         div[data-testid="stPopover"] > div > button,
         div[data-testid="stPopover"] button,
@@ -302,7 +332,10 @@ def apply_theme(dark: bool, accent: str):
             border-radius: 12px !important;
         }}
 
-        /* ================= CHAT INPUT + BOTTOM BAR ================= */
+
+        /* =========================================================
+           CHAT INPUT
+        ========================================================= */
 
         [data-testid="stBottom"],
         [data-testid="stBottom"] > div,
@@ -352,7 +385,9 @@ def apply_theme(dark: bool, accent: str):
         }}
 
 
-        /* ================= CHAT MESSAGES ================= */
+        /* =========================================================
+           CHAT MESSAGES
+        ========================================================= */
 
         div[data-testid="stChatMessage"],
         div[data-testid="stChatMessage"] p,
@@ -364,13 +399,16 @@ def apply_theme(dark: bool, accent: str):
             background: transparent !important;
         }}
 
-        code, pre {{
+        code,
+        pre {{
             background: var(--panel2) !important;
             color: var(--text) !important;
         }}
 
 
-        /* ================= EXPANDER / ALERTS / UPLOADER ================= */
+        /* =========================================================
+           EXPANDERS / ALERTS / UPLOADER
+        ========================================================= */
 
         div[data-testid="stExpander"] {{
             background: var(--panel) !important;
@@ -394,14 +432,20 @@ def apply_theme(dark: bool, accent: str):
         }}
 
 
-        /* ================= HERO ================= */
+        /* =========================================================
+           HERO
+        ========================================================= */
 
         .hero {{
             border: 1px solid var(--border);
             border-radius: 24px;
             padding: 42px 30px;
             text-align: center;
-            background: linear-gradient(145deg, var(--panel), {a}0D);
+            background: linear-gradient(
+                145deg,
+                var(--panel),
+                {a}0D
+            );
             box-shadow: 0 20px 60px rgba(0,0,0,.10);
         }}
 
@@ -447,7 +491,83 @@ def apply_theme(dark: bool, accent: str):
         }}
 
 
-        /* ================= GENERAL CARDS ================= */
+        /* =========================================================
+           INVESTIGATION PIPELINE
+        ========================================================= */
+
+        .pipeline-card {{
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin: 8px 0;
+            background: linear-gradient(
+                135deg,
+                var(--panel),
+                {a}08
+            );
+        }}
+
+        .pipeline-title {{
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: {a} !important;
+            margin-bottom: 14px;
+        }}
+
+        .pipeline-step {{
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            margin: 6px 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--panel2);
+        }}
+
+        .pipeline-icon {{
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            background: {a}18;
+            border: 1px solid {a}44;
+            color: {a} !important;
+            font-size: 14px;
+        }}
+
+        .pipeline-text {{
+            flex: 1;
+        }}
+
+        .pipeline-name {{
+            color: var(--text) !important;
+            font-weight: 700;
+            font-size: 13px;
+        }}
+
+        .pipeline-status {{
+            color: var(--muted) !important;
+            font-size: 11px;
+            margin-top: 2px;
+        }}
+
+        .pipeline-arrow {{
+            text-align: center;
+            color: var(--muted) !important;
+            font-size: 13px;
+            margin: -2px 0;
+        }}
+
+
+        /* =========================================================
+           GENERAL CARDS
+        ========================================================= */
 
         .section-label {{
             color: {a} !important;
@@ -485,7 +605,9 @@ def apply_theme(dark: bool, accent: str):
         }}
 
 
-        /* ================= SELECTBOX HARD OVERRIDE ================= */
+        /* =========================================================
+           SELECTBOX HARD OVERRIDE
+        ========================================================= */
 
         div[data-testid="stSelectbox"],
         div[data-testid="stSelectbox"] > div,
@@ -497,7 +619,6 @@ def apply_theme(dark: bool, accent: str):
             color: var(--text) !important;
         }}
 
-        /* label row should stay transparent */
         div[data-testid="stSelectbox"] label,
         div[data-testid="stSelectbox"] label *,
         div[data-testid="stWidgetLabel"],
@@ -506,7 +627,8 @@ def apply_theme(dark: bool, accent: str):
             background-color: transparent !important;
         }}
 
-        div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {{
+        div[data-testid="stSelectbox"]
+        div[data-baseweb="select"] > div {{
             border: 1px solid var(--border) !important;
             border-radius: 12px !important;
         }}
@@ -521,9 +643,16 @@ def apply_theme(dark: bool, accent: str):
             fill: var(--muted) !important;
         }}
 
-        /* ================= SCROLLBARS ================= */
 
-        ::-webkit-scrollbar {{ width: 8px; height: 8px; }}
+        /* =========================================================
+           SCROLLBARS
+        ========================================================= */
+
+        ::-webkit-scrollbar {{
+            width: 8px;
+            height: 8px;
+        }}
+
         ::-webkit-scrollbar-thumb {{
             background: var(--border);
             border-radius: 8px;
@@ -533,3 +662,4 @@ def apply_theme(dark: bool, accent: str):
         """,
         unsafe_allow_html=True,
     )
+```
