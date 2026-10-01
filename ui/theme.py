@@ -1220,3 +1220,53 @@ def apply_theme(dark: bool, accent: str):
         css = css.replace(f"@@{key}@@", value)
 
     st.markdown(css, unsafe_allow_html=True)
+
+/* Delete-history confirmation dialog: fully theme-aware text, surface and controls. */
+html body .stApp [data-testid="stDialog"],
+html body .stApp [role="dialog"],
+html body .stApp [data-testid="stDialog"] > div,
+html body .stApp [role="dialog"] > div {
+  background:var(--sh-panel)!important;
+  background-color:var(--sh-panel)!important;
+  color:var(--sh-text)!important;
+  border-color:var(--sh-border)!important;
+}
+html body .stApp [data-testid="stDialog"] *,
+html body .stApp [role="dialog"] * {
+  color:var(--sh-text)!important;
+}
+html body .stApp [data-testid="stDialog"] p,
+html body .stApp [role="dialog"] p,
+html body .stApp [data-testid="stDialog"] label,
+html body .stApp [role="dialog"] label {
+  color:var(--sh-text)!important;
+}
+html body .stApp [data-testid="stDialog"] button,
+html body .stApp [role="dialog"] button {
+  background:var(--sh-panel2)!important;
+  background-color:var(--sh-panel2)!important;
+  color:var(--sh-text)!important;
+  border:1px solid var(--sh-border)!important;
+  box-shadow:none!important;
+}
+html body .stApp [data-testid="stDialog"] button:hover,
+html body .stApp [role="dialog"] button:hover {
+  background:var(--sh-hover)!important;
+  color:var(--sh-text)!important;
+  border-color:var(--sh-accent)!important;
+}
+html body .stApp [data-testid="stDialog"] button[kind="primary"],
+html body .stApp [role="dialog"] button[kind="primary"] {
+  background:var(--sh-accent)!important;
+  color:#FFFFFF!important;
+  border-color:var(--sh-accent)!important;
+}
+html body .stApp [data-testid="stDialog"] input,
+html body .stApp [role="dialog"] input,
+html body .stApp [data-testid="stDialog"] textarea,
+html body .stApp [role="dialog"] textarea {
+  background:var(--sh-input)!important;
+  color:var(--sh-text)!important;
+  -webkit-text-fill-color:var(--sh-text)!important;
+  border-color:var(--sh-border)!important;
+}
