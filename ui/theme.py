@@ -1038,6 +1038,106 @@ section[data-testid="stSidebar"] button[key="btn_clear"]{color:var(--sh-accent)!
 section[data-testid="stSidebar"] hr{margin:13px 0!important;border:0!important;border-top:1px solid var(--sh-border)!important;opacity:.75!important;}
 @media(max-width:900px){.stat-card{min-height:100px!important;height:100px!important;}}
 
+/* Final control + risk + message color balance */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
+  outline:0!important;
+  outline-offset:0!important;
+  border:1px solid var(--sh-select-border)!important;
+  box-shadow:none!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus-visible {
+  outline:0!important;
+  box-shadow:0 0 0 1px var(--sh-select-border)!important;
+  border-color:var(--sh-select-border)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]::after {
+  display:block!important;
+  z-index:20!important;
+  border-right:2px solid var(--sh-select-arrow)!important;
+  border-bottom:2px solid var(--sh-select-arrow)!important;
+  opacity:1!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
+  display:none!important;
+}
+
+/* Risk meter — green / yellow / orange / red */
+.risk-meter-card {
+  --risk:#22C55E;
+  position:relative!important;
+  overflow:hidden!important;
+  margin:12px 0 16px!important;
+  padding:16px 18px!important;
+  border:1px solid color-mix(in srgb,var(--risk) 42%,var(--sh-border))!important;
+  border-left:4px solid var(--risk)!important;
+  border-radius:17px!important;
+  background:linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  box-shadow:0 14px 36px color-mix(in srgb,var(--risk) 9%,transparent)!important;
+}
+.risk-meter-card.risk-safe{--risk:#22C55E!important;}
+.risk-meter-card.risk-low{--risk:#EAB308!important;}
+.risk-meter-card.risk-medium{--risk:#F59E0B!important;}
+.risk-meter-card.risk-elevated{--risk:#F97316!important;}
+.risk-meter-card.risk-high{--risk:#EF4444!important;}
+.risk-meter-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;}
+.risk-meter-title{color:var(--sh-text)!important;font-weight:800!important;font-size:13px!important;}
+.risk-meter-level{display:inline-flex!important;margin-left:8px!important;padding:3px 8px!important;border-radius:999px!important;background:color-mix(in srgb,var(--risk) 12%,transparent)!important;color:var(--risk)!important;border:1px solid color-mix(in srgb,var(--risk) 30%,transparent)!important;font-size:10px!important;font-weight:750!important;}
+.risk-meter-top strong{color:var(--risk)!important;font-size:18px!important;}
+.risk-meter-track{height:10px!important;margin-top:12px!important;overflow:hidden!important;border-radius:999px!important;background:color-mix(in srgb,var(--sh-muted) 18%,transparent)!important;border:1px solid var(--sh-border)!important;}
+.risk-meter-fill{height:100%!important;border-radius:inherit!important;background:linear-gradient(90deg,#22C55E 0%,#EAB308 38%,#F59E0B 62%,#F97316 78%,#EF4444 100%)!important;box-shadow:0 0 14px color-mix(in srgb,var(--risk) 45%,transparent)!important;transition:width .55s ease!important;}
+.risk-meter-scale{display:flex!important;justify-content:space-between!important;margin-top:5px!important;color:var(--sh-muted)!important;font-size:9px!important;}
+.risk-meter-note{margin-top:9px!important;color:var(--sh-muted)!important;font-size:11px!important;line-height:1.45!important;}
+
+/* Balanced response text for both themes */
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"],
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] p,
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] li,
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] span,
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] strong,
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] em {
+  color:var(--sh-text)!important;
+}
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] code {
+  color:var(--sh-accent)!important;
+  background:var(--sh-panel2)!important;
+  border:1px solid var(--sh-border)!important;
+}
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] a {
+  color:var(--sh-accent)!important;
+}
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] blockquote {
+  color:var(--sh-muted)!important;
+  border-left-color:var(--sh-accent)!important;
+  background:var(--sh-panel2)!important;
+}
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] hr {
+  border-color:var(--sh-border)!important;
+}
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] table {
+  color:var(--sh-text)!important;
+  background:var(--sh-panel)!important;
+  border-color:var(--sh-border)!important;
+}
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] th {
+  color:var(--sh-text)!important;
+  background:var(--sh-panel2)!important;
+  border-color:var(--sh-border)!important;
+}
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] td {
+  color:var(--sh-text)!important;
+  border-color:var(--sh-border)!important;
+}
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] p,
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] li {
+  line-height:1.65!important;
+}
+
 </style>
 """
 
