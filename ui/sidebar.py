@@ -1,117 +1,350 @@
+from __future__ import annotations
+
+import html
+
 import streamlit as st
 
+from ui.history_store import (
+    delete_all,
+    load_chats,
+    new_id,
+)
+
 from ui.theme import ACCENTS
-from ui.history_store import load_chats, new_id, delete_all
+
 from ui.verdict import LEVELS
 
 
 def render():
-    """Top part of the sidebar (controls). Returns (mode, style, accent)."""
+    """
+    Render the main sidebar controls.
 
-    st.session_state.setdefault("dark", True)
-    st.session_state.setdefault("messages", [])
+    Returns:
+        (mode, response_style, accent)
+    """
+
+    st.session_state.setdefault(
+        "dark",
+        True,
+    )
+
+    st.session_state.setdefault(
+        "messages",
+        [],
+    )
 
     with st.sidebar:
-        st.markdown("### 🛡️ SCAMHUNTER AI")
-        st.caption("AI-powered scam investigation assistant")
+
+        # -----------------------------------------------------
+        # BRANDING
+        # -----------------------------------------------------
+
+        st.markdown(
+            """
+            <div class="sidebar-brand">
+
+                <div class="sidebar-brand-logo">
+                    🛡️
+                </div>
+
+                <div class="sidebar-brand-text">
+                    <div class="sidebar-brand-name">
+                        ScamHunter <span>AI</span>
+                    </div>
+
+                    <div class="sidebar-brand-subtitle">
+                        Evidence-first investigation
+                    </div>
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
         st.divider()
+
+        # -----------------------------------------------------
+        # INVESTIGATION MODE
+        # -----------------------------------------------------
 
         mode = st.selectbox(
             "INVESTIGATION MODE",
-            ["Quick Check", "Deep Investigation"],
+            [
+                "Quick Check",
+                "Deep Investigation",
+            ],
             index=0,
             key="mode",
         )
+
+        # -----------------------------------------------------
+        # RESPONSE STYLE
+        # -----------------------------------------------------
+
         style = st.selectbox(
             "RESPONSE STYLE",
-            ["Concise", "Balanced", "Detailed"],
+            [
+                "Concise",
+                "Balanced",
+                "Detailed",
+            ],
             index=1,
             key="style",
         )
+
+        # -----------------------------------------------------
+        # ACCENT
+        # -----------------------------------------------------
+
+        accent_names = list(ACCENTS.keys())
+
+        default_accent = (
+            accent_names.index("Amber")
+            if "Amber" in accent_names
+            else 0
+        )
+
         accent = st.selectbox(
             "ACCENT COLOR",
-            list(ACCENTS),
-            index=list(ACCENTS).index("Amber"),
+            accent_names,
+            index=default_accent,
             key="accent",
         )
 
-        st.markdown("**THEME**")
-        c1, c2 = st.columns(2)
-        with c1:
+        # -----------------------------------------------------
+        # THEME
+        # -----------------------------------------------------
+
+        st.markdown(
+            '<div class="sidebar-section-title">THEME</div>',
+            unsafe_allow_html=True,
+        )
+
+        light_col, dark_col = st.columns(
+            2,
+            gap="small",
+        )
+
+        with light_col:
+
             if st.button(
                 "☀ Light",
                 use_container_width=True,
                 key="btn_light",
-                type="primary" if not st.session_state.dark else "secondary",
+                type=(
+                    "primary"
+                    if not st.session_state.dark
+                    else "secondary"
+                ),
             ):
+
                 st.session_state.dark = False
                 st.rerun()
-        with c2:
+
+        with dark_col:
+
             if st.button(
                 "🌙 Dark",
                 use_container_width=True,
                 key="btn_dark",
-                type="primary" if st.session_state.dark else "secondary",
+                type=(
+                    "primary"
+                    if st.session_state.dark
+                    else "secondary"
+                ),
             ):
+
                 st.session_state.dark = True
                 st.rerun()
 
-        st.caption(
-            f"Active: {'Dark' if st.session_state.dark else 'Light'} · {accent}"
+        active_theme = (
+            "Dark"
+            if st.session_state.dark
+            else "Light"
+        )
+
+        st.markdown(
+            f"""
+            <div class="sidebar-active-theme">
+                Active theme:
+                <strong>{html.escape(active_theme)}</strong>
+                <span>·</span>
+                <strong>{html.escape(accent)}</strong>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
     return mode, style, accent
 
 
 def _last_dot(chat: dict) -> str:
-    for m in reversed(chat.get("messages", [])):
-        level = (m.get("verdict") or {}).get("level")
+    """Return verdict indicator for a saved chat."""
+
+    for message in reversed(
+        chat.get("messages", [])
+    ):
+
+        verdict = (
+            message.get("verdict")
+            or {}
+        )
+
+        level = verdict.get("level")
+
         if level in LEVELS:
             return LEVELS[level]["emoji"]
+
     return "⚪"
 
 
-def render_footer(uid: str, kb_status: str):
-    """Bottom part of the sidebar. Call at the END of app.py so the saved
-    chat list is always up to date."""
+def render_footer(
+    uid: str,
+    kb_status: str,
+):
+    """
+    Render the lower sidebar content.
+
+    This function is intentionally kept separate from render()
+    so the chat list is refreshed after an investigation.
+    """
 
     with st.sidebar:
-        st.divider()
-        st.markdown("**KNOWLEDGE BASE**")
-        st.caption(kb_status)
+
         st.divider()
 
-        st.markdown("**RECENT INVESTIGATIONS**")
+        # -----------------------------------------------------
+        # KNOWLEDGE BASE STATUS
+        # -----------------------------------------------------
+
+        st.markdown(
+            '<div class="sidebar-section-title">'
+            'KNOWLEDGE BASE'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
+        safe_status = html.escape(
+            str(kb_status)
+        )
+
+        st.markdown(
+            f"""
+            <div class="sidebar-status-card">
+                <div class="sidebar-status-dot"></div>
+                <div>{safe_status}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.divider()
+
+        # -----------------------------------------------------
+        # RECENT INVESTIGATIONS
+        # -----------------------------------------------------
+
+        st.markdown(
+            '<div class="sidebar-section-title">'
+            'RECENT INVESTIGATIONS'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
         chats = load_chats(uid)
 
         if chats:
-            current = st.session_state.get("chat_id")
+
+            current = st.session_state.get(
+                "chat_id"
+            )
+
             for chat in chats[:10]:
-                title = chat.get("title", "Chat")
-                label = f"{_last_dot(chat)} {title}"
-                if chat.get("id") == current:
+
+                chat_id = chat.get(
+                    "id",
+                    "",
+                )
+
+                title = chat.get(
+                    "title",
+                    "Chat",
+                )
+
+                title = " ".join(
+                    str(title).split()
+                )
+
+                label = (
+                    f"{_last_dot(chat)} "
+                    f"{title}"
+                )
+
+                if chat_id == current:
                     label = "▸ " + label
+
                 if st.button(
                     label,
-                    key=f"open_{chat['id']}",
+                    key=f"open_{chat_id}",
                     use_container_width=True,
                 ):
-                    st.session_state.load_chat_id = chat["id"]
-                    st.rerun()
-            st.caption("Bookmark this page to get your saved chats back later.")
-        else:
-            st.caption("No investigations yet.")
 
-        if st.button("Clear Chat", use_container_width=True, key="btn_clear"):
-            # Clears the screen only. Saved chats stay in the list above.
+                    st.session_state.load_chat_id = (
+                        chat_id
+                    )
+
+                    st.rerun()
+
+            st.caption(
+                "Saved investigations are linked "
+                "to this browser."
+            )
+
+        else:
+
+            st.caption(
+                "No investigations yet."
+            )
+
+        # -----------------------------------------------------
+        # CLEAR CURRENT CHAT
+        # -----------------------------------------------------
+
+        if st.button(
+            "Clear Chat",
+            use_container_width=True,
+            key="btn_clear",
+        ):
+
             st.session_state.messages = []
             st.session_state.chat_id = new_id()
+
             st.rerun()
 
-        with st.popover("Delete saved history", use_container_width=True):
-            st.caption("This permanently deletes all saved chats for this browser link.")
-            if st.button("Yes, delete everything", key="btn_delete_all"):
+        # -----------------------------------------------------
+        # DELETE SAVED HISTORY
+        # -----------------------------------------------------
+
+        with st.popover(
+            "Delete saved history",
+            use_container_width=True,
+        ):
+
+            st.caption(
+                "This permanently deletes all saved "
+                "investigations for this browser."
+            )
+
+            if st.button(
+                "Yes, delete everything",
+                key="btn_delete_all",
+                use_container_width=True,
+            ):
+
                 delete_all(uid)
+
                 st.session_state.messages = []
                 st.session_state.chat_id = new_id()
+
                 st.rerun()
