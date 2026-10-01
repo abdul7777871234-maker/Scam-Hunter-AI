@@ -61,9 +61,6 @@ def validate_upload(
             f"Unsupported file type: {suffix or 'unknown'}"
         )
 
-    # --------------------------------------------------------
-    # Determine size
-    # --------------------------------------------------------
 
     if size_bytes is None:
         candidate = Path(path)
@@ -71,11 +68,11 @@ def validate_upload(
         if candidate.exists() and candidate.is_file():
             size_bytes = candidate.stat().st_size
 
+    if data is not None:
+        size_bytes = len(data)
+
     if size_bytes is not None:
-        max_bytes = max(
-            1,
-            int(max_mb),
-        ) * 1024 * 1024
+        max_bytes = max(1, int(max_mb)) * 1024 * 1024
 
         if int(size_bytes) > max_bytes:
             raise ValueError(
