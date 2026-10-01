@@ -263,26 +263,15 @@ class GeminiProvider:
         exc: Exception,
     ) -> str:
 
-        message = str(exc).strip()
-
-        if not message:
-            message = exc.__class__.__name__
-
-        # Keep Streamlit errors readable.
-        if len(message) > 450:
-            message = message[:450] + "..."
-
-        # Do not expose credential material.
-        for marker in (
-            "AIza",
-            "Bearer ",
-            "gsk_",
-            "sk-",
-        ):
-            if marker in message:
-                message = (
-                    "provider authentication/request error"
-                )
-                break
-
-        return f"{model}: {message}"
+        message = str(exc).lower()
+        if any(marker in message for marker in ("api key", "authorization", "authentication", "401", "403")):
+            safe = "provider authentication error"
+        elif "429" in message or "resource_exhausted" in message or "quota" in message:
+            safe = "provider rate limit or quota error"
+        elif "503" in message or "unavailable" in message:
+            safe = "provider temporarily unavailable"
+        elif "timeout" in message or "timed out" in message:
+            safe = "provider timeout"
+        else:
+            safe = "provider request error"
+        return f"{model}: {safe}"
