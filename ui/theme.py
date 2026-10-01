@@ -35,12 +35,12 @@ CSS = """
   --sh-hover:@@HOVER@@; --sh-menu:@@MENU@@; --sh-menu-hover:@@MENUHOVER@@;
   --sh-input-bg:@@INPUT@@; --sh-input-text:@@TEXT@@; --sh-input-arrow:@@MUTED@@;
   --sh-select-bg:@@SELECT_BG@@; --sh-select-text:@@SELECT_TEXT@@; --sh-select-arrow:@@SELECT_ARROW@@; --sh-select-border:@@SELECT_BORDER@@;
-  color-scheme:@@SCHEME@@;
+  --sh-scheme:@@SCHEME@@;\n  color-scheme:var(--sh-scheme);
 }
 
 /* GLOBAL */
 html,body,.stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"]{
-  background:var(--sh-bg)!important; color:var(--sh-text)!important;}
+  background:var(--sh-bg)!important; color:var(--sh-text)!important; color-scheme:var(--sh-scheme)!important;}
 .stApp{background:radial-gradient(circle at 50% -10%,@@ACCENT@@18 0,transparent 32%),var(--sh-bg)!important;}
 .block-container{max-width:1320px!important;padding-top:4.5rem!important;padding-bottom:8rem!important;}
 * {box-sizing:border-box;}
