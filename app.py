@@ -49,29 +49,6 @@ st.set_page_config(
 
 
 # -------------------------------------------------------------------
-
-st.markdown(
-    """
-<style>
-    /* Fix white background, border, and right arrow container on selectboxes */
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="select"] [role="button"],
-    div[data-baseweb="select"] [data-aria-hidden="true"],
-    div[data-baseweb="select"] div {
-        background-color: #0F172A !important;
-        border-color: #334155 !important;
-        color: #FFFFFF !important;
-    }
-    div[data-baseweb="select"] svg {
-        fill: #F8FAFC !important;
-        background-color: transparent !important;
-    }
-</style>
-""",
-    unsafe_allow_html=True,
-)
-
-# -------------------------------------------------------------------
 # SESSION STATE
 # -------------------------------------------------------------------
 
