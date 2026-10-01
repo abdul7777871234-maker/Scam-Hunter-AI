@@ -190,8 +190,8 @@ class NumberedCanvas(canvas.Canvas):
             self.drawString(MARGIN, 6.7*mm, "SCAMHUNTER AI  •  Investigation support, not a fraud determination")
             self.setFont(FONT_BOLD, 6.8)
             self.drawRightString(PAGE_W-MARGIN, 6.7*mm, f"Page {self._pageNumber} of {total}")
-            super().showPage(self)
-        super().save()
+            canvas.Canvas.showPage(self)
+        canvas.Canvas.save(self)
 
 
 def _header_footer(c, doc):
