@@ -1,3 +1,4 @@
+```python
 from __future__ import annotations
 
 import inspect
@@ -39,12 +40,11 @@ S.setdefault("dark", False)
 S.setdefault("messages", [])
 S.setdefault("kb_status", "Knowledge base not initialized")
 S.setdefault("chat_id", new_id())
-S.setdefault("answer_cache", {})  # repeated questions answer instantly
+S.setdefault("answer_cache", {})
 
 
 # -------------------------------------------------------------------
-# BROWSER ID (keeps saved chats per user, no login needed)
-# The id lives in the page URL (?u=...). Bookmark it to come back.
+# BROWSER ID
 # -------------------------------------------------------------------
 
 if not valid_uid(S.get("uid")):
@@ -58,7 +58,7 @@ uid = S.uid
 
 
 # -------------------------------------------------------------------
-# OPEN A SAVED CHAT (clicked in the sidebar)
+# OPEN A SAVED CHAT
 # -------------------------------------------------------------------
 
 pending_chat = S.pop("load_chat_id", None)
@@ -80,7 +80,7 @@ apply_theme(S.dark, accent)
 
 
 # -------------------------------------------------------------------
-# RUNTIME (built once per server process, not on every rerun)
+# RUNTIME
 # -------------------------------------------------------------------
 
 @st.cache_resource(show_spinner="Loading models and knowledge base…")
@@ -111,8 +111,45 @@ else:
     S.kb_status = "Knowledge base ready for document indexing."
 
 
+# -------------------------------------------------------------------
+# INVESTIGATION ROUTER
+# -------------------------------------------------------------------
+
 def run_investigation(text: str) -> dict:
-    """Pass mode/style to the orchestrator if its run() accepts them."""
+    """
+    Route the investigation according to the selected mode.
+
+    Quick Check:
+        FAISS/RAG → Evidence Agent → Response Agent
+
+    Deep Investigation:
+        Full multi-agent investigation pipeline
+    """
+
+    # ---------------------------------------------------------------
+    # QUICK CHECK — FAST PATH
+    # ---------------------------------------------------------------
+
+    if mode == "Quick Check":
+
+        quick_method = getattr(
+            orchestrator,
+            "run_quick",
+            None,
+        )
+
+        if quick_method is None:
+            raise RuntimeError(
+                "Quick Check is not available. "
+                "Please make sure agents/orchestrator.py "
+                "contains run_quick()."
+            )
+
+        return quick_method(text)
+
+    # ---------------------------------------------------------------
+    # DEEP INVESTIGATION — FULL PIPELINE
+    # ---------------------------------------------------------------
 
     params = inspect.signature(orchestrator.run).parameters
     kwargs = {}
@@ -134,13 +171,18 @@ hero()
 
 
 # -------------------------------------------------------------------
-# CHAT HISTORY (current screen)
+# CHAT HISTORY
 # -------------------------------------------------------------------
 
 for message in S.messages:
     with st.chat_message(message["role"]):
+
         if message.get("verdict"):
-            st.markdown(badge_html(message["verdict"]), unsafe_allow_html=True)
+            st.markdown(
+                badge_html(message["verdict"]),
+                unsafe_allow_html=True,
+            )
+
         st.markdown(message["content"])
 
 
@@ -179,19 +221,31 @@ if submission:
     attachment_context = []
 
     for uploaded in uploaded_files:
+
         try:
+
             safe_name = validate_upload(
                 uploaded.name,
                 settings.max_upload_mb,
             )
 
             temp_path = Path(tempfile.gettempdir()) / safe_name
-            temp_path.write_bytes(uploaded.getbuffer())
+
+            temp_path.write_bytes(
+                uploaded.getbuffer()
+            )
 
             suffix = temp_path.suffix.lower()
 
-            if suffix in {".pdf", ".docx", ".txt", ".md"}:
+            if suffix in {
+                ".pdf",
+                ".docx",
+                ".txt",
+                ".md",
+            }:
+
                 kb.add_upload(temp_path)
+
                 attachment_context.append(
                     f"Attached document: {safe_name}"
                 )
@@ -202,19 +256,25 @@ if submission:
                 ".jpeg",
                 ".webp",
             }:
+
                 attachment_context.append(
                     f"Attached image: {safe_name}"
                 )
 
         except Exception as exc:
-            st.error(f"Attachment error: {exc}")
+
+            st.error(
+                f"Attachment error: {exc}"
+            )
 
     if prompt or attachment_context:
 
         if prompt:
             display_prompt = prompt
         else:
-            display_prompt = "\n".join(attachment_context)
+            display_prompt = "\n".join(
+                attachment_context
+            )
 
         S.messages.append(
             {
@@ -223,18 +283,35 @@ if submission:
             }
         )
 
-        save_chat(uid, S.chat_id, S.messages)
+        save_chat(
+            uid,
+            S.chat_id,
+            S.messages,
+        )
 
         with st.chat_message("user"):
             st.markdown(display_prompt)
 
-        cache_key = (mode, style, display_prompt)
-        use_cache = not uploaded_files  # never cache when files are attached
+        # -----------------------------------------------------------
+        # CACHE
+        # -----------------------------------------------------------
+
+        cache_key = (
+            mode,
+            style,
+            display_prompt,
+        )
+
+        use_cache = not uploaded_files
 
         empty_result = {
             "events": [],
-            "rag": {"evidence": []},
-            "web": {"items": []},
+            "rag": {
+                "evidence": [],
+            },
+            "web": {
+                "items": [],
+            },
         }
 
         # -----------------------------------------------------------
@@ -244,29 +321,52 @@ if submission:
         with st.chat_message("assistant"):
 
             result = empty_result
+
             verdict = None
-            cached = S.answer_cache.get(cache_key) if use_cache else None
+
+            cached = (
+                S.answer_cache.get(cache_key)
+                if use_cache
+                else None
+            )
 
             if cached:
 
                 result = cached
-                parsed = extract_verdict(result, result.get("answer", ""))
+
+                parsed = extract_verdict(
+                    result,
+                    result.get(
+                        "answer",
+                        "",
+                    ),
+                )
+
                 answer = parsed["answer"]
                 verdict = parsed["verdict"]
 
                 if verdict:
-                    st.markdown(badge_html(verdict), unsafe_allow_html=True)
+
+                    st.markdown(
+                        badge_html(verdict),
+                        unsafe_allow_html=True,
+                    )
 
                 st.markdown(answer)
-                st.caption("⚡ Instant (cached)")
+
+                st.caption(
+                    "⚡ Instant (cached)"
+                )
 
             else:
 
-                label = (
-                    "Quick check…"
-                    if mode == "Quick Check"
-                    else "Deep investigation…"
-                )
+                if mode == "Quick Check":
+
+                    label = "⚡ Quick check…"
+
+                else:
+
+                    label = "🔎 Deep investigation…"
 
                 started = time.perf_counter()
 
@@ -274,17 +374,29 @@ if submission:
 
                     try:
 
-                        result = run_investigation(display_prompt)
+                        result = run_investigation(
+                            display_prompt
+                        )
 
                         raw_answer = result.get(
                             "answer",
                             "No investigation result was returned.",
                         )
 
-                        if use_cache and result.get("answer"):
-                            S.answer_cache[cache_key] = result
+                        if (
+                            use_cache
+                            and result.get("answer")
+                        ):
 
-                        parsed = extract_verdict(result, raw_answer)
+                            S.answer_cache[
+                                cache_key
+                            ] = result
+
+                        parsed = extract_verdict(
+                            result,
+                            raw_answer,
+                        )
+
                         answer = parsed["answer"]
                         verdict = parsed["verdict"]
 
@@ -298,13 +410,27 @@ if submission:
                         result = empty_result
                         verdict = None
 
-                elapsed = time.perf_counter() - started
+                elapsed = (
+                    time.perf_counter()
+                    - started
+                )
 
                 if verdict:
-                    st.markdown(badge_html(verdict), unsafe_allow_html=True)
+
+                    st.markdown(
+                        badge_html(verdict),
+                        unsafe_allow_html=True,
+                    )
 
                 st.markdown(answer)
-                st.caption(f"⏱ {elapsed:.1f}s · {mode}")
+
+                st.caption(
+                    f"⏱ {elapsed:.1f}s · {mode}"
+                )
+
+            # -------------------------------------------------------
+            # SAVE ASSISTANT MESSAGE
+            # -------------------------------------------------------
 
             assistant_message = {
                 "role": "assistant",
@@ -312,12 +438,19 @@ if submission:
             }
 
             if verdict:
-                assistant_message["verdict"] = verdict
+                assistant_message[
+                    "verdict"
+                ] = verdict
 
-            S.messages.append(assistant_message)
+            S.messages.append(
+                assistant_message
+            )
 
-            # Saved after every reply, so history survives Clear Chat
-            save_chat(uid, S.chat_id, S.messages)
+            save_chat(
+                uid,
+                S.chat_id,
+                S.messages,
+            )
 
 
         # -----------------------------------------------------------
@@ -330,19 +463,36 @@ if submission:
             "Investigation Pipeline",
             expanded=False,
         ):
-            for event in result.get("events", []):
-                st.write("✓ " + event)
+
+            for event in result.get(
+                "events",
+                [],
+            ):
+
+                st.write(
+                    "✓ " + event
+                )
 
         with st.expander(
             "Knowledge Base Evidence",
             expanded=False,
         ):
-            items = result.get("rag", {}).get("evidence", [])
+
+            items = result.get(
+                "rag",
+                {},
+            ).get(
+                "evidence",
+                [],
+            )
 
             if items:
+
                 for item in items:
                     source_card(item)
+
             else:
+
                 st.caption(
                     "No matching internal evidence was retrieved."
                 )
@@ -351,12 +501,22 @@ if submission:
             "Web Evidence",
             expanded=False,
         ):
-            items = result.get("web", {}).get("items", [])
+
+            items = result.get(
+                "web",
+                {},
+            ).get(
+                "items",
+                [],
+            )
 
             if items:
+
                 for item in items:
                     source_card(item)
+
             else:
+
                 st.caption(
                     "No web evidence was retrieved."
                 )
@@ -382,7 +542,11 @@ st.markdown(
 
 
 # -------------------------------------------------------------------
-# SIDEBAR BOTTOM (after processing, so saved chats are always current)
+# SIDEBAR BOTTOM
 # -------------------------------------------------------------------
 
-render_footer(uid, S.kb_status)
+render_footer(
+    uid,
+    S.kb_status,
+)
+```
