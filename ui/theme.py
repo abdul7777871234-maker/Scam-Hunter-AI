@@ -1205,3 +1205,26 @@ def apply_theme(dark: bool, accent: str):
         css = css.replace(f"@@{key}@@", value)
 
     st.markdown(css, unsafe_allow_html=True)
+/* Final sidebar selectbox surface lock: remove white outer/inset edge in both themes. */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:hover,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within {
+  background:var(--sh-select-bg)!important;
+  background-image:none!important;
+  border:1px solid var(--sh-select-border)!important;
+  outline:none!important;
+  box-shadow:none!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
+  background:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  outline:none!important;
+  box-shadow:none!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]::before {
+  display:none!important;
+  content:none!important;
+}
