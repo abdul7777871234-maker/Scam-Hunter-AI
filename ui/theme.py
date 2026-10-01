@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import streamlit as st
@@ -16,10 +15,7 @@ ACCENTS = {
 
 
 def apply_theme(dark: bool, accent: str):
-    accent_color = ACCENTS.get(
-        accent,
-        ACCENTS["Cyan"],
-    )
+    accent_color = ACCENTS.get(accent, ACCENTS["Cyan"])
 
     if dark:
         bg = "#050811"
@@ -31,7 +27,6 @@ def apply_theme(dark: bool, accent: str):
         input_bg = "#0F172A"
         hover = "#172033"
         color_scheme = "dark"
-
     else:
         bg = "#F8FAFC"
         panel = "#FFFFFF"
@@ -88,16 +83,8 @@ def apply_theme(dark: bool, accent: str):
         padding-bottom: 8rem;
     }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    label,
-    p,
-    span,
-    li {
+    h1, h2, h3, h4, h5, h6,
+    label, p, span, li {
         color: inherit;
     }
 
@@ -134,14 +121,26 @@ def apply_theme(dark: bool, accent: str):
         box-shadow: none !important;
     }
 
+    /* Header icons (star, pencil, menu) visible in light mode */
+    [data-testid="stHeader"] svg,
+    [data-testid="stHeader"] svg *,
     [data-testid="stToolbar"] svg,
-    [data-testid="stMainMenu"] svg {
-        fill: currentColor !important;
+    [data-testid="stToolbar"] svg *,
+    [data-testid="stMainMenu"] svg,
+    [data-testid="stMainMenu"] svg * {
+        fill: var(--text) !important;
+        color: var(--text) !important;
     }
 
     [data-testid="stHeader"] button:hover {
         color: var(--accent) !important;
         background: var(--hover) !important;
+    }
+
+    [data-testid="stHeader"] button:hover svg,
+    [data-testid="stHeader"] button:hover svg * {
+        fill: var(--accent) !important;
+        color: var(--accent) !important;
     }
 
     [data-testid="stDecoration"] {
@@ -192,12 +191,19 @@ def apply_theme(dark: bool, accent: str):
 
 
     /* =========================================================
-       SELECTBOX
+       SELECTBOX (forces every nested BaseWeb layer)
     ========================================================= */
 
+    [data-testid="stSelectbox"] div[data-baseweb="select"],
+    [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+    [data-testid="stSelectbox"] div[data-baseweb="select"] div,
     div[data-baseweb="select"] > div {
-        background: var(--input-bg) !important;
+        background-color: var(--input-bg) !important;
         color: var(--text) !important;
+    }
+
+    [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+    div[data-baseweb="select"] > div {
         border: 1px solid var(--border) !important;
         border-radius: 12px !important;
         box-shadow: none !important;
@@ -331,6 +337,25 @@ def apply_theme(dark: bool, accent: str):
     div[data-testid="stChatInput"] textarea::placeholder {
         color: var(--muted) !important;
         -webkit-text-fill-color: var(--muted) !important;
+    }
+
+    /* "+" attach icon and send arrow */
+    div[data-testid="stChatInput"] svg,
+    div[data-testid="stChatInput"] svg *,
+    div[data-testid="stChatInput"] button {
+        color: var(--muted) !important;
+        fill: var(--muted) !important;
+    }
+
+    div[data-testid="stChatInput"] button {
+        background: var(--panel2) !important;
+        border-radius: 10px !important;
+    }
+
+    div[data-testid="stChatInput"] button:hover svg,
+    div[data-testid="stChatInput"] button:hover svg * {
+        color: var(--accent) !important;
+        fill: var(--accent) !important;
     }
 
 
@@ -575,7 +600,4 @@ def apply_theme(dark: bool, accent: str):
         .replace("__COLOR_SCHEME__", color_scheme)
     )
 
-    st.markdown(
-        css,
-        unsafe_allow_html=True,
-    )
+    st.markdown(css, unsafe_allow_html=True)
