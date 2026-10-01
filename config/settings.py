@@ -8,9 +8,29 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _env_int(name: str, default: int) -> int:
+    try:
+        return int(os.getenv(name, str(default)).strip())
+    except (TypeError, ValueError):
+        return default
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+
+    if value is None:
+        return default
+
+    return value.strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
 @dataclass(frozen=True)
 class Settings:
-
     # ---------------------------------------------------------
     # API KEYS
     # ---------------------------------------------------------
@@ -26,15 +46,21 @@ class Settings:
 
     # ---------------------------------------------------------
     # GEMINI FALLBACK CHAIN
+    #
+    # Ordered from preferred/newest to fallback.
     # ---------------------------------------------------------
 
     gemini_models: tuple[str, ...] = (
         "gemini-3.8-flash",
+        "gemini-flash-latest",
+        "gemini-flash-lite-latest",
         "gemini-3.7-flash",
         "gemini-3.6-flash",
         "gemini-3.5-flash",
         "gemini-3.5-flash-lite",
         "gemini-3.1-flash-lite",
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
     )
 
     # ---------------------------------------------------------
@@ -70,6 +96,10 @@ class Settings:
 
     max_upload_mb: int = 10
 
+    # Persist uploaded text documents into the local knowledge base.
+    # Disabled by default so temporary user uploads are not retained.
+    persist_uploads: bool = False
+
     # ---------------------------------------------------------
     # DIRECTORIES
     # ---------------------------------------------------------
@@ -91,10 +121,9 @@ class Settings:
     # ---------------------------------------------------------
 
     @classmethod
-    def from_runtime(cls):
+    def from_runtime(cls) -> "Settings":
 
         def secret(name: str) -> str:
-
             # Streamlit Secrets
             try:
                 import streamlit as st
@@ -108,24 +137,30 @@ class Settings:
                 pass
 
             # Environment variables
-            return os.getenv(
-                name,
-                "",
-            ).strip()
+            return os.getenv(name, "").strip()
 
-        settings = cls(
-            groq_api_key=secret(
-                "GROQ_API_KEY"
-            ),
-
-            gemini_api_key=secret(
-                "GEMINI_API_KEY"
-            ),
-
-            groq_model=os.getenv(
+        groq_model = (
+            os.getenv(
                 "GROQ_MODEL",
                 "openai/gpt-oss-120b",
-            ).strip(),
+            ).strip()
+            or "openai/gpt-oss-120b"
+        )
+
+        settings = cls(
+            groq_api_key=secret("GROQ_API_KEY"),
+            gemini_api_key=secret("GEMINI_API_KEY"),
+            groq_model=groq_model,
+
+            max_upload_mb=max(
+                1,
+                _env_int("MAX_UPLOAD_MB", 10),
+            ),
+
+            persist_uploads=_env_bool(
+                "PERSIST_UPLOADS",
+                False,
+            ),
         )
 
         settings.data_dir.mkdir(
