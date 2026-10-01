@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-from agents.classifier import ClassifierAgent
-from agents.rag_agent import RAGAgent
-from agents.web_agent import WebResearchAgent
-from agents.evidence_agent import EvidenceAgent
-from agents.pattern_agent import ScamPatternAgent
-from agents.contradiction_agent import ContradictionAgent
-from agents.critic_agent import CriticAgent
-from agents.judge_agent import JudgeAgent
-from agents.response_agent import ResponseAgent
-
 
 class InvestigationOrchestrator:
-    """Coordinates the complete ScamHunter AI investigation pipeline."""
-
     def __init__(self, router, retriever, web_search, settings):
         self.router = router
+        self.retriever = retriever
+        self.web = web_search
         self.settings = settings
+
+        from agents.classifier import ClassifierAgent
+        from agents.rag_agent import RAGAgent
+        from agents.evidence_agent import EvidenceAgent
+        from agents.pattern_agent import ScamPatternAgent
+        from agents.contradiction_agent import ContradictionAgent
+        from agents.critic_agent import CriticAgent
+        from agents.judge_agent import JudgeAgent
+        from agents.response_agent import ResponseAgent
+        from agents.web_agent import WebResearchAgent
 
         self.classifier = ClassifierAgent(router)
         self.rag = RAGAgent(retriever, settings)
@@ -28,35 +28,96 @@ class InvestigationOrchestrator:
         self.judge = JudgeAgent(router)
         self.response = ResponseAgent(router)
 
+    # ---------------------------------------------------------
+    # FAST / QUICK CHECK
+    # ---------------------------------------------------------
+
+    def run_quick(self, user_text: str) -> dict:
+        """
+        Fast investigation path.
+
+        Only uses:
+        1. FAISS/RAG retrieval
+        2. One evidence-analysis LLM call
+        3. One final-response LLM call
+
+        This intentionally skips:
+        classifier, web research, pattern agent,
+        contradiction agent, judge and critic.
+        """
+
+        events = []
+
+        # 1. Local knowledge-base retrieval
+        rag = self.rag.run(user_text)
+        events.append("Knowledge base searched")
+
+        evidence_items = rag.get("evidence", [])
+        rag_items = rag.get("items", [])
+
+        # 2. Single analysis call
+        evidence = self.evidence.run(
+            user_text,
+            rag,
+            {"items": [], "cached": False},
+        )
+        events.append("Evidence analyzed")
+
+        analysis = evidence.get("analysis", "")
+        evidence_items = evidence.get("evidence", evidence_items)
+
+        # 3. Single final response call
+        final = self.response.run(
+            user_text,
+            analysis,
+            "",
+            "",
+            evidence_items,
+        )
+        events.append("Fast response generated")
+
+        return {
+            "answer": final,
+            "events": events,
+            "classification": {
+                "mode": "quick",
+                "requires_rag": True,
+                "requires_web": False,
+            },
+            "rag": {
+                "items": rag_items,
+                "evidence": evidence_items,
+            },
+            "web": {
+                "items": [],
+                "cached": False,
+            },
+            "analysis": analysis,
+        }
+
+    # ---------------------------------------------------------
+    # FULL / DEEP INVESTIGATION
+    # ---------------------------------------------------------
+
     def run(self, user_text: str) -> dict:
         events = []
 
-        # 1. Classify the investigation request
         classification = self.classifier.run(user_text)
         events.append("Input classified")
 
-        # 2. Search the internal knowledge base
         if classification.get("requires_rag", True):
             rag = self.rag.run(user_text)
         else:
-            rag = {
-                "items": [],
-                "evidence": [],
-            }
+            rag = {"items": [], "evidence": []}
 
         events.append("Knowledge base searched")
 
-        # 3. Perform web research when required
-        web = {
-            "items": [],
-            "cached": False,
-        }
+        web = {"items": [], "cached": False}
 
         if classification.get("requires_web", False):
             web = self.web.run(user_text[:2500])
             events.append("Web research completed")
 
-        # 4. Analyze all available evidence
         evidence = self.evidence.run(
             user_text,
             rag,
@@ -64,20 +125,17 @@ class InvestigationOrchestrator:
         )
         events.append("Evidence analyzed")
 
-        # 5. Identify possible scam patterns
         pattern = self.pattern.run(
             user_text,
             evidence["analysis"],
         )
         events.append("Scam patterns analyzed")
 
-        # 6. Check evidence for contradictions
         contradiction = self.contradiction.run(
             evidence["evidence"],
         )
         events.append("Contradictions checked")
 
-        # 7. Review evidence and produce an assessment
         judge = self.judge.run(
             pattern,
             contradiction,
@@ -85,7 +143,6 @@ class InvestigationOrchestrator:
         )
         events.append("Evidence reviewed")
 
-        # 8. Generate the first response draft
         draft = self.response.run(
             user_text,
             pattern,
@@ -95,14 +152,12 @@ class InvestigationOrchestrator:
         )
         events.append("Response synthesized")
 
-        # 9. Perform final quality and safety review
         critique = self.critic.run(
             draft,
             evidence["evidence"],
         )
         events.append("Final quality check completed")
 
-        # 10. Generate the final response using the quality review
         final = self.response.run(
             user_text,
             pattern + "\n\nQUALITY CHECK:\n" + critique,
@@ -113,10 +168,11 @@ class InvestigationOrchestrator:
 
         return {
             "answer": final,
-            "classification": classification,
             "events": events,
+            "classification": classification,
             "rag": rag,
             "web": web,
+            "analysis": evidence["analysis"],
             "pattern": pattern,
             "contradiction": contradiction,
             "judge": judge,
