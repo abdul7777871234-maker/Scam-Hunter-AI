@@ -227,5 +227,9 @@ class WebSearch:
 
     @staticmethod
     def _safe_error(exc: Exception) -> str:
-        message = str(exc).strip() or exc.__class__.__name__
-        return message[:300] + ("..." if len(message) > 300 else "")
+        message = str(exc).lower()
+        if "timeout" in message or "timed out" in message:
+            return "provider timeout"
+        if any(x in message for x in ("403", "429", "blocked", "forbidden")):
+            return "search provider access/rate-limit error"
+        return "search provider request error"
