@@ -376,6 +376,279 @@ html body .stApp section[data-testid="stSidebar"] button:hover {
   .hero { margin-bottom:1.25rem!important; padding:30px 20px!important; }
   .hero-title { font-size:36px!important; letter-spacing:-1.5px!important; }
 }
+
+/* =====================================================================
+   PREMIUM UI POLISH — visual only
+   No layout/state/backend behavior is changed.
+   ===================================================================== */
+
+/* Page rhythm + typography */
+html body .stApp {
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif!important;
+  letter-spacing: -0.01em;
+}
+html body .stApp [data-testid="stMain"] {
+  padding-left: 0!important;
+  padding-right: 0!important;
+}
+.block-container {
+  max-width: 1380px!important;
+  padding-left: 28px!important;
+  padding-right: 28px!important;
+}
+
+/* Softer global text hierarchy */
+.stMarkdown p, .stMarkdown li {
+  line-height: 1.68;
+}
+h1, h2, h3 {
+  color:var(--sh-text)!important;
+  letter-spacing:-0.025em!important;
+}
+hr {
+  border-color:var(--sh-border)!important;
+}
+
+/* Premium sidebar */
+section[data-testid="stSidebar"] > div {
+  padding: 1rem .9rem 1.25rem!important;
+}
+section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+  gap: .55rem!important;
+}
+.sidebar-brand {
+  padding: 7px 4px 18px!important;
+  margin-bottom: 4px!important;
+}
+.sidebar-brand-logo {
+  width:50px!important;
+  height:50px!important;
+  border-radius:16px!important;
+  background:linear-gradient(145deg, @@ACCENT@@22, @@ACCENT@@08)!important;
+  box-shadow:0 8px 28px @@ACCENT@@18!important;
+}
+.sidebar-section-title {
+  margin:15px 2px 7px!important;
+  font-size:9px!important;
+  letter-spacing:1.8px!important;
+}
+
+/* Sidebar controls — cleaner spacing and tactile hover */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] {
+  margin-bottom:4px!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] label {
+  margin-bottom:5px!important;
+  font-size:11px!important;
+  letter-spacing:.01em!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"] {
+  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"]:hover {
+  box-shadow:0 0 0 3px @@ACCENT@@10!important;
+}
+html body .stApp section[data-testid="stSidebar"] button {
+  transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease!important;
+}
+html body .stApp section[data-testid="stSidebar"] button:hover {
+  transform:translateY(-1px)!important;
+}
+
+/* Stat strip */
+.stat-card {
+  background:linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  border:1px solid var(--sh-border)!important;
+  border-radius:16px!important;
+  box-shadow:0 10px 30px rgba(15,23,42,.06)!important;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease!important;
+}
+.stat-card:hover {
+  transform:translateY(-2px)!important;
+  border-color:@@ACCENT@@55!important;
+  box-shadow:0 14px 36px rgba(15,23,42,.10)!important;
+}
+
+/* Hero refinement */
+.hero {
+  border-radius:26px!important;
+  background:
+    radial-gradient(circle at 50% 0%,@@ACCENT@@18 0,transparent 42%),
+    linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  box-shadow:0 18px 55px rgba(15,23,42,.08)!important;
+}
+.hero-logo {
+  background:linear-gradient(145deg,@@ACCENT@@22,transparent)!important;
+}
+.hero-title {
+  font-size:42px!important;
+  letter-spacing:-2.4px!important;
+}
+.hero-description {
+  max-width:820px!important;
+  font-size:14px!important;
+  line-height:1.65!important;
+}
+
+/* Chat surfaces */
+html body .stApp [data-testid="stChatMessage"] {
+  padding:12px 4px!important;
+}
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] {
+  border:1px solid var(--sh-border)!important;
+  border-radius:18px!important;
+  padding:13px 17px!important;
+  background:var(--sh-panel)!important;
+  box-shadow:0 8px 28px rgba(15,23,42,.045)!important;
+}
+html body .stApp [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) [data-testid="stChatMessageContent"] {
+  background:linear-gradient(145deg,var(--sh-panel),@@ACCENT@@08)!important;
+}
+html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageAvatar"] {
+  border:1px solid var(--sh-border)!important;
+  border-radius:12px!important;
+  background:var(--sh-panel2)!important;
+}
+html body .stApp [data-testid="stChatMessage"] p:last-child {
+  margin-bottom:0!important;
+}
+
+/* Risk / verdict / evidence cards */
+.verdict-card {
+  border-radius:17px!important;
+  padding:16px 18px!important;
+  background:linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  box-shadow:0 10px 30px rgba(15,23,42,.06)!important;
+}
+.source-card,.source {
+  border-radius:15px!important;
+  background:linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  box-shadow:0 7px 24px rgba(15,23,42,.045)!important;
+  transition:transform .16s ease,border-color .16s ease!important;
+}
+.source-card:hover,.source:hover {
+  transform:translateY(-1px)!important;
+  border-color:@@ACCENT@@55!important;
+}
+
+/* Investigation pipeline */
+.pipeline-card {
+  padding:12px!important;
+  border-radius:18px!important;
+  background:linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+}
+.pipeline-step {
+  min-height:52px!important;
+  margin:5px 0!important;
+  border-radius:13px!important;
+  background:var(--sh-panel)!important;
+  transition:border-color .16s ease,transform .16s ease!important;
+}
+.pipeline-step:hover {
+  border-color:@@ACCENT@@55!important;
+  transform:translateX(2px)!important;
+}
+.pipeline-arrow {
+  opacity:.65!important;
+  font-size:12px!important;
+}
+
+/* Expanders */
+html body .stApp [data-testid="stExpander"] {
+  overflow:hidden!important;
+  border-radius:16px!important;
+  background:var(--sh-panel)!important;
+  box-shadow:0 7px 24px rgba(15,23,42,.035)!important;
+}
+html body .stApp [data-testid="stExpander"] summary {
+  min-height:48px!important;
+  padding:0 15px!important;
+  transition:background .16s ease!important;
+}
+html body .stApp [data-testid="stExpander"] summary:hover {
+  background:var(--sh-hover)!important;
+}
+
+/* Chat input — primary interaction */
+html body .stApp [data-testid="stChatInput"] {
+  padding-left:0!important;
+  padding-right:0!important;
+}
+html body .stApp [data-testid="stChatInput"] > div {
+  min-height:58px!important;
+  border-radius:20px!important;
+  background:linear-gradient(145deg,var(--sh-panel),var(--sh-panel2))!important;
+  box-shadow:0 12px 36px rgba(15,23,42,.10)!important;
+  transition:border-color .16s ease,box-shadow .16s ease!important;
+}
+html body .stApp [data-testid="stChatInput"] > div:focus-within {
+  border-color:@@ACCENT@@88!important;
+  box-shadow:0 0 0 3px @@ACCENT@@12,0 14px 38px rgba(15,23,42,.12)!important;
+}
+html body .stApp [data-testid="stChatInput"] textarea {
+  font-size:14px!important;
+  line-height:1.5!important;
+}
+
+/* Buttons */
+html body .stApp div.stButton > button,
+html body .stApp [data-testid="stDownloadButton"] button {
+  border-radius:11px!important;
+  font-weight:650!important;
+  transition:transform .16s ease,background .16s ease,border-color .16s ease,box-shadow .16s ease!important;
+}
+html body .stApp div.stButton > button:hover,
+html body .stApp [data-testid="stDownloadButton"] button:hover {
+  transform:translateY(-1px)!important;
+  box-shadow:0 7px 20px @@ACCENT@@14!important;
+}
+
+/* File uploader */
+html body .stApp [data-testid="stFileUploaderDropzone"] {
+  min-height:100px!important;
+  border-radius:16px!important;
+  background:linear-gradient(145deg,var(--sh-input),var(--sh-panel2))!important;
+  transition:border-color .16s ease,background .16s ease!important;
+}
+html body .stApp [data-testid="stFileUploaderDropzone"]:hover {
+  border-color:@@ACCENT@@77!important;
+  background:var(--sh-hover)!important;
+}
+
+/* Warning/info/success messages */
+html body .stApp [data-testid="stAlert"] {
+  border-radius:15px!important;
+  border:1px solid var(--sh-border)!important;
+  box-shadow:0 7px 24px rgba(15,23,42,.045)!important;
+}
+
+/* Download/report control */
+html body .stApp [data-testid="stDownloadButton"] button {
+  background:var(--sh-panel)!important;
+  color:var(--sh-text)!important;
+  border:1px solid var(--sh-border)!important;
+}
+html body .stApp [data-testid="stDownloadButton"] button:hover {
+  color:var(--sh-accent)!important;
+  border-color:@@ACCENT@@66!important;
+}
+
+/* Mobile */
+@media (max-width:900px) {
+  .block-container {
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+  .hero-title {
+    font-size:34px!important;
+    letter-spacing:-1.7px!important;
+  }
+  html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageContent"] {
+    padding:11px 13px!important;
+    border-radius:15px!important;
+  }
+}
+
 </style>
 """
 
