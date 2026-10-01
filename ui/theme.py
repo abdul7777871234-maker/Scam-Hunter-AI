@@ -348,6 +348,50 @@ html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"] > div 
   -webkit-text-fill-color:@@TEXT@@ !important;
   color-scheme:@@SCHEME@@ !important;
 }
+
+/* ---- DASHBOARD SPACING + RESPONSIVE SAMPLE QUERIES ---- */
+.stat-card{min-height:82px;width:100%;padding:14px 12px;border:1px solid var(--sh-border);border-radius:14px;background:var(--sh-panel)!important;overflow:hidden;}
+.stat-label{color:var(--sh-muted)!important;font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;line-height:1.25;white-space:normal;overflow-wrap:anywhere;}
+.stat-value{color:var(--sh-text)!important;font-size:19px;font-weight:800;line-height:1.25;margin-top:6px;white-space:normal;overflow-wrap:anywhere;}
+.sample-query-title{margin:22px 0 8px;color:var(--sh-muted)!important;font-size:10px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;}
+div.stButton>button{white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.25!important;min-height:44px!important;height:auto!important;padding:9px 12px!important;}
+div.stButton>button p{white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.25!important;margin:0!important;}
+/* ---- SIDEBAR BASEWEB SELECT ---- */
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div,
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [aria-haspopup="listbox"]{
+  background:@@INPUT@@!important;background-color:@@INPUT@@!important;background-image:none!important;
+  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;color-scheme:@@SCHEME@@!important;
+  border-color:@@BORDER@@!important;box-shadow:none!important;opacity:1!important;filter:none!important;
+}
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input,
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] div{
+  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;
+}
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg{
+  background:transparent!important;color:@@MUTED@@!important;fill:@@MUTED@@!important;
+}
+/* Dropdowns render in a portal outside the sidebar DOM. */
+div[data-baseweb="popover"],div[data-baseweb="popover"] > div,div[data-baseweb="popover"] [role="listbox"]{
+  background:@@MENU@@!important;background-color:@@MENU@@!important;color:@@TEXT@@!important;
+  color-scheme:@@SCHEME@@!important;border:1px solid @@BORDER@@!important;
+}
+div[data-baseweb="popover"] [role="option"],div[data-baseweb="popover"] [role="option"] > div,
+div[data-baseweb="popover"] [role="option"] span{
+  background:transparent!important;background-color:transparent!important;color:@@TEXT@@!important;
+  -webkit-text-fill-color:@@TEXT@@!important;
+}
+div[data-baseweb="popover"] [role="option"]:hover,div[data-baseweb="popover"] [role="option"][aria-selected="true"]{
+  background:@@MENUHOVER@@!important;background-color:@@MENUHOVER@@!important;color:@@ACCENT@@!important;
+}
+@media (max-width:900px){
+  .stat-value{font-size:16px;}
+  .stat-card{min-height:76px;padding:12px 10px;}
+  .sample-query-title{margin-top:18px;}
+}
 </style>
 """
 
