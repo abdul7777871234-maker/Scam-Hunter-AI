@@ -13,12 +13,14 @@ ACCENTS = {
 DARK = {
     "BG": "#050811", "PANEL": "#0B1120", "PANEL2": "#111827",
     "INPUT": "#0F172A", "TEXT": "#F8FAFC", "MUTED": "#94A3B8",
+    "SELECT_BG": "#1E293B", "SELECT_TEXT": "#F1F5F9", "SELECT_ARROW": "#CBD5E1", "SELECT_BORDER": "#334155",
     "BORDER": "rgba(148,163,184,0.20)", "HOVER": "#172033",
     "MENU": "#0B1120", "MENUHOVER": "#172033", "SCHEME": "dark",
 }
 LIGHT = {
     "BG": "#F8FAFC", "PANEL": "#FFFFFF", "PANEL2": "#F1F5F9",
     "INPUT": "#FFFFFF", "TEXT": "#0F172A", "MUTED": "#64748B",
+    "SELECT_BG": "#FFFFFF", "SELECT_TEXT": "#0F172A", "SELECT_ARROW": "#334155", "SELECT_BORDER": "#CBD5E1",
     "BORDER": "rgba(15,23,42,0.14)", "HOVER": "#E8EEF7",
     "MENU": "#FFFFFF", "MENUHOVER": "#EEF4FA", "SCHEME": "light",
 }
@@ -32,6 +34,7 @@ CSS = """
   --sh-input:@@INPUT@@; --sh-text:@@TEXT@@; --sh-muted:@@MUTED@@; --sh-border:@@BORDER@@;
   --sh-hover:@@HOVER@@; --sh-menu:@@MENU@@; --sh-menu-hover:@@MENUHOVER@@;
   --sh-input-bg:@@INPUT@@; --sh-input-text:@@TEXT@@; --sh-input-arrow:@@MUTED@@;
+  --sh-select-bg:@@SELECT_BG@@; --sh-select-text:@@SELECT_TEXT@@; --sh-select-arrow:@@SELECT_ARROW@@; --sh-select-border:@@SELECT_BORDER@@;
   color-scheme:@@SCHEME@@;
 }
 
@@ -472,52 +475,67 @@ body > div[data-baseweb="popover"] li[role="option"]:hover {
   -webkit-text-fill-color:var(--sh-accent)!important;
 }
 
-/* FINAL SELECTBOX CALIBRATION: keep native BaseWeb surfaces locked to the active theme. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="combobox"] {
-  background:var(--sh-input)!important;
-  background-color:var(--sh-input)!important;
+/* FINAL SELECTBOX CALIBRATION: keep sidebar BaseWeb select surfaces locked to the active theme. */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div > div > div {
+  background:var(--sh-select-bg)!important;
+  background-color:var(--sh-select-bg)!important;
   background-image:none!important;
-  color:var(--sh-text)!important;
-  -webkit-text-fill-color:var(--sh-text)!important;
-  border-color:var(--sh-border)!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+  border:1px solid var(--sh-select-border)!important;
+  border-radius:12px!important;
   box-shadow:none!important;
   opacity:1!important;
   color-scheme:@@SCHEME@@!important;
 }
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div > div {
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] span,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] input {
   background:transparent!important;
   background-color:transparent!important;
-  color:var(--sh-text)!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
 }
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
-  color:var(--sh-muted)!important;
-  fill:var(--sh-muted)!important;
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] svg {
+  background:transparent!important;
+  color:var(--sh-select-arrow)!important;
+  fill:var(--sh-select-arrow)!important;
+  opacity:1!important;
 }
-body > div[data-baseweb="popover"] [role="listbox"],
-body > div[data-baseweb="popover"] [role="option"] {
+
+/* BaseWeb renders the opened menu in a portal outside the sidebar. */
+html body div[data-baseweb="popover"],
+html body div[data-baseweb="popover"] > div,
+html body div[data-baseweb="popover"] [data-baseweb="menu"],
+html body div[data-baseweb="popover"] ul[role="listbox"],
+html body div[data-baseweb="popover"] li[role="option"] {
   background:var(--sh-menu)!important;
   background-color:var(--sh-menu)!important;
   color:var(--sh-text)!important;
+  border-color:var(--sh-border)!important;
   color-scheme:@@SCHEME@@!important;
 }
-body > div[data-baseweb="popover"] [role="option"] span,
-body > div[data-baseweb="popover"] [role="option"] div {
+html body div[data-baseweb="popover"] [role="option"],
+html body div[data-baseweb="popover"] [role="option"] > div,
+html body div[data-baseweb="popover"] [role="option"] span {
   background:transparent!important;
   background-color:transparent!important;
   color:var(--sh-text)!important;
   -webkit-text-fill-color:var(--sh-text)!important;
 }
-body > div[data-baseweb="popover"] [role="option"]:hover,
-body > div[data-baseweb="popover"] [role="option"][aria-selected="true"] {
+html body div[data-baseweb="popover"] [role="option"]:hover,
+html body div[data-baseweb="popover"] [role="option"][aria-selected="true"],
+html body div[data-baseweb="popover"] li[role="option"]:hover {
   background:var(--sh-menu-hover)!important;
   background-color:var(--sh-menu-hover)!important;
   color:var(--sh-accent)!important;
+  -webkit-text-fill-color:var(--sh-accent)!important;
 }
-body > div[data-baseweb="popover"] [role="option"]:hover span,
-body > div[data-baseweb="popover"] [role="option"][aria-selected="true"] span {
+html body div[data-baseweb="popover"] [role="option"]:hover *,
+html body div[data-baseweb="popover"] [role="option"][aria-selected="true"] * {
+  background:transparent!important;
   color:var(--sh-accent)!important;
   -webkit-text-fill-color:var(--sh-accent)!important;
 }
