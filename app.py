@@ -235,10 +235,13 @@ def render_evidence(result: dict, scan: dict | None) -> None:
             st.caption("No matching internal evidence was retrieved.")
 
     with st.expander("Web Evidence", expanded=False):
-        items = result.get("web", {}).get("items", [])
+        web_result = result.get("web", {}) or {}
+        items = web_result.get("items", [])
         if items:
             for item in items:
                 source_card(item)
+        elif web_result.get("error"):
+            st.warning(f"Web research failed: {web_result.get('error')}")
         else:
             st.caption("No web evidence was retrieved.")
 
@@ -268,7 +271,7 @@ def compact_sources(result: dict) -> list:
 
 
 def render_download(index: int, message: dict) -> None:
-    """Markdown report for one assistant answer."""
+    """PDF investigation report for one assistant answer."""
     question = ""
     for earlier in reversed(S.messages[:index]):
         if earlier.get("role") == "user":
@@ -288,8 +291,8 @@ def render_download(index: int, message: dict) -> None:
     st.download_button(
         "Download report",
         data=report,
-        file_name=f"scamhunter-report-{index + 1}.md",
-        mime="text/markdown",
+        file_name=f"scamhunter-report-{index + 1}.pdf",
+        mime="application/pdf",
         key=f"download_{S.chat_id}_{index}",
     )
 
