@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import tempfile
 import time
+from html import escape
 from pathlib import Path
 
 import streamlit as st
@@ -51,19 +52,11 @@ S.setdefault("answer_cache", {})
 # -------------------------------------------------------------------
 
 if not valid_uid(S.get("uid")):
-
     url_uid = st.query_params.get("u")
-
-    S.uid = (
-        url_uid
-        if valid_uid(url_uid)
-        else new_id()
-    )
-
+    S.uid = url_uid if valid_uid(url_uid) else new_id()
 
 if st.query_params.get("u") != S.uid:
     st.query_params["u"] = S.uid
-
 
 uid = S.uid
 
@@ -72,24 +65,13 @@ uid = S.uid
 # OPEN A SAVED CHAT
 # -------------------------------------------------------------------
 
-pending_chat = S.pop(
-    "load_chat_id",
-    None,
-)
+pending_chat = S.pop("load_chat_id", None)
 
 if pending_chat:
-
     for saved in load_chats(uid):
-
         if saved.get("id") == pending_chat:
-
-            S.messages = saved.get(
-                "messages",
-                [],
-            )
-
+            S.messages = saved.get("messages", [])
             S.chat_id = saved["id"]
-
             break
 
 
@@ -99,65 +81,30 @@ if pending_chat:
 
 mode, style, accent = render_sidebar()
 
-apply_theme(
-    S.dark,
-    accent,
-)
+apply_theme(S.dark, accent)
 
 
 # -------------------------------------------------------------------
 # RUNTIME
 # -------------------------------------------------------------------
 
-@st.cache_resource(
-    show_spinner="Loading models and knowledge base…"
-)
+@st.cache_resource(show_spinner="Loading models and knowledge base…")
 def get_runtime():
-
     runtime_settings = Settings.from_runtime()
-
-    kb = KnowledgeBase(
-        runtime_settings
-    )
-
-    router = ModelRouter(
-        runtime_settings
-    )
-
-    retriever = Retriever(
-        kb,
-        runtime_settings,
-    )
-
-    web = WebSearch(
-        runtime_settings
-    )
-
+    kb = KnowledgeBase(runtime_settings)
+    router = ModelRouter(runtime_settings)
+    retriever = Retriever(kb, runtime_settings)
+    web = WebSearch(runtime_settings)
     orchestrator = InvestigationOrchestrator(
         router,
         retriever,
         web,
         runtime_settings,
     )
-
-    return (
-        runtime_settings,
-        kb,
-        router,
-        retriever,
-        web,
-        orchestrator,
-    )
+    return runtime_settings, kb, router, retriever, web, orchestrator
 
 
-(
-    settings,
-    kb,
-    router,
-    retriever,
-    web,
-    orchestrator,
-) = get_runtime()
+settings, kb, router, retriever, web, orchestrator = get_runtime()
 
 
 # -------------------------------------------------------------------
@@ -165,15 +112,78 @@ def get_runtime():
 # -------------------------------------------------------------------
 
 if kb.store.count:
+    S.kb_status = f"{kb.store.count:,} chunks indexed"
+else:
+    S.kb_status = "Knowledge base ready for document indexing."
 
-    S.kb_status = (
-        f"{kb.store.count:,} chunks indexed"
+
+# -------------------------------------------------------------------
+# HELPERS
+# -------------------------------------------------------------------
+
+PIPELINE_ICONS = (
+    ("knowledge", "📚"),
+    ("web", "🌐"),
+    ("evidence", "🔬"),
+    ("pattern", "🧩"),
+    ("contradiction", "⚖️"),
+    ("review", "🧑‍⚖️"),
+    ("response", "✍️"),
+    ("quality", "🛡️"),
+)
+
+
+def pipeline_icon(event: str) -> str:
+    low = event.lower()
+    for key, icon in PIPELINE_ICONS:
+        if key in low:
+            return icon
+    return "✓"
+
+
+def render_pipeline(events: list) -> None:
+    """
+    Render the whole pipeline as ONE html string.
+
+    No indentation and no blank lines: Markdown treats an indented
+    line or a blank line inside HTML as a code block, which was
+    the cause of the raw-code display.
+    """
+    if not events:
+        st.caption("No pipeline events were recorded.")
+        return
+
+    steps = []
+
+    for event in events:
+        name = escape(str(event))
+        steps.append(
+            '<div class="pipeline-step">'
+            f'<div class="pipeline-icon">{pipeline_icon(str(event))}</div>'
+            '<div class="pipeline-text">'
+            f'<div class="pipeline-name">{name}</div>'
+            '<div class="pipeline-status">Completed</div>'
+            "</div></div>"
+        )
+
+    html = (
+        '<div class="pipeline-card">'
+        + '<div class="pipeline-arrow">↓</div>'.join(steps)
+        + "</div>"
     )
 
-else:
+    st.markdown(html, unsafe_allow_html=True)
 
-    S.kb_status = (
-        "Knowledge base ready for document indexing."
+
+def render_disclaimer() -> None:
+    st.markdown(
+        '<div class="footer-card"><span class="muted">'
+        "🔒 Evidence is treated as untrusted data.<br>"
+        "ScamHunter AI provides investigation support and does not "
+        "guarantee the authenticity or safety of any person, site, "
+        "message, or offer."
+        "</span></div>",
+        unsafe_allow_html=True,
     )
 
 
@@ -181,54 +191,28 @@ else:
 # INVESTIGATION ROUTER
 # -------------------------------------------------------------------
 
-def run_investigation(
-    text: str,
-) -> dict:
+def run_investigation(text: str) -> dict:
     """
-    Route the investigation according
-    to the selected application mode.
-
     Quick Check:
-        FAISS/RAG
-        →
-        Evidence Agent
-        →
-        Response Agent
+        FAISS/RAG -> Evidence Agent -> Response Agent
 
     Deep Investigation:
         Full multi-agent investigation pipeline.
     """
 
-    # ---------------------------------------------------------------
-    # QUICK CHECK
-    # ---------------------------------------------------------------
-
     if mode == "Quick Check":
-
-        quick_method = getattr(
-            orchestrator,
-            "run_quick",
-            None,
-        )
+        quick_method = getattr(orchestrator, "run_quick", None)
 
         if quick_method is None:
-
             raise RuntimeError(
                 "Quick Check is not available. "
-                "Please make sure "
-                "agents/orchestrator.py "
+                "Please make sure agents/orchestrator.py "
                 "contains run_quick()."
             )
 
         return quick_method(text)
 
-    # ---------------------------------------------------------------
-    # DEEP INVESTIGATION
-    # ---------------------------------------------------------------
-
-    params = inspect.signature(
-        orchestrator.run
-    ).parameters
+    params = inspect.signature(orchestrator.run).parameters
 
     kwargs = {}
 
@@ -238,10 +222,7 @@ def run_investigation(
     if "style" in params:
         kwargs["style"] = style
 
-    return orchestrator.run(
-        text,
-        **kwargs,
-    )
+    return orchestrator.run(text, **kwargs)
 
 
 # -------------------------------------------------------------------
@@ -256,23 +237,14 @@ hero()
 # -------------------------------------------------------------------
 
 for message in S.messages:
-
-    with st.chat_message(
-        message["role"]
-    ):
-
+    with st.chat_message(message["role"]):
         if message.get("verdict"):
-
             st.markdown(
-                badge_html(
-                    message["verdict"]
-                ),
+                badge_html(message["verdict"]),
                 unsafe_allow_html=True,
             )
 
-        st.markdown(
-            message["content"]
-        )
+        st.markdown(message["content"])
 
 
 # -------------------------------------------------------------------
@@ -282,16 +254,7 @@ for message in S.messages:
 submission = st.chat_input(
     "Investigate a suspicious message, offer, link, or document…",
     accept_file=True,
-    file_type=[
-        "pdf",
-        "docx",
-        "txt",
-        "md",
-        "png",
-        "jpg",
-        "jpeg",
-        "webp",
-    ],
+    file_type=["pdf", "docx", "txt", "md", "png", "jpg", "jpeg", "webp"],
     max_upload_size=settings.max_upload_mb,
     key="scamhunter_chat",
 )
@@ -304,11 +267,7 @@ submission = st.chat_input(
 if submission:
 
     prompt = submission.text.strip()
-
-    uploaded_files = list(
-        submission.files or []
-    )
-
+    uploaded_files = list(submission.files or [])
     attachment_context = []
 
     # ---------------------------------------------------------------
@@ -316,64 +275,26 @@ if submission:
     # ---------------------------------------------------------------
 
     for uploaded in uploaded_files:
-
         try:
-
             safe_name = validate_upload(
                 uploaded.name,
                 settings.max_upload_mb,
             )
 
-            temp_path = (
-                Path(tempfile.gettempdir())
-                / safe_name
-            )
-
-            temp_path.write_bytes(
-                uploaded.getbuffer()
-            )
+            temp_path = Path(tempfile.gettempdir()) / safe_name
+            temp_path.write_bytes(uploaded.getbuffer())
 
             suffix = temp_path.suffix.lower()
 
-            # -------------------------------------------------------
-            # DOCUMENT
-            # -------------------------------------------------------
+            if suffix in {".pdf", ".docx", ".txt", ".md"}:
+                kb.add_upload(temp_path)
+                attachment_context.append(f"Attached document: {safe_name}")
 
-            if suffix in {
-                ".pdf",
-                ".docx",
-                ".txt",
-                ".md",
-            }:
-
-                kb.add_upload(
-                    temp_path
-                )
-
-                attachment_context.append(
-                    f"Attached document: {safe_name}"
-                )
-
-            # -------------------------------------------------------
-            # IMAGE
-            # -------------------------------------------------------
-
-            elif suffix in {
-                ".png",
-                ".jpg",
-                ".jpeg",
-                ".webp",
-            }:
-
-                attachment_context.append(
-                    f"Attached image: {safe_name}"
-                )
+            elif suffix in {".png", ".jpg", ".jpeg", ".webp"}:
+                attachment_context.append(f"Attached image: {safe_name}")
 
         except Exception as exc:
-
-            st.error(
-                f"Attachment error: {exc}"
-            )
+            st.error(f"Attachment error: {exc}")
 
     # ---------------------------------------------------------------
     # ONLY CONTINUE IF THERE IS CONTENT
@@ -381,260 +302,101 @@ if submission:
 
     if prompt or attachment_context:
 
-        if prompt:
+        display_prompt = prompt if prompt else "\n".join(attachment_context)
 
-            display_prompt = prompt
-
-        else:
-
-            display_prompt = "\n".join(
-                attachment_context
-            )
-
-        # -----------------------------------------------------------
-        # SAVE USER MESSAGE
-        # -----------------------------------------------------------
-
-        S.messages.append(
-            {
-                "role": "user",
-                "content": display_prompt,
-            }
-        )
-
-        save_chat(
-            uid,
-            S.chat_id,
-            S.messages,
-        )
-
-        # -----------------------------------------------------------
-        # SHOW USER MESSAGE
-        # -----------------------------------------------------------
+        S.messages.append({"role": "user", "content": display_prompt})
+        save_chat(uid, S.chat_id, S.messages)
 
         with st.chat_message("user"):
+            st.markdown(display_prompt)
 
-            st.markdown(
-                display_prompt
-            )
+        cache_key = (mode, style, display_prompt)
 
-        # -----------------------------------------------------------
-        # CACHE KEY
-        # -----------------------------------------------------------
-
-        cache_key = (
-            mode,
-            style,
-            display_prompt,
-        )
-
-        # Uploaded files should not use
-        # the normal text-answer cache.
+        # Uploaded files should not use the normal text-answer cache.
         use_cache = not uploaded_files
-
-        # -----------------------------------------------------------
-        # EMPTY RESULT
-        # -----------------------------------------------------------
 
         empty_result = {
             "answer": "",
             "events": [],
-            "rag": {
-                "items": [],
-                "evidence": [],
-            },
-            "web": {
-                "items": [],
-                "cached": False,
-            },
+            "rag": {"items": [], "evidence": []},
+            "web": {"items": [], "cached": False},
         }
 
         # -----------------------------------------------------------
         # INVESTIGATION
         # -----------------------------------------------------------
 
-        with st.chat_message(
-            "assistant"
-        ):
+        with st.chat_message("assistant"):
 
             result = empty_result
-
             verdict = None
 
-            cached = (
-                S.answer_cache.get(
-                    cache_key
-                )
-                if use_cache
-                else None
-            )
+            cached = S.answer_cache.get(cache_key) if use_cache else None
 
-            # =======================================================
-            # CACHED RESPONSE
-            # =======================================================
-
+            # ---- cached response ----
             if cached:
-
                 result = cached
 
-                parsed = extract_verdict(
-                    result,
-                    result.get(
-                        "answer",
-                        "",
-                    ),
-                )
-
+                parsed = extract_verdict(result, result.get("answer", ""))
                 answer = parsed["answer"]
-
                 verdict = parsed["verdict"]
 
                 if verdict:
+                    st.markdown(badge_html(verdict), unsafe_allow_html=True)
 
-                    st.markdown(
-                        badge_html(
-                            verdict
-                        ),
-                        unsafe_allow_html=True,
-                    )
+                st.markdown(answer)
+                st.caption("⚡ Instant (cached)")
 
-                st.markdown(
-                    answer
-                )
-
-                st.caption(
-                    "⚡ Instant (cached)"
-                )
-
-            # =======================================================
-            # NEW INVESTIGATION
-            # =======================================================
-
+            # ---- new investigation ----
             else:
-
-                if mode == "Quick Check":
-
-                    label = (
-                        "⚡ Quick check…"
-                    )
-
-                else:
-
-                    label = (
-                        "🔎 Deep investigation…"
-                    )
-
-                started = (
-                    time.perf_counter()
+                label = (
+                    "⚡ Quick check…"
+                    if mode == "Quick Check"
+                    else "🔎 Deep investigation…"
                 )
+
+                started = time.perf_counter()
 
                 with st.spinner(label):
-
                     try:
-
-                        result = run_investigation(
-                            display_prompt
-                        )
+                        result = run_investigation(display_prompt)
 
                         raw_answer = result.get(
                             "answer",
                             "No investigation result was returned.",
                         )
 
-                        # ------------------------------------------------
-                        # SAVE TO CACHE
-                        # ------------------------------------------------
+                        if use_cache and result.get("answer"):
+                            S.answer_cache[cache_key] = result
 
-                        if (
-                            use_cache
-                            and result.get(
-                                "answer"
-                            )
-                        ):
-
-                            S.answer_cache[
-                                cache_key
-                            ] = result
-
-                        # ------------------------------------------------
-                        # EXTRACT VERDICT
-                        # ------------------------------------------------
-
-                        parsed = extract_verdict(
-                            result,
-                            raw_answer,
-                        )
-
+                        parsed = extract_verdict(result, raw_answer)
                         answer = parsed["answer"]
-
                         verdict = parsed["verdict"]
 
                     except Exception as exc:
-
                         answer = (
-                            "Investigation could not "
-                            "be completed.\n\n"
+                            "Investigation could not be completed.\n\n"
                             f"`{exc}`"
                         )
-
                         result = empty_result
-
                         verdict = None
 
-                elapsed = (
-                    time.perf_counter()
-                    - started
-                )
-
-                # ------------------------------------------------
-                # SHOW VERDICT
-                # ------------------------------------------------
+                elapsed = time.perf_counter() - started
 
                 if verdict:
+                    st.markdown(badge_html(verdict), unsafe_allow_html=True)
 
-                    st.markdown(
-                        badge_html(
-                            verdict
-                        ),
-                        unsafe_allow_html=True,
-                    )
+                st.markdown(answer)
+                st.caption(f"⏱ {elapsed:.1f}s · {mode}")
 
-                # ------------------------------------------------
-                # SHOW ANSWER
-                # ------------------------------------------------
-
-                st.markdown(
-                    answer
-                )
-
-                st.caption(
-                    f"⏱ {elapsed:.1f}s · {mode}"
-                )
-
-            # -------------------------------------------------------
-            # SAVE ASSISTANT MESSAGE
-            # -------------------------------------------------------
-
-            assistant_message = {
-                "role": "assistant",
-                "content": answer,
-            }
+            # ---- save assistant message ----
+            assistant_message = {"role": "assistant", "content": answer}
 
             if verdict:
+                assistant_message["verdict"] = verdict
 
-                assistant_message[
-                    "verdict"
-                ] = verdict
-
-            S.messages.append(
-                assistant_message
-            )
-
-            save_chat(
-                uid,
-                S.chat_id,
-                S.messages,
-            )
+            S.messages.append(assistant_message)
+            save_chat(uid, S.chat_id, S.messages)
 
         # ===========================================================
         # EVIDENCE SECTION
@@ -642,214 +404,32 @@ if submission:
 
         st.divider()
 
-        # -----------------------------------------------------------
-        # INVESTIGATION PIPELINE
-        # -----------------------------------------------------------
+        with st.expander("🧠 Investigation Pipeline", expanded=False):
+            render_pipeline(result.get("events", []))
 
-        with st.expander(
-            "🧠 Investigation Pipeline",
-            expanded=False,
-        ):
-
-            events = result.get(
-                "events",
-                [],
-            )
-
-            if events:
-
-                st.markdown(
-                    '<div class="pipeline-card">',
-                    unsafe_allow_html=True,
-                )
-
-                for index, event in enumerate(
-                    events
-                ):
-
-                    # -----------------------------------------------
-                    # ARROW BETWEEN STEPS
-                    # -----------------------------------------------
-
-                    if index > 0:
-
-                        st.markdown(
-                            '<div class="pipeline-arrow">↓</div>',
-                            unsafe_allow_html=True,
-                        )
-
-                    event_lower = (
-                        event.lower()
-                    )
-
-                    # -----------------------------------------------
-                    # PIPELINE ICON
-                    # -----------------------------------------------
-
-                    if "knowledge" in event_lower:
-
-                        icon = "📚"
-
-                    elif "web" in event_lower:
-
-                        icon = "🌐"
-
-                    elif "evidence" in event_lower:
-
-                        icon = "🔬"
-
-                    elif "pattern" in event_lower:
-
-                        icon = "🧩"
-
-                    elif "contradiction" in event_lower:
-
-                        icon = "⚖️"
-
-                    elif "review" in event_lower:
-
-                        icon = "🧑‍⚖️"
-
-                    elif "response" in event_lower:
-
-                        icon = "✍️"
-
-                    elif "quality" in event_lower:
-
-                        icon = "🛡️"
-
-                    else:
-
-                        icon = "✓"
-
-                    # -----------------------------------------------
-                    # PIPELINE STEP
-                    # -----------------------------------------------
-
-                    st.markdown(
-                        f"""
-                        <div class="pipeline-step">
-
-                            <div class="pipeline-icon">
-                                {icon}
-                            </div>
-
-                            <div class="pipeline-text">
-
-                                <div class="pipeline-name">
-                                    {event}
-                                </div>
-
-                                <div class="pipeline-status">
-                                    Completed
-                                </div>
-
-                            </div>
-
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
-                st.markdown(
-                    "</div>",
-                    unsafe_allow_html=True,
-                )
-
-            else:
-
-                st.caption(
-                    "No pipeline events were recorded."
-                )
-
-        # -----------------------------------------------------------
-        # KNOWLEDGE BASE EVIDENCE
-        # -----------------------------------------------------------
-
-        with st.expander(
-            "Knowledge Base Evidence",
-            expanded=False,
-        ):
-
-            items = result.get(
-                "rag",
-                {},
-            ).get(
-                "evidence",
-                [],
-            )
+        with st.expander("Knowledge Base Evidence", expanded=False):
+            items = result.get("rag", {}).get("evidence", [])
 
             if items:
-
                 for item in items:
-
                     source_card(item)
-
             else:
+                st.caption("No matching internal evidence was retrieved.")
 
-                st.caption(
-                    "No matching internal evidence was retrieved."
-                )
-
-        # -----------------------------------------------------------
-        # WEB EVIDENCE
-        # -----------------------------------------------------------
-
-        with st.expander(
-            "Web Evidence",
-            expanded=False,
-        ):
-
-            items = result.get(
-                "web",
-                {},
-            ).get(
-                "items",
-                [],
-            )
+        with st.expander("Web Evidence", expanded=False):
+            items = result.get("web", {}).get("items", [])
 
             if items:
-
                 for item in items:
-
                     source_card(item)
-
             else:
-
-                st.caption(
-                    "No web evidence was retrieved."
-                )
+                st.caption("No web evidence was retrieved.")
 
 
 # -------------------------------------------------------------------
 # FOOTER
 # -------------------------------------------------------------------
 
-st.markdown(
-    """
-    <div class="card footer-card">
+render_disclaimer()
 
-        <span class="muted">
-
-            🔒 Evidence is treated as untrusted data.
-
-            ScamHunter AI provides investigation support
-            and does not guarantee the authenticity or safety
-            of any person, site, message, or offer.
-
-        </span>
-
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# -------------------------------------------------------------------
-# SIDEBAR FOOTER
-# -------------------------------------------------------------------
-
-render_footer(
-    uid,
-    S.kb_status,
-)
+render_footer(uid, S.kb_status)
