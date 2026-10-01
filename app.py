@@ -449,10 +449,6 @@ for position, message in enumerate(S.messages):
 # -------------------------------------------------------------------
 
 if not S.messages:
-    example = example_prompts()
-    if example:
-        S.pending_prompt = example
-        st.rerun()
 
 # -------------------------------------------------------------------
 # CHAT INPUT + ATTACHMENT
