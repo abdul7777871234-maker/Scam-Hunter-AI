@@ -643,10 +643,10 @@ if submission:
                             answer = parsed["answer"]
                             verdict = parsed["verdict"]
 
-                        except Exception as exc:
+                        except Exception:
                             answer = (
-                                "Investigation could not be completed.\n\n"
-                                f"`{exc}`"
+                                "Investigation could not be completed safely. "
+                                "Please try again in a moment."
                             )
                             result = empty_result
                             verdict = None
@@ -681,12 +681,12 @@ if submission:
 
             S.last_result = {"result": result, "scan": scan}
 
-        # ===========================================================
-        # EVIDENCE SECTION
-        # ===========================================================
+            # ===========================================================
+            # EVIDENCE SECTION
+            # ===========================================================
 
-        st.divider()
-        render_evidence(result, scan)
+            st.divider()
+            render_evidence(result, scan)
 
 # -------------------------------------------------------------------
 # EVIDENCE OF THE LATEST ANSWER (stays visible after any rerun)
