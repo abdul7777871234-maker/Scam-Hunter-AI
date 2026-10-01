@@ -1,3 +1,23 @@
+import streamlit as st
+
+
+def hero():
+    st.markdown(
+        """
+        <div class="hero">
+          <div class="logo">🛡️</div>
+          <h1>ScamHunter <span>AI</span></h1>
+          <p>
+            Investigate suspicious messages, offers, links and online claims
+            with AI-powered evidence analysis.
+          </p>
+          <div class="badge">● Evidence-first AI investigation</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def source_card(item):
     source_type = (
         item.get("source_type")
@@ -5,6 +25,9 @@ def source_card(item):
         or ""
     ).lower()
 
+    # -----------------------------
+    # Knowledge Base source
+    # -----------------------------
     if source_type == "knowledge_base":
         title = (
             item.get("filename")
@@ -47,28 +70,33 @@ def source_card(item):
             unsafe_allow_html=True,
         )
 
-    else:
-        title = (
-            item.get("title")
-            or item.get("url")
-            or "Web source"
-        )
+        return
 
-        detail = item.get("url", "")
-        excerpt = (
-            item.get("snippet")
-            or item.get("excerpt")
-            or ""
-        )
+    # -----------------------------
+    # Web source
+    # -----------------------------
+    title = (
+        item.get("title")
+        or item.get("url")
+        or "Web source"
+    )
 
-        st.markdown(
-            f"""
-            <div class="source">
-              <b>🌐 {title}</b><br>
-              <span class="muted">{detail}</span>
-              <br><br>
-              {excerpt}
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    detail = item.get("url", "")
+
+    excerpt = (
+        item.get("snippet")
+        or item.get("excerpt")
+        or ""
+    )
+
+    st.markdown(
+        f"""
+        <div class="source">
+          <b>🌐 {title}</b><br>
+          <span class="muted">{detail}</span>
+          <br><br>
+          {excerpt}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
