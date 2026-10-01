@@ -630,7 +630,7 @@ if submission:
                 elapsed = time.perf_counter() - started
 
             if verdict:
-                st.markdown(badge_html(verdict), unsafe_allow_html=True)
+                st.markdown(badge_html(verdict, scan.get("score", 0)), unsafe_allow_html=True)
 
             st.markdown(answer)
 
