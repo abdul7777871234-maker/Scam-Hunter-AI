@@ -664,6 +664,98 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] di
   color:@@SELECT_ARROW@@!important;
   fill:@@SELECT_ARROW@@!important;
 }
+/* FINAL UI/LAYOUT PATCH — CSS ONLY */
+html body .stApp .block-container{
+  width:100%!important;max-width:1320px!important;
+  padding-top:1.25rem!important;padding-right:2rem!important;
+  padding-left:2rem!important;padding-bottom:6rem!important;
+  margin:0 auto!important;
+}
+html body .stApp [data-testid="stMain"]{
+  min-height:100vh!important;overflow-y:auto!important;overflow-x:hidden!important;
+}
+html body .stApp [data-testid="stBottom"]{
+  position:fixed!important;left:0!important;right:0!important;bottom:0!important;
+  width:100%!important;z-index:1000!important;padding:0 1rem .75rem!important;
+  background:linear-gradient(to bottom,transparent 0%,var(--sh-bg) 28%,var(--sh-bg) 100%)!important;
+  pointer-events:none!important;
+}
+html body .stApp [data-testid="stBottom"]>div,
+html body .stApp [data-testid="stBottomBlockContainer"]{
+  width:100%!important;max-width:1320px!important;margin:0 auto!important;
+  background:transparent!important;
+}
+html body .stApp [data-testid="stChatInput"]{
+  width:100%!important;margin:0!important;pointer-events:auto!important;
+}
+html body .stApp [data-testid="stChatInput"]>div{
+  width:100%!important;min-height:52px!important;margin:0!important;
+  border-radius:16px!important;background:var(--sh-panel)!important;
+  border:1px solid var(--sh-border)!important;
+  box-shadow:0 10px 35px rgba(0,0,0,.12)!important;
+}
+html body .stApp .hero{
+  margin-top:0!important;margin-bottom:1rem!important;padding:24px 22px!important;
+  min-height:0!important;height:auto!important;
+}
+html body .stApp .hero-logo{width:50px!important;height:50px!important;border-radius:16px!important;font-size:23px!important;}
+html body .stApp .hero-title{margin-top:10px!important;font-size:36px!important;}
+html body .stApp .hero-description{margin-top:7px!important;font-size:13px!important;line-height:1.4!important;}
+html body .stApp .hero-badge{margin-top:9px!important;padding:5px 11px!important;font-size:10px!important;}
+
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]>div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]>div>div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]>div>div>div{
+  min-height:40px!important;background:@@SELECT_BG@@!important;
+  background-color:@@SELECT_BG@@!important;background-image:none!important;
+  color:@@SELECT_TEXT@@!important;-webkit-text-fill-color:@@SELECT_TEXT@@!important;
+  border:1px solid @@SELECT_BORDER@@!important;border-radius:11px!important;
+  box-shadow:none!important;opacity:1!important;color-scheme:@@SCHEME@@!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"]{
+  background:transparent!important;background-color:transparent!important;
+  color:@@SELECT_TEXT@@!important;-webkit-text-fill-color:@@SELECT_TEXT@@!important;opacity:1!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg{
+  background:transparent!important;color:@@SELECT_ARROW@@!important;fill:@@SELECT_ARROW@@!important;opacity:1!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:hover>div{
+  background:@@HOVER@@!important;background-color:@@HOVER@@!important;
+  border-color:@@SELECT_BORDER@@!important;
+}
+html body div[data-baseweb="popover"],
+html body div[data-baseweb="popover"] [data-baseweb="menu"],
+html body div[data-baseweb="popover"] ul[role="listbox"]{
+  background:@@MENU@@!important;background-color:@@MENU@@!important;
+  color:@@TEXT@@!important;border-color:@@BORDER@@!important;color-scheme:@@SCHEME@@!important;
+}
+html body div[data-baseweb="popover"] [role="option"],
+html body div[data-baseweb="popover"] [role="option"]>div,
+html body div[data-baseweb="popover"] [role="option"] span{
+  background:transparent!important;background-color:transparent!important;
+  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;
+}
+html body div[data-baseweb="popover"] [role="option"]:hover,
+html body div[data-baseweb="popover"] [role="option"][aria-selected="true"]{
+  background:@@MENUHOVER@@!important;background-color:@@MENUHOVER@@!important;
+  color:@@ACCENT@@!important;-webkit-text-fill-color:@@ACCENT@@!important;
+}
+html body .stApp section[data-testid="stSidebar"] label,
+html body .stApp section[data-testid="stSidebar"] label p,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] *{
+  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;opacity:1!important;
+}
+@media(max-width:900px){
+  html body .stApp .block-container{
+    padding-top:.75rem!important;padding-right:.75rem!important;padding-left:.75rem!important;padding-bottom:5.5rem!important;
+  }
+  html body .stApp [data-testid="stBottom"]{padding:0 .5rem .5rem!important;}
+  html body .stApp .hero{padding:20px 16px!important;margin-bottom:.75rem!important;}
+  html body .stApp .hero-title{font-size:31px!important;}
+}
 </style>
 """
 
