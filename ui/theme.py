@@ -112,22 +112,8 @@ section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] *{color:var(
 [data-testid="stSidebarCollapseButton"] button:hover,[data-testid="stSidebarCollapsedControl"] button:hover{
   background:var(--sh-hover)!important;color:var(--sh-accent)!important;border-color:var(--sh-accent)!important;}
 
-/* SELECTBOX */
+/* SELECTBOX LABELS */
 [data-testid="stSelectbox"] label,[data-testid="stSelectbox"] label p{color:var(--sh-text)!important;font-weight:700!important;}
-[data-baseweb="select"]{background:transparent!important;color:var(--sh-text)!important;}
-[data-baseweb="select"]>div{min-height:42px!important;background:var(--sh-input)!important;background-image:none!important;
-  color:var(--sh-text)!important;border:1px solid var(--sh-border)!important;border-radius:12px!important;box-shadow:none!important;}
-[data-baseweb="select"]>div:hover{background:var(--sh-hover)!important;border-color:var(--sh-accent)!important;}
-[data-baseweb="select"] *{color:var(--sh-text)!important;-webkit-text-fill-color:var(--sh-text)!important;}
-[data-baseweb="select"] svg{color:var(--sh-muted)!important;fill:currentColor!important;}
-
-/* DROPDOWN MENU */
-[data-baseweb="popover"],[data-baseweb="popover"]>div,[data-baseweb="menu"],[role="listbox"]{
-  background:var(--sh-menu)!important;color:var(--sh-text)!important;border-color:var(--sh-border)!important;}
-[data-baseweb="menu"]{padding:6px!important;border-radius:14px!important;}
-[role="option"],li[role="option"],div[role="option"]{background:var(--sh-menu)!important;color:var(--sh-text)!important;border-radius:9px!important;}
-[role="option"]:hover,li[role="option"]:hover,div[role="option"]:hover,[role="option"][aria-selected="true"]{
-  background:var(--sh-menu-hover)!important;color:var(--sh-accent)!important;}
 
 /* BUTTONS + POPOVERS */
 div.stButton>button,[data-testid="stPopover"] button,button[data-testid="stPopoverButton"]{
@@ -254,123 +240,6 @@ html body .stApp [data-testid="stFileUploaderDropzone"] {
 }
 html body .stApp [data-testid="stFileUploaderDropzone"] * {
   color:var(--sh-text)!important;
-}
-
-/* Remove BaseWeb's native white outline/focus ring from sidebar select controls. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"] {
-  outline:none!important;
-  outline-color:transparent!important;
-  box-shadow:none!important;
-  border-color:var(--sh-select-border)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div:focus,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus-visible {
-  outline:none!important;
-  outline-color:transparent!important;
-  box-shadow:none!important;
-  border-color:var(--sh-select-border)!important;
-}
-/* Sidebar selectboxes: one source of truth for Light/Dark surfaces. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] {
-  min-height:42px!important;
-  position:relative!important;
-  background:var(--sh-select-bg)!important;
-  background-color:var(--sh-select-bg)!important;
-  background-image:none!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-  border:1px solid var(--sh-select-border)!important;
-  border-radius:12px!important;
-  box-shadow:none!important;
-  opacity:1!important;
-  color-scheme:var(--sh-scheme)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
-  min-height:40px!important;
-  background:transparent!important;
-  background-color:transparent!important;
-  background-image:none!important;
-  border:0!important;
-  border-radius:11px!important;
-  box-shadow:none!important;
-  outline:none!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]::after {
-  content:"";
-  position:absolute;
-  right:13px;
-  top:50%;
-  width:7px;
-  height:7px;
-  border-right:2px solid var(--sh-select-arrow);
-  border-bottom:2px solid var(--sh-select-arrow);
-  transform:translateY(-65%) rotate(45deg);
-  pointer-events:none;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
-  display:none!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] p,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] * {
-  background:transparent!important;
-  background-color:transparent!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
-  background:transparent!important;
-  color:var(--sh-select-arrow)!important;
-  fill:var(--sh-select-arrow)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:hover > div {
-  background:var(--sh-hover)!important;
-  background-color:var(--sh-hover)!important;
-  border-color:var(--sh-accent)!important;
-}
-
-/* BaseWeb opens select menus in a portal outside the sidebar. */
-html body div[data-baseweb="popover"],
-html body div[data-baseweb="popover"] > div,
-html body div[data-baseweb="popover"] [data-baseweb="menu"],
-html body div[data-baseweb="popover"] ul[role="listbox"],
-html body div[data-baseweb="popover"] li[role="option"] {
-  background:var(--sh-menu)!important;
-  background-color:var(--sh-menu)!important;
-  color:var(--sh-text)!important;
-  border-color:var(--sh-border)!important;
-  color-scheme:var(--sh-scheme)!important;
-}
-html body div[data-baseweb="popover"] [role="option"],
-html body div[data-baseweb="popover"] [role="option"] > div,
-html body div[data-baseweb="popover"] [role="option"] span {
-  background:transparent!important;
-  background-color:transparent!important;
-  color:var(--sh-text)!important;
-  -webkit-text-fill-color:var(--sh-text)!important;
-}
-html body div[data-baseweb="popover"] [role="option"]:hover,
-html body div[data-baseweb="popover"] [role="option"][aria-selected="true"],
-html body div[data-baseweb="popover"] li[role="option"]:hover {
-  background:var(--sh-menu-hover)!important;
-  background-color:var(--sh-menu-hover)!important;
-  color:var(--sh-accent)!important;
-  -webkit-text-fill-color:var(--sh-accent)!important;
-}
-html body div[data-baseweb="popover"] [role="option"]:hover *,
-html body div[data-baseweb="popover"] [role="option"][aria-selected="true"] * {
-  background:transparent!important;
-  color:var(--sh-accent)!important;
-  -webkit-text-fill-color:var(--sh-accent)!important;
 }
 
 /* Sidebar action buttons follow the active palette. */
@@ -1054,22 +923,6 @@ section[data-testid="stSidebar"] .sidebar-section-title:before{content:"";width:
 section[data-testid="stSidebar"] .sidebar-section-title:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--sh-border),transparent)!important;}
 section[data-testid="stSidebar"] [data-testid="stSelectbox"]{margin-bottom:11px!important;}
 section[data-testid="stSidebar"] [data-testid="stSelectbox"] label{margin-bottom:5px!important;padding-left:3px!important;font-size:10px!important;letter-spacing:.65px!important;text-transform:uppercase!important;color:var(--sh-muted)!important;}
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]{min-height:44px!important;border-radius:14px!important;background:var(--sh-select-bg)!important;background-image:none!important;border:1px solid var(--sh-select-border)!important;outline:none!important;box-shadow:0 8px 22px rgba(0,0,0,.08)!important;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease!important;}
-section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:hover{transform:translateY(-1px)!important;border-color:@@ACCENT@@70!important;box-shadow:0 12px 28px rgba(0,0,0,.12),0 0 22px @@ACCENT@@09!important;}
-/* Sidebar selected controls: theme-aware border for every selectbox. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
-  border-color:var(--sh-select-border)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus-visible {
-  border-color:var(--sh-select-border)!important;
-  outline:none!important;
-  box-shadow:0 0 0 1px var(--sh-select-border)!important;
-}
 
 section[data-testid="stSidebar"] .sidebar-active-theme{margin:8px 1px 2px!important;padding:9px 11px!important;border:1px solid var(--sh-border)!important;border-radius:11px!important;background:linear-gradient(145deg,@@ACCENT@@09,var(--sh-panel2))!important;color:var(--sh-muted)!important;font-size:10px!important;text-align:center!important;}
 section[data-testid="stSidebar"] .sidebar-provider-card,section[data-testid="stSidebar"] .sidebar-status-card{min-height:58px!important;padding:11px 12px!important;border-radius:15px!important;border:1px solid var(--sh-border)!important;background:radial-gradient(circle at 0% 0%,@@ACCENT@@10,transparent 45%),linear-gradient(145deg,var(--sh-panel2),var(--sh-panel))!important;box-shadow:0 12px 28px rgba(0,0,0,.09),inset 0 1px 0 rgba(255,255,255,.06)!important;}
@@ -1089,80 +942,6 @@ section[data-testid="stSidebar"] button[key="btn_clear"],section[data-testid="st
 section[data-testid="stSidebar"] button[key="btn_clear"]{color:var(--sh-accent)!important;border-color:@@ACCENT@@40!important;background:@@ACCENT@@08!important;}
 section[data-testid="stSidebar"] hr{margin:13px 0!important;border:0!important;border-top:1px solid var(--sh-border)!important;opacity:.75!important;}
 @media(max-width:900px){.stat-card{min-height:100px!important;height:100px!important;}}
-
-/* Final control + risk + message color balance */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
-  outline:0!important;
-  outline-offset:0!important;
-  border:1px solid var(--sh-select-border)!important;
-  box-shadow:none!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div:focus,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus-visible {
-  outline:0!important;
-  box-shadow:0 0 0 1px var(--sh-select-border)!important;
-  border-color:var(--sh-select-border)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]::after {
-  display:block!important;
-  z-index:20!important;
-  border-right:2px solid var(--sh-select-arrow)!important;
-  border-bottom:2px solid var(--sh-select-arrow)!important;
-  opacity:1!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
-  display:none!important;
-}
-
-/* Sidebar selectbox: final BaseWeb surface and arrow lock. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [data-aria-hidden="true"] {
-  background:transparent!important;
-  background-color:transparent!important;
-  background-image:none!important;
-  border-color:transparent!important;
-  box-shadow:none!important;
-  outline:none!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] {
-  background:var(--sh-select-bg)!important;
-  background-color:var(--sh-select-bg)!important;
-  border:1px solid var(--sh-select-border)!important;
-  color:var(--sh-select-text)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] * {
-  background:transparent!important;
-  background-color:transparent!important;
-  border-color:transparent!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]::after {
-  content:""!important;
-  display:block!important;
-  position:absolute!important;
-  right:13px!important;
-  top:50%!important;
-  width:7px!important;
-  height:7px!important;
-  border-right:2px solid var(--sh-select-arrow)!important;
-  border-bottom:2px solid var(--sh-select-arrow)!important;
-  transform:translateY(-65%) rotate(45deg)!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  opacity:1!important;
-  pointer-events:none!important;
-  z-index:30!important;
-}
 
 /* Risk meter — green / yellow / orange / red */
 .risk-meter-card {
@@ -1237,83 +1016,24 @@ html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageConten
 
 
 
-/* FINAL SIDEBAR SELECTBOX PALETTE — theme owns the visible BaseWeb control. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] {
-  position:relative!important;
-  background:transparent!important;
-  background-color:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
-  color:var(--sh-select-text)!important;
-}
+/* FINAL SELECTBOX OUTER CONTROL — outer box only. Inner content and dropdown stay native. */
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div {
-  min-height:44px!important;
-  background:var(--sh-select-bg)!important;
-  background-color:var(--sh-select-bg)!important;
-  background-image:none!important;
-  border:1px solid var(--sh-select-border)!important;
-  border-radius:14px!important;
-  box-shadow:none!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div:hover,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:hover > div {
-  border-color:var(--sh-accent)!important;
-  background:var(--sh-hover)!important;
-  background-color:var(--sh-hover)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [data-aria-hidden="true"] {
-  background:transparent!important;
-  background-color:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] p {
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
-  display:block!important;
-  color:var(--sh-select-arrow)!important;
-  fill:var(--sh-select-arrow)!important;
-  stroke:var(--sh-select-arrow)!important;
-  opacity:1!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg path,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg polyline,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg line {
-  fill:var(--sh-select-arrow)!important;
-  stroke:var(--sh-select-arrow)!important;
-}
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]::after {
-  display:none!important;
-}
-
-/* FINAL SELECTBOX OUTER CONTROL — do not style inner option rows. */
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="combobox"],
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"][aria-haspopup="listbox"] {
   min-height:44px!important;
   box-sizing:border-box!important;
   background:var(--sh-select-bg)!important;
   background-color:var(--sh-select-bg)!important;
-  color:var(--sh-select-text)!important;
-  -webkit-text-fill-color:var(--sh-select-text)!important;
   border:1px solid var(--sh-select-border)!important;
   border-radius:14px!important;
   outline:none!important;
   box-shadow:none!important;
 }
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="combobox"]:hover,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"][aria-haspopup="listbox"]:hover {
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div:hover {
   background:var(--sh-hover)!important;
   background-color:var(--sh-hover)!important;
   border-color:var(--sh-accent)!important;
 }
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="combobox"]:focus,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"][aria-haspopup="listbox"]:focus {
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div:focus-within {
   outline:none!important;
   box-shadow:0 0 0 1px var(--sh-select-border)!important;
   border-color:var(--sh-select-border)!important;
