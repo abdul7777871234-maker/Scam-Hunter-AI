@@ -34,7 +34,7 @@ class WebResearchAgent:
         if not value:
             return ""
 
-        urls = re.findall(r"https?://[^\s<>"']+|www\.[^\s<>"']+", value, re.I)
+        urls = re.findall(r'''https?://[^\s<>"']+|www\.[^\s<>"']+''', value, re.I)
         domains = []
         for raw_url in urls:
             candidate = raw_url.rstrip(".,!?;:)]}")
@@ -49,12 +49,12 @@ class WebResearchAgent:
 
         # If the user wrapped the suspicious message in quotes, search the
         # message itself rather than the surrounding instruction text.
-        quoted = re.findall(r"["“](.*?)["”]", value)
+        quoted = re.findall(r'''["“](.*?)["”]''', value)
         message = max(quoted, key=len, default=value)
 
         # Remove URLs and common meta-instructions that otherwise dominate
         # search ranking (for example, "I received this message").
-        message = re.sub(r"https?://[^\s<>"']+|www\.[^\s<>"']+", " ", message, flags=re.I)
+        message = re.sub(r'''https?://[^\s<>"']+|www\.[^\s<>"']+''', " ", message, flags=re.I)
         message = re.sub(
             r"\b(?:i received this message|please investigate this message|"
             r"please investigate|analyze this message|check this message|"
