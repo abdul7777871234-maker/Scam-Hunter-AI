@@ -116,12 +116,12 @@ USER REQUEST:
         value = (text or "").lower()
 
         if re.search(
-            r"https?://|www\\.|\\b[a-z0-9-]+\\.(?:com|net|org|co|io|sa|pk|uk|gov|edu)\\b",
+            r"https?://|www\.|\b[a-z0-9-]+\.(?:com|net|org|co|io|sa|pk|uk|gov|edu)\b",
             value,
         ):
             return True
 
-        if re.search(r"\\b(?:\\+?\\d[\\d\\s().-]{7,}\\d)\\b", value):
+        if re.search(r"\b(?:\+?\d[\d\s().-]{7,}\d)\b", value):
             return True
 
         web_terms = (
