@@ -1016,21 +1016,46 @@ html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageConten
 
 
 
-/* SELECTBOX DROPDOWN SURFACE — menu background only; option rows remain native. */
+/* SELECTBOX DROPDOWN — force the entire opened popup surface to follow the active theme.
+   Streamlit/BaseWeb renders this menu in a portal outside the sidebar, so target
+   every relevant popup/listbox layer rather than relying on the sidebar scope. */
 html body div[data-baseweb="popover"],
 html body div[data-baseweb="popover"] > div,
 html body div[data-baseweb="popover"] > div > div,
+html body div[data-baseweb="popover"] > div > div > div,
 html body div[data-baseweb="menu"],
 html body div[data-baseweb="menu"] > div,
 html body div[data-baseweb="menu"] > div > div,
+html body div[data-baseweb="menu"] > ul,
 html body ul[role="listbox"],
 html body div[role="listbox"],
 html body div[role="listbox"] > div,
-html body div[role="listbox"] > ul {
+html body div[role="listbox"] > ul,
+html body div[role="listbox"] > div > div {
   background:var(--sh-menu)!important;
   background-color:var(--sh-menu)!important;
   color:var(--sh-text)!important;
   color-scheme:var(--sh-scheme)!important;
+}
+
+/* BaseWeb option rows can paint their own white surface over the menu. */
+html body div[data-baseweb="menu"] [role="option"],
+html body ul[role="listbox"] [role="option"],
+html body div[role="listbox"] [role="option"] {
+  background:var(--sh-menu)!important;
+  background-color:var(--sh-menu)!important;
+  color:var(--sh-text)!important;
+}
+
+html body div[data-baseweb="menu"] [role="option"]:hover,
+html body ul[role="listbox"] [role="option"]:hover,
+html body div[role="listbox"] [role="option"]:hover,
+html body div[data-baseweb="menu"] [role="option"][aria-selected="true"],
+html body ul[role="listbox"] [role="option"][aria-selected="true"],
+html body div[role="listbox"] [role="option"][aria-selected="true"] {
+  background:var(--sh-menu-hover)!important;
+  background-color:var(--sh-menu-hover)!important;
+  color:var(--sh-text)!important;
 }
 
 /* FINAL SELECTBOX OUTER CONTROL — outer box only. Inner content and dropdown stay native. */
