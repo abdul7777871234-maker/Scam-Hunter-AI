@@ -446,15 +446,6 @@ stat_strip(
     ]
 )
 
-# Example prompts are shown only before the first chat message.
-if not S.messages:
-    from ui.components import example_prompts
-    example = example_prompts()
-    if example:
-        S.pending_prompt = example
-        st.rerun()
-
-
 if not router.has_any_provider:
     st.warning(
         "**Instant Scan is active — no AI API key configured.** "
