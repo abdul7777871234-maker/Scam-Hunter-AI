@@ -125,15 +125,15 @@ div.stButton>button p{color:inherit!important;}
 [data-testid="stChatMessage"] p,[data-testid="stChatMessage"] li{color:var(--sh-text)!important;}
 
 /* HERO */
-.hero{border:1px solid var(--sh-border);border-radius:24px;padding:42px 30px;text-align:center;
+.hero{border:1px solid var(--sh-border);border-radius:24px;padding:28px 24px;text-align:center;
   background:linear-gradient(145deg,var(--sh-panel),@@ACCENT@@0D);box-shadow:0 20px 60px rgba(0,0,0,.08);}
-.hero-logo{width:66px;height:66px;margin:0 auto;display:flex;align-items:center;justify-content:center;
-  border:1px solid var(--sh-accent);border-radius:20px;font-size:30px;line-height:1;box-shadow:0 0 28px @@ACCENT@@44;}
-.hero-title{margin-top:18px;font-size:44px;line-height:1.02;font-weight:800;letter-spacing:-2px;color:var(--sh-text)!important;}
+.hero-logo{width:54px;height:54px;margin:0 auto;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--sh-accent);border-radius:20px;font-size:25px;line-height:1;box-shadow:0 0 28px @@ACCENT@@44;}
+.hero-title{margin-top:12px;font-size:38px;line-height:1.02;font-weight:800;letter-spacing:-2px;color:var(--sh-text)!important;}
 .hero-title span{color:var(--sh-accent)!important;}
-.hero-description{max-width:760px;margin:12px auto 0;color:var(--sh-muted)!important;font-size:16px;line-height:1.6;}
-.hero-badge{display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:8px 14px;border:1px solid var(--sh-accent);
-  border-radius:999px;color:var(--sh-accent)!important;font-size:12px;font-weight:700;background:@@ACCENT@@0F;}
+.hero-description{max-width:760px;margin:9px auto 0;color:var(--sh-muted)!important;font-size:14px;line-height:1.45;}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;margin-top:11px;padding:6px 12px;border:1px solid var(--sh-accent);
+  border-radius:999px;color:var(--sh-accent)!important;font-size:11px;font-weight:700;background:@@ACCENT@@0F;}
 
 /* SOURCE CARDS */
 .source-card,.source{border:1px solid var(--sh-border);border-left:3px solid var(--sh-accent);border-radius:12px;
@@ -637,6 +637,33 @@ html body div[data-baseweb="popover"] [role="option"][aria-selected="true"] * {
   -webkit-text-fill-color:@@ACCENT@@!important;
 }
 
+/* FINAL SIDEBAR SELECT CALIBRATION */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] [role="button"] {
+  background:@@SELECT_BG@@!important;
+  background-color:@@SELECT_BG@@!important;
+  background-image:none!important;
+  color:@@SELECT_TEXT@@!important;
+  -webkit-text-fill-color:@@SELECT_TEXT@@!important;
+  border-color:@@SELECT_BORDER@@!important;
+  box-shadow:none!important;
+  color-scheme:@@SCHEME@@!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] span,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] input,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] [role="button"] * {
+  background:transparent!important;
+  background-color:transparent!important;
+  color:@@SELECT_TEXT@@!important;
+  -webkit-text-fill-color:@@SELECT_TEXT@@!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] div[data-baseweb="select"] svg {
+  background:transparent!important;
+  color:@@SELECT_ARROW@@!important;
+  fill:@@SELECT_ARROW@@!important;
+}
 </style>
 """
 
