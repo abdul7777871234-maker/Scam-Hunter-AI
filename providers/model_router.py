@@ -39,7 +39,12 @@ class ModelRouter:
         return self.gemini.describe_image(image_bytes=image_bytes,mime_type=mime_type,prompt=prompt)
 
     @staticmethod
-    def _safe_error(exc:Exception)->str:
-        msg=str(exc).strip() or exc.__class__.__name__
-        if any(x in msg for x in ("gsk_","AIza","sk-","Bearer ")): return f"{exc.__class__.__name__}: provider authentication/request error"
-        return msg[:500]+("..." if len(msg)>500 else "")
+    def _safe_error(exc: Exception) -> str:
+        msg = str(exc).lower()
+        if any(x in msg for x in ("api key", "authorization", "authentication", "401", "403")):
+            return "provider authentication error"
+        if "429" in msg or "quota" in msg or "resource_exhausted" in msg:
+            return "provider rate limit or quota error"
+        if "timeout" in msg or "timed out" in msg:
+            return "provider timeout"
+        return "provider request error"
