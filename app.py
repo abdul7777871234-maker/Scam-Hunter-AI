@@ -332,6 +332,32 @@ def offline_answer(scan: dict) -> tuple[str, dict | None]:
 # -------------------------------------------------------------------
 
 
+
+
+def run_normal_chat(text: str) -> str:
+    """Answer ordinary conversation without RAG, web research, or scam agents."""
+    prompt = f"""
+You are ScamHunter AI's normal conversational assistant.
+
+The user is having an ordinary conversation, not asking for a scam investigation.
+Answer naturally and helpfully. Do not invent facts. If the user later provides
+suspicious content, it can be routed to the investigation system separately.
+
+USER:
+{text}
+"""
+    result = router.best_available(
+        prompt,
+        system=(
+            "You are a friendly general-purpose AI assistant inside ScamHunter AI. "
+            "For ordinary conversation, answer normally and do not discuss the investigation pipeline unless asked."
+        ),
+        prefer_gemini=False,
+        temperature=0.4,
+    )
+    return result.text.strip()
+
+
 def run_investigation(text: str, signals: str = "") -> dict:
     """
     Quick Check:
@@ -487,7 +513,7 @@ for position, message in enumerate(S.messages):
 
         st.markdown(message["content"])
 
-        if message["role"] == "assistant":
+        if message["role"] == "assistant" and message.get("type") != "chat":
             render_download(position, message)
 
 # -------------------------------------------------------------------
@@ -572,8 +598,42 @@ if submission:
                 notes: list[str] = []
                 analysis_input = prompt
 
-                # ---- attachments ----
-                if uploaded_files:
+                # ---- automatic intent routing ----
+                # Attachments always go through investigation because they are
+                # explicitly submitted as evidence. Text-only turns are classified
+                # before the investigation UI/pipeline is shown.
+                intent = {"intent": "scam_analysis", "requires_rag": True, "requires_web": False}
+                if not uploaded_files:
+                    intent = orchestrator.detect_intent(prompt)
+
+                if intent.get("intent") == "normal_chat":
+                    try:
+                        answer = run_normal_chat(prompt) if router.has_any_provider else (
+                            "Hello! I’m ScamHunter AI. Add a Groq or Gemini API key to enable normal AI chat."
+                        )
+                    except Exception:
+                        answer = "I could not generate a normal chat response right now. Please try again in a moment."
+
+                    st.markdown(answer)
+                    assistant_message = {
+                        "role": "assistant",
+                        "content": answer,
+                        "type": "chat",
+                        "language": language,
+                        "mode": mode,
+                    }
+                    S.messages.append(assistant_message)
+                    save_chat(uid, S.chat_id, S.messages)
+                    S.last_result = None
+
+                else:
+                    st.info(
+                        "🔎 Potentially suspicious content detected. "
+                        "I’m analyzing it for scam/phishing indicators and supporting evidence."
+                    )
+
+                    # ---- attachments ----
+                    if uploaded_files:
                     with st.spinner("📎 Reading attachments…"):
                         blocks, notes = process_attachments(uploaded_files)
 
@@ -679,14 +739,18 @@ if submission:
 
                 render_download(len(S.messages) - 1, assistant_message)
 
-            S.last_result = {"result": result, "scan": scan}
+                S.last_result = {"result": result, "scan": scan}
+
+            # End scam-analysis branch. Normal chat intentionally skips
+            # risk meter, pipeline, evidence expanders, and PDF reporting.
 
             # ===========================================================
-            # EVIDENCE SECTION
+            # EVIDENCE SECTION — scam investigations only
             # ===========================================================
 
-            st.divider()
-            render_evidence(result, scan)
+            if S.get("last_result"):
+                st.divider()
+                render_evidence(result, scan)
 
 # -------------------------------------------------------------------
 # EVIDENCE OF THE LATEST ANSWER (stays visible after any rerun)
