@@ -1,12 +1,24 @@
 from __future__ import annotations
 
-from config.models import ModelResult
-from config.settings import Settings
-from providers.gemini_provider import GeminiProvider
 from providers.groq_provider import GroqProvider
+from providers.gemini_provider import GeminiProvider
+from config.settings import Settings
+from config.models import ModelResult
 
 
 class ModelRouter:
+    """
+    Provider router with bidirectional fallback.
+
+    Preferred order:
+        Gemini -> Groq
+    or:
+        Groq -> Gemini
+
+    This prevents one provider/network restriction from breaking
+    the entire investigation pipeline.
+    """
+
     def __init__(self, settings: Settings):
         self.settings = settings
 
@@ -51,65 +63,45 @@ class ModelRouter:
         prefer_gemini: bool = False,
     ) -> ModelResult:
 
-        errors = []
+        attempts = []
 
-        # -----------------------------------------
-        # 1. Try Gemini first when requested
-        # -----------------------------------------
-        if prefer_gemini and self.settings.gemini_api_key:
+        if prefer_gemini:
+            providers = [
+                ("gemini", self.gemini_complete),
+                ("groq", self.groq_complete),
+            ]
+        else:
+            providers = [
+                ("groq", self.groq_complete),
+                ("gemini", self.gemini_complete),
+            ]
+
+        for provider_name, provider_call in providers:
             try:
-                return self.gemini_complete(
-                    prompt,
-                    system,
-                )
-            except Exception as exc:
-                errors.append(
-                    f"Gemini failed: {type(exc).__name__}: {exc}"
+                result = provider_call(prompt, system)
+
+                if result and result.text and result.text.strip():
+                    if attempts:
+                        result.fallback_used = True
+
+                    return result
+
+                attempts.append(
+                    f"{provider_name}: empty response"
                 )
 
-        # -----------------------------------------
-        # 2. Try Groq
-        # -----------------------------------------
-        if self.settings.groq_api_key:
-            try:
-                return self.groq_complete(
-                    prompt,
-                    system,
-                )
             except Exception as exc:
-                errors.append(
-                    f"Groq failed: {type(exc).__name__}: {exc}"
+                error = str(exc).strip()
+
+                attempts.append(
+                    f"{provider_name}: {error}"
                 )
 
-        # -----------------------------------------
-        # 3. If Gemini was not preferred,
-        #    try Gemini as final fallback
-        # -----------------------------------------
-        if (
-            not prefer_gemini
-            and self.settings.gemini_api_key
-        ):
-            try:
-                return self.gemini_complete(
-                    prompt,
-                    system,
-                )
-            except Exception as exc:
-                errors.append(
-                    f"Gemini fallback failed: "
-                    f"{type(exc).__name__}: {exc}"
-                )
+                continue
 
-        # -----------------------------------------
-        # 4. Nothing worked
-        # -----------------------------------------
-        if errors:
-            raise RuntimeError(
-                "All configured AI providers failed.\n\n"
-                + "\n".join(errors)
-            )
+        details = " | ".join(attempts)
 
         raise RuntimeError(
-            "No AI provider is configured. "
-            "Please configure GEMINI_API_KEY or GROQ_API_KEY."
+            "All AI providers failed. "
+            f"Attempts: {details}"
         )
