@@ -420,14 +420,23 @@ def apply_theme(dark: bool, accent: str):
 
         /* ================= SELECTBOX HARD OVERRIDE ================= */
 
-        div[data-testid="stSelectbox"] div[data-baseweb="select"],
-        div[data-testid="stSelectbox"] div[data-baseweb="select"] > div,
-        div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div,
-        div[data-testid="stSelectbox"] div[data-baseweb="select"] div[value],
-        div[data-testid="stSelectbox"] [data-baseweb="select"] div {{
+        div[data-testid="stSelectbox"],
+        div[data-testid="stSelectbox"] > div,
+        div[data-testid="stSelectbox"] *,
+        [data-baseweb="select"],
+        [data-baseweb="select"] * {{
             background-color: var(--input-bg) !important;
-            background: var(--input-bg) !important;
+            background-image: none !important;
             color: var(--text) !important;
+        }}
+
+        /* label row should stay transparent */
+        div[data-testid="stSelectbox"] label,
+        div[data-testid="stSelectbox"] label *,
+        div[data-testid="stWidgetLabel"],
+        div[data-testid="stWidgetLabel"] * {{
+            background: transparent !important;
+            background-color: transparent !important;
         }}
 
         div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {{
