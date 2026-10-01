@@ -8,6 +8,7 @@ PAGE_W = 612
 PAGE_H = 792
 MARGIN = 42
 
+WHITE = (1.0, 1.0, 1.0)
 NAVY = WHITE
 PANEL = (0.95, 0.96, 0.98)
 PANEL_2 = (0.985, 0.985, 0.985)
@@ -18,7 +19,6 @@ BLUE = (0.20, 0.42, 1.00)
 GREEN = (0.20, 0.78, 0.45)
 YELLOW = (0.95, 0.68, 0.16)
 RED = (0.95, 0.25, 0.30)
-WHITE = (1.0, 1.0, 1.0)
 
 
 def _esc(text):
@@ -51,7 +51,6 @@ def _line(cmd, x1, y1, x2, y2, color=MUTED, width=0.7):
 
 
 def _rect(cmd, x, y, w, h, fill, stroke=None, width=0.7, radius=False):
-    # Rounded rectangles are intentionally avoided so the PDF stays dependency-free.
     cmd.append(f"{_rgb(fill)} rg {x:.1f} {y:.1f} {w:.1f} {h:.1f} re f")
     if stroke:
         cmd.append(
@@ -117,7 +116,6 @@ def _risk_label(verdict=None, scan=None):
 
 def _draw_header(cmd, generated, mode, language):
     _rect(cmd, 0, PAGE_H - 94, PAGE_W, 94, WHITE)
-    # Shield-style brand mark drawn with simple vector geometry.
     cmd.append(
         f"{_rgb(CYAN)} rg "
         "58 733 m 58 760 l 74 769 l 90 760 l 90 733 "
@@ -156,16 +154,13 @@ def build_report(
     risk = _risk_color(verdict, scan)
     risk_label = _risk_label(verdict, scan)
 
-    content = []
     pages = []
     page = []
 
-    # Page 1: executive report.
     page.append(_text(page, 42, 680, "INVESTIGATION SUMMARY", 9, CYAN, "F2"))
     page.append(_text(page, 42, 650, "ScamHunter AI Investigation Report", 24, TEXT, "F2"))
     page.append(_text(page, 42, 628, "A structured snapshot of the investigation performed by the application.", 9, MUTED))
 
-    # Metadata strip.
     _rect(page, 42, 575, 528, 38, PANEL, (0.13, 0.18, 0.28))
     page.append(_text(page, 56, 590, "GENERATED", 7, MUTED, "F2"))
     page.append(_text(page, 126, 590, generated, 8.5, TEXT))
@@ -174,7 +169,6 @@ def build_report(
     page.append(_text(page, 455, 590, "LANGUAGE", 7, MUTED, "F2"))
     page.append(_text(page, 505, 590, language, 8.5, TEXT))
 
-    # Risk card.
     _rect(page, 42, 485, 528, 68, PANEL_2, risk)
     page.append(_text(page, 58, 529, "ASSESSMENT SIGNAL", 7.5, MUTED, "F2"))
     page.append(_text(page, 58, 506, risk_label, 20, risk, "F2"))
@@ -191,7 +185,6 @@ def build_report(
         category = verdict.get("category") or "Not specified"
         page.append(_text(page, 220, 512, f"Category: {category}", 10, TEXT, "F2"))
 
-    # User content.
     page.append(_text(page, 42, 456, "USER CONTENT", 9, CYAN, "F2"))
     y = 436
     for line in _wrap(question or "(No text provided.)", 91):
@@ -200,7 +193,6 @@ def build_report(
         page.append(_text(page, 42, y, line, 9, TEXT))
         y -= 14
 
-    # AI response.
     y -= 12
     page.append(_text(page, 42, y, "AI INVESTIGATION", 9, CYAN, "F2"))
     y -= 22
@@ -214,7 +206,6 @@ def build_report(
             y -= 13
         y -= 4
 
-    # Sources always get their own continuation area so the report remains readable.
     if sources:
         if y < 190:
             pages.append(page)
@@ -244,7 +235,6 @@ def build_report(
 
     pages.append(page)
 
-    # Instant scan details get a compact final block when space permits.
     if scan and scan.get("flags"):
         page = []
         _build_page(page, len(pages) + 1, 0, generated, mode, language)
@@ -266,7 +256,6 @@ def build_report(
                 y = 680
         pages.append(page)
 
-    # Rebuild page headers/footers now that the final page count is known.
     final_pages = []
     for page_commands in pages:
         final = []
@@ -280,12 +269,9 @@ def build_report(
 def _make_pdf(pages):
     pdf = BytesIO()
     pdf.write(b"%PDF-1.4\n")
-
     objects = []
-
-    # Object 1: catalog, object 2: page tree.
     objects.append(b"<< /Type /Catalog /Pages 2 0 R >>")
-    objects.append(b"")  # Filled after page count is known.
+    objects.append(b"")
 
     page_start = 3
     content_start = page_start + len(pages)
