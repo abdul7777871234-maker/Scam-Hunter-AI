@@ -418,6 +418,33 @@ def apply_theme(dark: bool, accent: str):
         }}
 
 
+        /* ================= SELECTBOX HARD OVERRIDE ================= */
+
+        div[data-testid="stSelectbox"] div[data-baseweb="select"],
+        div[data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+        div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div,
+        div[data-testid="stSelectbox"] div[data-baseweb="select"] div[value],
+        div[data-testid="stSelectbox"] [data-baseweb="select"] div {{
+            background-color: var(--input-bg) !important;
+            background: var(--input-bg) !important;
+            color: var(--text) !important;
+        }}
+
+        div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {{
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+        }}
+
+        div[data-testid="stSelectbox"] input {{
+            background: transparent !important;
+            color: var(--text) !important;
+            -webkit-text-fill-color: var(--text) !important;
+        }}
+
+        div[data-testid="stSelectbox"] svg {{
+            fill: var(--muted) !important;
+        }}
+
         /* ================= SCROLLBARS ================= */
 
         ::-webkit-scrollbar {{ width: 8px; height: 8px; }}
