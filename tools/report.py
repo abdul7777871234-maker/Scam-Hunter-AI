@@ -116,10 +116,10 @@ def _risk_label(verdict=None, scan=None):
 
 
 def _draw_watermark(cmd):
-    # Large, low-opacity-style vector/text watermark behind the report content.
+    # Subtle centered brand watermark. Kept light enough that report text remains clear.
     cmd.append("q")
-    cmd.append("0.11 0.14 0.22 rg")
-    cmd.append("BT /F2 54 Tf 0.35 Tc 0 1 -1 0 250 300 Tm (SCAMHUNTER AI) Tj ET")
+    cmd.append("0.075 0.105 0.17 rg")
+    cmd.append("BT /F2 46 Tf 0.8 Tc 0.98 0.17 -0.17 0.98 178 365 Tm (SCAMHUNTER AI) Tj ET")
     cmd.append("Q")
 
 
@@ -219,7 +219,6 @@ def build_report(
                 pages.append(page)
                 page = []
                 y = 680
-                _build_page(page, len(pages) + 1, 0, generated, mode, language)
             page.append(_text(page, 42, y, line, 8.8, TEXT))
             y -= 13
         y -= 4
@@ -230,8 +229,7 @@ def build_report(
             pages.append(page)
             page = []
             y = 680
-            _build_page(page, len(pages) + 1, 0, generated, mode, language)
-        page.append(_text(page, 42, y, "EVIDENCE & SOURCES", 9, CYAN, "F2"))
+            page.append(_text(page, 42, y, "EVIDENCE & SOURCES", 9, CYAN, "F2"))
         y -= 20
         for index, source in enumerate(sources, 1):
             source_lines = _source_lines(source)
@@ -240,7 +238,6 @@ def build_report(
                 pages.append(page)
                 page = []
                 y = 680
-                _build_page(page, len(pages) + 1, 0, generated, mode, language)
             page.append(_text(page, 42, y, f"{index:02d}", 8, CYAN, "F2"))
             page.append(_text(page, 70, y, title[:78], 8.5, TEXT, "F2"))
             y -= 13
@@ -250,8 +247,7 @@ def build_report(
                         pages.append(page)
                         page = []
                         y = 680
-                        _build_page(page, len(pages) + 1, 0, generated, mode, language)
-                    page.append(_text(page, 70, y, line, 7.3, MUTED))
+                            page.append(_text(page, 70, y, line, 7.3, MUTED))
                     y -= 11
             y -= 7
 
@@ -276,7 +272,6 @@ def build_report(
             if y < 75:
                 pages.append(page)
                 page = []
-                _build_page(page, len(pages) + 1, 0, generated, mode, language)
                 y = 680
         pages.append(page)
 
