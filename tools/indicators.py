@@ -1,31 +1,33 @@
 from __future__ import annotations
-
 import re
 from urllib.parse import urlparse
 
-URGENT_PATTERNS=[r"\burgent\b",r"\bimmediately\b",r"\bact now\b",r"\baction required\b",r"\blast chance\b",r"\bexpires?\b",r"\bwithin\s+\d+\s+(?:minutes?|hours?|days?)\b"]
-PAYMENT_PATTERNS=[r"\bpay\b",r"\bpayment\b",r"\btransfer\b",r"\bbank transfer\b",r"\bwire transfer\b",r"\bgift card\b",r"\bbitcoin\b",r"\bcrypto(?:currency)?\b",r"\busdt\b",r"\bdeposit\b",r"\bfee\b"]
-CREDENTIAL_PATTERNS=[r"\bpassword\b",r"\bpasscode\b",r"\botp\b",r"\bone[- ]time password\b",r"\bverification code\b",r"\bsecurity code\b",r"\bpin\b",r"\blogin\b",r"\busername\b"]
-PERSONAL_PATTERNS=[r"\bcnic\b",r"\bpassport\b",r"\bid card\b",r"\bdate of birth\b",r"\baccount number\b",r"\bcard number\b",r"\bcredit card\b",r"\bdebit card\b"]
-THREAT_PATTERNS=[r"\barrest\b",r"\bpolice\b",r"\blawsuit\b",r"\blegal action\b",r"\byou will be arrested\b",r"\baccount.{0,30}\b(?:suspend|suspended|blocked|close|closed|terminate)\b"]
-REWARD_PATTERNS=[r"\bwon\b",r"\bwinner\b",r"\bprize\b",r"\breward\b",r"\blottery\b",r"\bgiveaway\b",r"\bfree money\b",r"\bcongratulations\b"]
-CONTACT_PATTERNS=[r"\bwhatsapp\b",r"\btelegram\b",r"\bsignal\b",r"\bcontact me\b",r"\bmessage me\b",r"\bcall this number\b"]
+PATTERNS = {
+    "urgency": [r"\burgent\b", r"\bimmediately\b", r"\bact now\b", r"\blimited slots?\b", r"\bexpires?\b", r"\blast chance\b", r"\bcontact.{0,20}\bnow\b"],
+    "payment": [r"\bpay\b", r"\bpayment\b", r"\btransfer\b", r"\bdeposit\b", r"\bfee\b", r"\bwire transfer\b", r"\bgift card\b", r"\bpersonal account\b", r"\bcrypto(?:currency)?\b", r"\busdt\b"],
+    "credentials": [r"\bpassword\b", r"\bpasscode\b", r"\botp\b", r"\bverification code\b", r"\bsecurity code\b", r"\bpin\b", r"\blogin\b", r"\busername\b"],
+    "personal": [r"\bcnic\b", r"\bpassport\b", r"\bid card\b", r"\bdate of birth\b", r"\baccount number\b", r"\bcard number\b", r"\bcredit card\b", r"\bdebit card\b"],
+    "threat": [r"\barrest\b", r"\bpolice\b", r"\blawsuit\b", r"\blegal action\b", r"\baccount.{0,30}\b(?:suspend|suspended|blocked|terminate)\b"],
+    "reward": [r"\bwon\b", r"\bwinner\b", r"\bprize\b", r"\breward\b", r"\blottery\b", r"\bgiveaway\b", r"\bfree money\b", r"\bcongratulations\b"],
+    "investment": [r"\binvest(?:ment|ing)?\b", r"\btrading system\b", r"\bai trading\b", r"\bprofit(?:s)?\b", r"\breturns?\b", r"\b20\s*%\b", r"\bguarantee(?:d)?\b", r"\bzero[- ]risk\b", r"\bno risk\b"],
+    "external_contact": [r"\bwhatsapp\b", r"\btelegram\b", r"\bsignal\b", r"\bcontact me\b", r"\bmessage me\b"],
+}
 URL_PATTERN=re.compile(r"(https?://[^\s<>\"]+|www\.[^\s<>\"]+)",re.I)
 
-def _count(text,patterns):
-    return sum(len(re.findall(p,text,re.I)) for p in patterns)
+def _count(text, key):
+    return sum(len(re.findall(p,text,re.I)) for p in PATTERNS[key])
 
 def _urls(text):
     return [x.rstrip(".,!?;:)]}") for x in URL_PATTERN.findall(text)]
 
 def _url_flags(url):
     flags=[]
-    candidate=url if not url.lower().startswith("www.") else "https://"+url
+    candidate=url if url.lower().startswith(("http://","https://")) else "https://"+url
     try:
-        p=urlparse(candidate); host=(p.hostname or "").lower()
+        host=(urlparse(candidate).hostname or "").lower()
         if not host: flags.append("URL has no recognizable hostname.")
-        if any(x in host for x in ("verify","secure","account","login","support","claim","reward","wallet")):
-            flags.append("Hostname contains a security/account/reward-related keyword.")
+        if any(x in host for x in ("verify","secure","account","login","claim","reward","wallet")):
+            flags.append("Hostname contains an account, verification, reward, or wallet keyword.")
         if len(host.split("."))>4: flags.append("Unusually deep hostname.")
     except Exception:
         flags.append("URL could not be parsed normally.")
@@ -38,23 +40,43 @@ def scan_text(text):
     text=str(text or "").strip()
     if not text:
         return {"level":"none","score":0,"headline":"No content was provided.","flags":[],"urls":[],"categories":[]}
-    urgent=_count(text,URGENT_PATTERNS); payment=_count(text,PAYMENT_PATTERNS); credentials=_count(text,CREDENTIAL_PATTERNS)
-    personal=_count(text,PERSONAL_PATTERNS); threats=_count(text,THREAT_PATTERNS); rewards=_count(text,REWARD_PATTERNS)
-    contact=_count(text,CONTACT_PATTERNS); urls=_urls(text)
+    counts={k:_count(text,k) for k in PATTERNS}
+    urls=_urls(text)
     flags=[]; categories=[]
-    if urgent: flags.append(_flag("Urgency or pressure","Do not act immediately. Verify the request independently first.","medium",urgent)); categories.append("Urgency")
-    if payment: flags.append(_flag("Money or payment request","Do not transfer money until the recipient and request are independently verified.","high",payment)); categories.append("Payment")
-    if credentials: flags.append(_flag("Credential or verification request","Never share passwords, OTPs, PINs, or verification codes with an unverified contact.","high",credentials)); categories.append("Credential theft")
-    if personal: flags.append(_flag("Sensitive personal information","Verify why the information is required and use an official channel.","high",personal)); categories.append("Identity information")
-    if threats: flags.append(_flag("Threat or consequence language","Verify the claim through the organization's official contact information.","high",threats)); categories.append("Threat")
-    if rewards: flags.append(_flag("Unexpected prize or reward","Do not pay a fee or provide sensitive information to claim an unexpected reward.","medium",rewards)); categories.append("Reward")
-    if contact: flags.append(_flag("External messaging request","Verify the sender before moving the conversation to another messaging platform.","low",contact))
+    def add(key,label,advice,severity,category=None):
+        n=counts[key]
+        if n:
+            flags.append(_flag(label,advice,severity,n))
+            if category: categories.append(category)
+    add("urgency","Urgency or pressure","Do not act immediately. Verify the request independently first.","medium","Urgency")
+    add("payment","Money or payment request","Do not transfer money until the recipient and request are independently verified.","high","Payment")
+    add("credentials","Credential or verification request","Never share passwords, OTPs, PINs, or verification codes with an unverified contact.","high","Credential theft")
+    add("personal","Sensitive personal information","Verify why the information is required and use an official channel.","high","Identity information")
+    add("threat","Threat or consequence language","Verify the claim through the organization's official contact information.","high","Threat")
+    add("reward","Unexpected prize or reward","Do not pay a fee or provide sensitive information to claim an unexpected reward.","medium","Reward")
+    add("investment","Investment or guaranteed-return language","Do not send funds based on guaranteed returns or zero-risk claims. Verify licensing and the firm independently.","high","Investment")
+    add("external_contact","External messaging request","Verify the sender before moving the conversation to another messaging platform.","low","External contact")
+    if urls:
+        flags.append(_flag("Link detected","Inspect and independently verify the destination before opening it.","medium",len(urls)))
+        categories.append("Link")
     url_items=[{"url":u,"flags":_url_flags(u)} for u in urls]
-    if urls: flags.append(_flag("Link detected","Inspect and independently verify the destination before opening it.","medium",len(urls))); categories.append("Link")
-    score=min(100,min(urgent*8,20)+min(payment*12,30)+min(credentials*18,35)+min(personal*14,25)+min(threats*16,30)+min(rewards*8,20)+min(len(urls)*8,20))
+
+    score=0
+    score += min(counts["urgency"]*8,20)
+    score += min(counts["payment"]*12,30)
+    score += min(counts["credentials"]*18,35)
+    score += min(counts["personal"]*14,25)
+    score += min(counts["threat"]*16,30)
+    score += min(counts["reward"]*10,25)
+    score += min(counts["investment"]*14,40)
+    score += min(counts["external_contact"]*4,8)
+    score += min(len(urls)*8,20)
+    score=min(score,100)
+
     if score>=60: level,headline="high","Multiple strong warning signals were detected."
-    elif score>=25: level,headline="medium","Some warning signals were detected."
-    else: level,headline=("low","A small number of warning signals were detected.") if flags else ("none","No automatic warning signals were detected.")
+    elif score>=30: level,headline="medium","Several warning signals were detected."
+    elif score>=10: level,headline="low","A small number of warning signals were detected."
+    else: level,headline="none","No automatic warning signals were detected."
     return {"level":level,"score":score,"headline":headline,"flags":flags,"urls":url_items,"categories":list(dict.fromkeys(categories))}
 
 def format_signals(scan):
