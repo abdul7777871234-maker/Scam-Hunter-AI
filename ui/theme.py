@@ -1119,6 +1119,39 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [d
   display:none!important;
 }
 
+/* Final sidebar selectbox surface lock — prevent Streamlit white wrappers. */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div {
+  background:var(--sh-select-bg)!important;
+  background-color:var(--sh-select-bg)!important;
+  background-image:none!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] {
+  border:1px solid var(--sh-select-border)!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div {
+  border:0!important;
+  box-shadow:none!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"] * {
+  background:transparent!important;
+  background-color:transparent!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within {
+  border-color:var(--sh-select-border)!important;
+  box-shadow:0 0 0 1px var(--sh-select-border)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:hover {
+  border-color:@@ACCENT@@70!important;
+}
+
 /* Risk meter — green / yellow / orange / red */
 .risk-meter-card {
   --risk:#22C55E;
