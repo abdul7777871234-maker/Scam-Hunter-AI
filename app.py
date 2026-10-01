@@ -25,7 +25,7 @@ from tools.indicators import format_signals, scan_text
 from tools.report import build_report
 from agents.orchestrator import InvestigationOrchestrator
 from ui.theme import apply_theme
-from ui.sidebar import render as render_sidebar, render_footer
+from ui.sidebar import render as render_sidebar, render_footer, render_provider_status
 from ui.components import (
     hero,
     stat_strip,
@@ -125,6 +125,7 @@ def get_runtime():
 
 
 settings, kb, router, retriever, web, orchestrator = get_runtime()
+render_provider_status(bool(settings.groq_api_key), bool(settings.gemini_api_key))
 
 # -------------------------------------------------------------------
 # KNOWLEDGE BASE STATUS
@@ -444,6 +445,24 @@ stat_strip(
     ]
 )
 
+# Example prompts are shown only before the first chat message.
+if not S.messages:
+    from ui.components import example_prompts
+    example = example_prompts()
+    if example:
+        S.pending_prompt = example
+        st.rerun()
+
+
+if not router.has_any_provider:
+    st.warning(
+        "**Instant Scan is active — no AI API key configured.** "
+        "Links, phone numbers, wallet addresses and red-flag phrases can still be detected. "
+        "The 0–100 score is a heuristic hint, not proof of fraud. Add a Groq or Gemini key for AI investigation.",
+        icon="⚠️",
+    )
+
+
 # -------------------------------------------------------------------
 # CHAT HISTORY
 # -------------------------------------------------------------------
@@ -550,8 +569,7 @@ if submission:
                     scan = scan_text(analysis_input)
 
             # ---- instant scan (works without any API key) ----
-            if scan.get("level") != "none":
-                risk_meter(scan)
+            risk_meter(scan)
 
             for note in notes:
                 st.caption(f"⚠️ {note}")
@@ -630,7 +648,7 @@ if submission:
                 st.caption(f"⏱ {elapsed:.1f}s · {mode}")
 
             # ---- save assistant message ----
-            assistant_message = {"role": "assistant", "content": answer}
+            assistant_message = {"role": "assistant", "content": answer, "language": language, "mode": mode}
 
             if verdict:
                 assistant_message["verdict"] = verdict
