@@ -41,6 +41,24 @@ from ui.history_store import new_id, valid_uid, load_chats, save_chat
 # -------------------------------------------------------------------
 
 st.set_page_config(
+
+st.markdown("""
+<style>
+    /* Fix white box on selectbox arrow and border */
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="select"] [role="button"],
+    div[data-baseweb="select"] [data-aria-hidden="true"],
+    div[data-baseweb="select"] div {
+        background-color: #0F172A !important;
+        border-color: #334155 !important;
+        color: #FFFFFF !important;
+    }
+    div[data-baseweb="select"] svg {
+        fill: #F8FAFC !important;
+        background-color: transparent !important;
+    }
+</style>
+""", unsafe_allow_html=True)
     page_title="ScamHunter AI",
     page_icon="🛡️",
     layout="wide",
