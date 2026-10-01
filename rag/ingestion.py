@@ -1,19 +1,34 @@
 from __future__ import annotations
 
-from pathlib import Path
 import hashlib
 import json
+from pathlib import Path
 
-from rag.extraction import extract_document, clean_text
 from rag.chunking import chunk_text
 from rag.embeddings import Embedder
+from rag.extraction import clean_text, extract_document
 from rag.vector_store import VectorStore
 
 
-SUPPORTED = {".pdf", ".docx", ".txt", ".md"}
+SUPPORTED = {
+    ".pdf",
+    ".docx",
+    ".txt",
+    ".md",
+}
 
 
 class KnowledgeBase:
+    """
+    Incremental local knowledge base.
+
+    Documents are hashed so unchanged documents are not re-chunked
+    or re-embedded.
+
+    FAISS stores vectors while all citation metadata is retained
+    alongside each vector.
+    """
+
     def __init__(self, settings):
         self.settings = settings
 
@@ -25,58 +40,143 @@ class KnowledgeBase:
         self.chunks_path = settings.data_dir / "all_chunks.json"
         self.metadata_path = settings.data_dir / "metadata.json"
 
-        self.doc_dir.mkdir(parents=True, exist_ok=True)
-        self.chunk_dir.mkdir(parents=True, exist_ok=True)
+        self.doc_dir.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
 
-        self.manifest = self._load_manifest()
-        self.all_chunks = self._load_chunks()
+        self.chunk_dir.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        self.faiss_dir.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        self.manifest = self._load_json(
+            self.manifest_path,
+            {},
+        )
+
+        self.all_chunks = self._load_json(
+            self.chunks_path,
+            [],
+        )
+
+        if not isinstance(self.manifest, dict):
+            self.manifest = {}
+
+        if not isinstance(self.all_chunks, list):
+            self.all_chunks = []
 
         self.embedder = None
-        self.store = VectorStore(self.faiss_dir)
+        self.store = VectorStore(
+            self.faiss_dir
+        )
 
-    def _load_manifest(self):
-        if self.manifest_path.exists():
-            try:
-                return json.loads(
-                    self.manifest_path.read_text(encoding="utf-8")
-                )
-            except Exception:
-                return {}
-        return {}
+    # ---------------------------------------------------------
+    # LOAD / SAVE
+    # ---------------------------------------------------------
 
-    def _load_chunks(self):
-        if self.chunks_path.exists():
-            try:
-                return json.loads(
-                    self.chunks_path.read_text(encoding="utf-8")
+    @staticmethod
+    def _load_json(path: Path, default):
+        if not path.exists():
+            return default
+
+        try:
+            return json.loads(
+                path.read_text(
+                    encoding="utf-8"
                 )
-            except Exception:
-                return []
-        return []
+            )
+        except Exception:
+            return default
+
+    @staticmethod
+    def _write_json(
+        path: Path,
+        value,
+    ) -> None:
+        path.write_text(
+            json.dumps(
+                value,
+                indent=2,
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+    # ---------------------------------------------------------
+    # HASHING
+    # ---------------------------------------------------------
 
     @staticmethod
     def sha256(path: Path) -> str:
-        h = hashlib.sha256()
+        digest = hashlib.sha256()
 
-        with path.open("rb") as f:
-            for block in iter(lambda: f.read(1024 * 1024), b""):
-                h.update(block)
+        with path.open("rb") as file:
+            for block in iter(
+                lambda: file.read(1024 * 1024),
+                b"",
+            ):
+                digest.update(block)
 
-        return h.hexdigest()
+        return digest.hexdigest()
 
-    def _all_source_files(self):
-        return [
-            p
-            for p in self.doc_dir.rglob("*")
-            if p.is_file() and p.suffix.lower() in SUPPORTED
-        ]
+    # ---------------------------------------------------------
+    # SOURCE FILES
+    # ---------------------------------------------------------
 
-    def _chunks_for_file(self, path: Path, digest: str) -> list[dict]:
+    def _all_source_files(self) -> list[Path]:
+        return sorted(
+            (
+                path
+                for path in self.doc_dir.rglob("*")
+                if path.is_file()
+                and path.suffix.lower() in SUPPORTED
+            ),
+            key=lambda path: str(path).lower(),
+        )
+
+    # ---------------------------------------------------------
+    # CHUNKING
+    # ---------------------------------------------------------
+
+    def _chunks_for_file(
+        self,
+        path: Path,
+        digest: str,
+    ) -> list[dict]:
+
         doc_id = digest[:16]
-        chunks = []
+        chunks: list[dict] = []
 
-        for page in extract_document(path):
-            cleaned = clean_text(page["text"])
+        pages = extract_document(path)
+
+        for page in pages:
+            raw_text = page.get(
+                "text",
+                "",
+            )
+
+            cleaned = clean_text(
+                raw_text
+            )
+
+            if not cleaned:
+                continue
+
+            page_number = page.get(
+                "page",
+                1,
+            )
+
+            section = page.get(
+                "section",
+                "",
+            )
 
             page_chunks = chunk_text(
                 cleaned,
@@ -84,119 +184,239 @@ class KnowledgeBase:
                 self.settings.chunk_overlap,
             )
 
-            for n, chunk in enumerate(page_chunks):
+            for number, chunk in enumerate(
+                page_chunks
+            ):
+                chunk = chunk.strip()
+
+                if not chunk:
+                    continue
+
                 chunks.append(
                     {
                         "document_id": doc_id,
                         "filename": path.name,
                         "file_type": path.suffix.lower(),
                         "source_type": "knowledge_base",
-                        "page": page.get("page", 1),
-                        "section": page.get("section", ""),
-                        "chunk_id": f"{doc_id}-{n:04d}",
+                        "page": page_number,
+                        "section": section,
+                        "chunk_id": (
+                            f"{doc_id}-{number:04d}"
+                        ),
                         "text": chunk,
                     }
                 )
 
         return chunks
 
-    def _write_metadata(self, embedding_dimension: int | None = None):
+    # ---------------------------------------------------------
+    # METADATA
+    # ---------------------------------------------------------
+
+    def _write_metadata(
+        self,
+        embedding_dimension: int | None = None,
+    ) -> None:
+
         metadata = []
 
-        for index, chunk in enumerate(self.all_chunks):
+        for index, chunk in enumerate(
+            self.all_chunks
+        ):
             metadata.append(
                 {
                     "faiss_index": index,
-                    "document_id": chunk.get("document_id"),
-                    "filename": chunk.get("filename"),
-                    "file_type": chunk.get("file_type"),
-                    "source_type": chunk.get("source_type"),
-                    "page": chunk.get("page"),
-                    "section": chunk.get("section"),
-                    "chunk_id": chunk.get("chunk_id"),
-                    "embedding_model": self.settings.embedding_model,
-                    "embedding_dimension": embedding_dimension,
+                    "document_id": chunk.get(
+                        "document_id"
+                    ),
+                    "filename": chunk.get(
+                        "filename"
+                    ),
+                    "file_type": chunk.get(
+                        "file_type"
+                    ),
+                    "source_type": chunk.get(
+                        "source_type"
+                    ),
+                    "page": chunk.get(
+                        "page"
+                    ),
+                    "section": chunk.get(
+                        "section",
+                        "",
+                    ),
+                    "chunk_id": chunk.get(
+                        "chunk_id"
+                    ),
+                    "embedding_model": (
+                        self.settings.embedding_model
+                    ),
+                    "embedding_dimension": (
+                        embedding_dimension
+                    ),
                 }
             )
 
         payload = {
-            "version": 1,
-            "embedding_model": self.settings.embedding_model,
-            "embedding_dimension": embedding_dimension,
-            "total_documents": len(self.manifest),
-            "total_chunks": len(self.all_chunks),
+            "version": 2,
+            "embedding_model": (
+                self.settings.embedding_model
+            ),
+            "embedding_dimension": (
+                embedding_dimension
+            ),
+            "total_documents": len(
+                self.manifest
+            ),
+            "total_chunks": len(
+                self.all_chunks
+            ),
             "vector_index": "FAISS IndexFlatIP",
             "chunks": metadata,
         }
 
-        self.metadata_path.write_text(
-            json.dumps(
-                payload,
-                indent=2,
-                ensure_ascii=False,
-            ),
-            encoding="utf-8",
+        self._write_json(
+            self.metadata_path,
+            payload,
         )
+
+    # ---------------------------------------------------------
+    # BUILD / INCREMENTAL UPDATE
+    # ---------------------------------------------------------
 
     def build(self) -> dict:
         files = self._all_source_files()
 
-        current = {}
-        changed = []
-        removed_ids = set()
+        current: dict = {}
+        changed: list = []
+        removed_ids: set[str] = set()
+
+        # ---------------------------------------------
+        # Detect current files and changed documents
+        # ---------------------------------------------
 
         for path in files:
-            rel = str(path.relative_to(self.doc_dir))
+            relative_path = str(
+                path.relative_to(
+                    self.doc_dir
+                )
+            )
+
             digest = self.sha256(path)
             doc_id = digest[:16]
 
-            current[rel] = {
+            current[relative_path] = {
                 "sha256": digest,
                 "document_id": doc_id,
                 "filename": path.name,
             }
 
-            old = self.manifest.get(rel)
+            old = self.manifest.get(
+                relative_path
+            )
 
-            if not old or old.get("sha256") != digest:
+            if (
+                not old
+                or old.get("sha256") != digest
+            ):
                 changed.append(
-                    (rel, path, digest, doc_id)
+                    (
+                        relative_path,
+                        path,
+                        digest,
+                        doc_id,
+                    )
                 )
 
-        for rel, old in self.manifest.items():
-            if rel not in current:
-                removed_ids.add(old.get("document_id"))
+        # ---------------------------------------------
+        # Detect removed files
+        # ---------------------------------------------
+
+        for relative_path, old in (
+            self.manifest.items()
+        ):
+            if relative_path not in current:
+                old_id = old.get(
+                    "document_id"
+                )
+
+                if old_id:
+                    removed_ids.add(
+                        old_id
+                    )
+
+        # ---------------------------------------------
+        # Remove old chunks for changed/removed docs
+        # ---------------------------------------------
 
         old_changed_ids = {
-            self.manifest[rel]["document_id"]
-            for rel, _, _, _ in changed
-            if rel in self.manifest
+            self.manifest[relative_path][
+                "document_id"
+            ]
+            for relative_path, _, _, _ in changed
+            if relative_path in self.manifest
+            and self.manifest[
+                relative_path
+            ].get("document_id")
         }
 
-        drop_ids = removed_ids | old_changed_ids
+        drop_ids = (
+            removed_ids
+            | old_changed_ids
+        )
 
         if drop_ids:
             self.all_chunks = [
                 chunk
                 for chunk in self.all_chunks
-                if chunk.get("document_id") not in drop_ids
+                if chunk.get(
+                    "document_id"
+                ) not in drop_ids
             ]
 
-        added_chunks = []
+        # ---------------------------------------------
+        # Create chunks for changed docs
+        # ---------------------------------------------
+
+        added_chunks: list[dict] = []
 
         for _, path, digest, _ in changed:
             added_chunks.extend(
-                self._chunks_for_file(path, digest)
+                self._chunks_for_file(
+                    path,
+                    digest,
+                )
             )
 
-        self.all_chunks.extend(added_chunks)
+        self.all_chunks.extend(
+            added_chunks
+        )
+
+        # ---------------------------------------------
+        # Rebuild vector index when required
+        # ---------------------------------------------
+
+        must_rebuild = bool(
+            changed
+            or removed_ids
+            or (
+                self.all_chunks
+                and self.store.count == 0
+            )
+        )
 
         embedding_dimension = None
 
-        if changed or removed_ids or not self.store.count:
+        if must_rebuild:
             texts = [
-                chunk["text"]
+                chunk.get("text", "")
                 for chunk in self.all_chunks
+            ]
+
+            texts = [
+                text
+                for text in texts
+                if text.strip()
             ]
 
             if texts:
@@ -205,9 +425,13 @@ class KnowledgeBase:
                         self.settings.embedding_model
                     )
 
-                vectors = self.embedder.encode(texts)
+                vectors = self.embedder.encode(
+                    texts
+                )
 
-                embedding_dimension = int(vectors.shape[1])
+                embedding_dimension = int(
+                    vectors.shape[1]
+                )
 
                 self.store.replace(
                     vectors,
@@ -215,71 +439,136 @@ class KnowledgeBase:
                 )
 
             else:
-                self.store.index = None
-                self.store.metadata = []
+                self._clear_vector_store()
 
-                if self.store.index_path.exists():
-                    self.store.index_path.unlink()
-
-                self.store.meta_path.write_text(
-                    "[]",
-                    encoding="utf-8",
+        elif self.store.count:
+            try:
+                embedding_dimension = int(
+                    self.store.index.d
                 )
+            except Exception:
+                embedding_dimension = None
 
-        else:
-            if self.all_chunks:
-                embedding_dimension = len(
-                    self.all_chunks[0].get(
-                        "embedding_dimension",
-                        []
-                    )
-                ) or None
+        # ---------------------------------------------
+        # Persist current state
+        # ---------------------------------------------
 
         self.manifest = current
 
-        self.manifest_path.write_text(
-            json.dumps(
-                current,
-                indent=2,
-                ensure_ascii=False,
-            ),
-            encoding="utf-8",
+        self._write_json(
+            self.manifest_path,
+            self.manifest,
         )
 
-        self.chunks_path.write_text(
-            json.dumps(
-                self.all_chunks,
-                indent=2,
-                ensure_ascii=False,
-            ),
-            encoding="utf-8",
+        self._write_json(
+            self.chunks_path,
+            self.all_chunks,
         )
 
         self._write_metadata(
-            embedding_dimension=embedding_dimension
+            embedding_dimension
         )
 
         return {
             "documents": len(files),
-            "chunks": len(self.all_chunks),
-            "vectors": len(self.all_chunks),
-            "changed_documents": len(changed),
-            "removed_documents": len(removed_ids),
-            "reembedded": bool(
-                changed
-                or removed_ids
-                or not self.store.count
+            "chunks": len(
+                self.all_chunks
             ),
-            "metadata_file": str(self.metadata_path),
+            "vectors": len(
+                self.all_chunks
+            ),
+            "changed_documents": len(
+                changed
+            ),
+            "removed_documents": len(
+                removed_ids
+            ),
+            "reembedded": must_rebuild,
+            "metadata_file": str(
+                self.metadata_path
+            ),
         }
 
-    def add_upload(self, source_path: str | Path) -> Path:
-        source_path = Path(source_path)
+    # ---------------------------------------------------------
+    # UPLOADS
+    # ---------------------------------------------------------
 
-        target = self.doc_dir / source_path.name
+    def add_upload(
+        self,
+        source_path: str | Path,
+    ) -> Path:
+
+        source_path = Path(
+            source_path
+        )
+
+        if not source_path.exists():
+            raise FileNotFoundError(
+                f"Upload does not exist: "
+                f"{source_path}"
+            )
+
+        if not source_path.is_file():
+            raise ValueError(
+                "Upload path is not a file."
+            )
+
+        suffix = (
+            source_path.suffix.lower()
+        )
+
+        if suffix not in SUPPORTED:
+            raise ValueError(
+                f"Unsupported knowledge-base "
+                f"file type: {suffix}"
+            )
+
+        target = (
+            self.doc_dir
+            / source_path.name
+        )
+
+        # Avoid accidental overwrite when a different
+        # uploaded file has the same name.
+        if target.exists():
+            old_hash = self.sha256(
+                target
+            )
+            new_hash = self.sha256(
+                source_path
+            )
+
+            if old_hash != new_hash:
+                stem = target.stem
+                suffix = target.suffix
+
+                counter = 2
+
+                while target.exists():
+                    target = (
+                        self.doc_dir
+                        / f"{stem}-{counter}{suffix}"
+                    )
+                    counter += 1
 
         target.write_bytes(
             source_path.read_bytes()
         )
 
         return target
+
+    # ---------------------------------------------------------
+    # VECTOR STORE RESET
+    # ---------------------------------------------------------
+
+    def _clear_vector_store(self) -> None:
+        self.store.index = None
+        self.store.metadata = []
+
+        if self.store.index_path.exists():
+            self.store.index_path.unlink()
+
+        self.store.meta_path.write_text(
+            "[]",
+            encoding="utf-8",
+        )
