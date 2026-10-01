@@ -13,6 +13,8 @@ PATTERNS = {
     "external_contact": [r"\bwhatsapp\b", r"\btelegram\b", r"\bsignal\b", r"\bcontact me\b", r"\bmessage me\b"],
 }
 URL_PATTERN=re.compile(r"(https?://[^\s<>\"]+|www\.[^\s<>\"]+)",re.I)
+PHONE_PATTERN = [r"(?<!\w)(?:\+?\d[\d\s().-]{7,}\d)(?!\w)"]
+WALLET_PATTERN = [r"(?<![A-Za-z0-9])0x[a-fA-F0-9]{40}(?![A-Za-z0-9])", r"(?<![A-Za-z0-9])(?:bc1[a-zA-Z0-9]{25,87}|[13][a-km-zA-HJ-NP-Z1-9]{25,34})(?![A-Za-z0-9])"]
 
 def _count(text, key):
     return sum(len(re.findall(p,text,re.I)) for p in PATTERNS[key])
@@ -41,6 +43,8 @@ def scan_text(text):
     if not text:
         return {"level":"none","score":0,"headline":"No content was provided.","flags":[],"urls":[],"categories":[]}
     counts={k:_count(text,k) for k in PATTERNS}
+    counts["phone"] = sum(len(re.findall(p, text)) for p in PHONE_PATTERN)
+    counts["wallet"] = sum(len(re.findall(p, text)) for p in WALLET_PATTERN)
     urls=_urls(text)
     flags=[]; categories=[]
     def add(key,label,advice,severity,category=None):
