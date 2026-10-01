@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+import html
+
 import streamlit as st
 
 
@@ -5,13 +9,21 @@ def hero():
     st.markdown(
         """
         <div class="hero">
-          <div class="logo">🛡️</div>
-          <h1>ScamHunter <span>AI</span></h1>
-          <p>
-            Investigate suspicious messages, offers, links and online claims
-            with AI-powered evidence analysis.
-          </p>
-          <div class="badge">● Evidence-first AI investigation</div>
+            <div class="hero-logo">🛡️</div>
+
+            <div class="hero-title">
+                ScamHunter <span>AI</span>
+            </div>
+
+            <div class="hero-description">
+                Investigate suspicious messages, offers, links and online
+                claims with AI-powered evidence analysis.
+            </div>
+
+            <div class="hero-badge">
+                <span class="hero-badge-dot">●</span>
+                Evidence-first AI investigation
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -20,11 +32,13 @@ def hero():
 
 def source_card(item):
     """
-    Render a citation card for either Knowledge Base or Web evidence.
+    Render a safe, theme-aware evidence citation card.
 
-    Supports both:
-    - flat evidence dictionaries
-    - evidence dictionaries containing a nested `source` object
+    Supports:
+    - Knowledge Base evidence
+    - Web evidence
+    - Flat evidence dictionaries
+    - Nested source dictionaries
     """
 
     if not isinstance(item, dict):
@@ -32,8 +46,6 @@ def source_card(item):
 
     source = item.get("source")
 
-    # Some pipeline stages wrap the original source inside
-    # item["source"]. Merge both levels so metadata is preserved.
     if isinstance(source, dict):
         merged = dict(source)
 
@@ -49,9 +61,9 @@ def source_card(item):
         or ""
     ).lower()
 
-    # ---------------------------------------------------------------
-    # KNOWLEDGE BASE
-    # ---------------------------------------------------------------
+    # ---------------------------------------------------------
+    # KNOWLEDGE BASE SOURCE
+    # ---------------------------------------------------------
 
     if source_type == "knowledge_base":
         filename = (
@@ -64,18 +76,18 @@ def source_card(item):
         section = item.get("section") or "General"
         chunk_id = item.get("chunk_id")
 
-        detail_parts = []
+        details = []
 
         if page is not None:
-            detail_parts.append(f"Page {page}")
+            details.append(f"Page {page}")
 
         if section:
-            detail_parts.append(section)
+            details.append(section)
 
         if chunk_id:
-            detail_parts.append(chunk_id)
+            details.append(chunk_id)
 
-        detail = " · ".join(detail_parts)
+        detail_text = " · ".join(details)
 
         excerpt = (
             item.get("excerpt")
@@ -84,13 +96,32 @@ def source_card(item):
             or ""
         )
 
+        filename = html.escape(str(filename))
+        detail_text = html.escape(str(detail_text))
+        excerpt = html.escape(str(excerpt)).replace("\n", "<br>")
+
         st.markdown(
             f"""
-            <div class="source">
-              <b>📄 {filename}</b><br>
-              <span class="muted">{detail}</span>
-              <br><br>
-              {excerpt}
+            <div class="source-card source-card-kb">
+
+                <div class="source-header">
+                    <div class="source-icon">📄</div>
+
+                    <div class="source-heading">
+                        <div class="source-title">
+                            {filename}
+                        </div>
+
+                        <div class="source-meta">
+                            {detail_text}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="source-excerpt">
+                    {excerpt}
+                </div>
+
             </div>
             """,
             unsafe_allow_html=True,
@@ -98,9 +129,9 @@ def source_card(item):
 
         return
 
-    # ---------------------------------------------------------------
+    # ---------------------------------------------------------
     # WEB SOURCE
-    # ---------------------------------------------------------------
+    # ---------------------------------------------------------
 
     title = (
         item.get("title")
@@ -118,13 +149,69 @@ def source_card(item):
         or ""
     )
 
+    title = html.escape(str(title))
+    url = html.escape(str(url))
+    excerpt = html.escape(str(excerpt)).replace("\n", "<br>")
+
     st.markdown(
         f"""
-        <div class="source">
-          <b>🌐 {title}</b><br>
-          <span class="muted">{url}</span>
-          <br><br>
-          {excerpt}
+        <div class="source-card source-card-web">
+
+            <div class="source-header">
+                <div class="source-icon">🌐</div>
+
+                <div class="source-heading">
+                    <div class="source-title">
+                        {title}
+                    </div>
+
+                    <div class="source-meta">
+                        {url}
+                    </div>
+                </div>
+            </div>
+
+            <div class="source-excerpt">
+                {excerpt}
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def section_label(text: str):
+    """Render a small uppercase section label."""
+
+    safe_text = html.escape(str(text))
+
+    st.markdown(
+        f'<div class="section-label">{safe_text}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def info_card(title: str, body: str, icon: str = "ℹ️"):
+    """Render a generic theme-aware information card."""
+
+    safe_title = html.escape(str(title))
+    safe_body = html.escape(str(body)).replace("\n", "<br>")
+    safe_icon = html.escape(str(icon))
+
+    st.markdown(
+        f"""
+        <div class="info-card">
+
+            <div class="info-card-title">
+                <span class="info-card-icon">{safe_icon}</span>
+                <span>{safe_title}</span>
+            </div>
+
+            <div class="info-card-body">
+                {safe_body}
+            </div>
+
         </div>
         """,
         unsafe_allow_html=True,
