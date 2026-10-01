@@ -19,7 +19,34 @@ def new_id() -> str:
 
 
 def valid_uid(uid) -> bool:
-    return bool(uid) and isinstance(uid, str) and bool(_UID.match(uid))
+    return isinstance(uid, str) and bool(_UID.fullmatch(uid))
+
+
+def valid_chat_id(chat_id) -> bool:
+    return isinstance(chat_id, str) and bool(_UID.fullmatch(chat_id))
+
+
+def _sanitize_messages(messages: list) -> list:
+    if not isinstance(messages, list):
+        return []
+    safe = []
+    for message in messages[:200]:
+        if not isinstance(message, dict):
+            continue
+        role = message.get("role")
+        if role not in {"user", "assistant"}:
+            continue
+        item = {"role": role, "content": str(message.get("content", ""))[:20000]}
+        if "language" in message:
+            item["language"] = str(message["language"])[:50]
+        if "mode" in message:
+            item["mode"] = str(message["mode"])[:50]
+        if isinstance(message.get("verdict"), dict):
+            item["verdict"] = message["verdict"]
+        if isinstance(message.get("sources"), list):
+            item["sources"] = message["sources"][:20]
+        safe.append(item)
+    return safe
 
 
 def _path(uid: str) -> Path:
@@ -31,10 +58,23 @@ def load_chats(uid: str) -> list:
         return []
     try:
         data = json.loads(_path(uid).read_text(encoding="utf-8"))
-        chats = data.get("chats", [])
+        chats = data.get("chats", []) if isinstance(data, dict) else []
+        if not isinstance(chats, list):
+            return []
     except (FileNotFoundError, ValueError, OSError, AttributeError):
         return []
-    return sorted(chats, key=lambda c: c.get("updated", 0), reverse=True)
+    cleaned = []
+    for chat in chats[:MAX_CHATS]:
+        if not isinstance(chat, dict) or not valid_chat_id(chat.get("id")):
+            continue
+        cleaned.append({
+            "id": chat["id"],
+            "title": str(chat.get("title", "New chat"))[:100],
+            "created": float(chat.get("created", 0) or 0),
+            "updated": float(chat.get("updated", 0) or 0),
+            "messages": _sanitize_messages(chat.get("messages", [])),
+        })
+    return sorted(cleaned, key=lambda c: c.get("updated", 0), reverse=True)
 
 
 def _write(uid: str, chats: list) -> None:
@@ -53,13 +93,13 @@ def _title(messages: list) -> str:
 
 
 def save_chat(uid: str, chat_id: str, messages: list) -> None:
-    if not valid_uid(uid) or not messages:
+    if not valid_uid(uid) or not valid_chat_id(chat_id) or not messages:
         return
     chats = load_chats(uid)
     now = time.time()
     for chat in chats:
         if chat.get("id") == chat_id:
-            chat["messages"] = messages
+            chat["messages"] = _sanitize_messages(messages)
             chat["updated"] = now
             break
     else:
@@ -69,7 +109,7 @@ def save_chat(uid: str, chat_id: str, messages: list) -> None:
                 "title": _title(messages),
                 "created": now,
                 "updated": now,
-                "messages": messages,
+                "messages": _sanitize_messages(messages),
             }
         )
     chats.sort(key=lambda c: c.get("updated", 0), reverse=True)
@@ -80,7 +120,7 @@ def save_chat(uid: str, chat_id: str, messages: list) -> None:
 
 
 def delete_chat(uid: str, chat_id: str) -> None:
-    if not valid_uid(uid) or not chat_id:
+    if not valid_uid(uid) or not valid_chat_id(chat_id):
         return
     chats = load_chats(uid)
     remaining = [chat for chat in chats if chat.get("id") != chat_id]
