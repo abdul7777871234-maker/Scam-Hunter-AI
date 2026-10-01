@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import tempfile
 from pathlib import Path
+
 import streamlit as st
 
 from config.settings import Settings
@@ -14,116 +16,277 @@ from ui.theme import apply_theme
 from ui.sidebar import render as render_sidebar
 from ui.components import hero, source_card
 
-st.set_page_config(page_title="ScamHunter AI", page_icon="🛡️", layout="wide")
+
+st.set_page_config(
+    page_title="ScamHunter AI",
+    page_icon="🛡️",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+
+# -------------------------------------------------------------------
+# SESSION STATE
+# -------------------------------------------------------------------
 
 S = st.session_state
+
 S.setdefault("dark", False)
 S.setdefault("messages", [])
 S.setdefault("history", [])
-S.setdefault("kb_ready", False)
+S.setdefault("kb_status", "Knowledge base not initialized")
+
+
+# -------------------------------------------------------------------
+# SETTINGS
+# -------------------------------------------------------------------
 
 settings = Settings.from_runtime()
+
 mode, style, accent = render_sidebar()
 apply_theme(S.dark, accent)
 
-# Cache expensive resources.
-@st.cache_resource
+
+# -------------------------------------------------------------------
+# RUNTIME
+# -------------------------------------------------------------------
+
+@st.cache_resource(show_spinner=False)
 def get_runtime():
-    settings = Settings.from_runtime()
-    kb = KnowledgeBase(settings)
-    router = ModelRouter(settings)
-    retriever = Retriever(kb, settings)
-    web = WebSearch(settings)
-    orchestrator = InvestigationOrchestrator(router, retriever, web, settings)
-    return settings, kb, router, retriever, web, orchestrator
+    runtime_settings = Settings.from_runtime()
+
+    kb = KnowledgeBase(runtime_settings)
+    router = ModelRouter(runtime_settings)
+    retriever = Retriever(kb, runtime_settings)
+    web = WebSearch(runtime_settings)
+
+    orchestrator = InvestigationOrchestrator(
+        router,
+        retriever,
+        web,
+        runtime_settings,
+    )
+
+    return runtime_settings, kb, router, retriever, web, orchestrator
+
 
 settings, kb, router, retriever, web, orchestrator = get_runtime()
+
 
 if kb.store.count:
     S.kb_status = f"{kb.store.count:,} chunks indexed"
 else:
-    S.kb_status = "Knowledge base empty — use the setup script or upload documents."
+    S.kb_status = "Knowledge base ready for document indexing."
+
+
+# -------------------------------------------------------------------
+# HERO
+# -------------------------------------------------------------------
 
 hero()
 
-st.markdown('<div class="section-label">Suggested Investigations</div>', unsafe_allow_html=True)
-cols = st.columns(2)
-suggestions = [
-    "Analyze this suspicious job offer for scam signals.",
-    "Analyze these payment instructions for suspicious patterns.",
-    "Check this investment message for red flags and evidence.",
-    "Analyze this phishing-style account verification message.",
-]
-for i, text in enumerate(suggestions):
-    with cols[i % 2]:
-        if st.button(text, use_container_width=True, key=f"s{i}"):
-            S["pending_prompt"] = text
 
-st.markdown('<div class="section-label">Investigation Workspace</div>', unsafe_allow_html=True)
+# -------------------------------------------------------------------
+# CHAT HISTORY
+# -------------------------------------------------------------------
 
-upload = st.file_uploader(
-    "Attach evidence",
-    type=["pdf","docx","txt","md","png","jpg","jpeg","webp"],
-    help="Maximum 10 MB per file.",
+for message in S.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+
+# -------------------------------------------------------------------
+# CHAT INPUT + ATTACHMENT
+# -------------------------------------------------------------------
+
+submission = st.chat_input(
+    "Investigate a suspicious message, offer, link, or document…",
+    accept_file=True,
+    file_type=[
+        "pdf",
+        "docx",
+        "txt",
+        "md",
+        "png",
+        "jpg",
+        "jpeg",
+        "webp",
+    ],
+    max_upload_size=settings.max_upload_mb,
+    key="scamhunter_chat",
 )
-if upload:
-    try:
-        safe_name = validate_upload(upload.name, settings.max_upload_mb)
-        tmp = Path(tempfile.gettempdir()) / safe_name
-        tmp.write_bytes(upload.getbuffer())
-        if tmp.suffix.lower() in {".pdf",".docx",".txt",".md"}:
-            kb.add_upload(tmp)
-            S.kb_status = "New document copied. Run the knowledge-base build script to embed it."
-        st.success(f"Attached: {safe_name}")
-    except Exception as exc:
-        st.error(str(exc))
 
-default_prompt = S.pop("pending_prompt", "")
-prompt = st.chat_input("Paste a suspicious message, offer, URL, or question…")
-if not prompt and default_prompt:
-    prompt = default_prompt
 
-if prompt:
-    S.messages.append({"role":"user","content":prompt})
-    S.history.append(prompt)
-    with st.spinner("Running evidence-first investigation…"):
+# -------------------------------------------------------------------
+# PROCESS SUBMISSION
+# -------------------------------------------------------------------
+
+if submission:
+
+    prompt = submission.text.strip()
+
+    uploaded_files = list(submission.files or [])
+
+    attachment_context = []
+
+    for uploaded in uploaded_files:
         try:
-            result = orchestrator.run(prompt)
-            answer = result["answer"]
-            S.messages.append({"role":"assistant","content":answer})
+            safe_name = validate_upload(
+                uploaded.name,
+                settings.max_upload_mb,
+            )
+
+            temp_path = Path(tempfile.gettempdir()) / safe_name
+            temp_path.write_bytes(uploaded.getbuffer())
+
+            suffix = temp_path.suffix.lower()
+
+            if suffix in {".pdf", ".docx", ".txt", ".md"}:
+                kb.add_upload(temp_path)
+                attachment_context.append(
+                    f"Attached document: {safe_name}"
+                )
+
+            elif suffix in {
+                ".png",
+                ".jpg",
+                ".jpeg",
+                ".webp",
+            }:
+                attachment_context.append(
+                    f"Attached image: {safe_name}"
+                )
+
         except Exception as exc:
-            answer = f"Investigation could not be completed: {exc}"
-            S.messages.append({"role":"assistant","content":answer})
-            result = {"events": [], "rag": {"evidence":[]}, "web":{"items":[]}}
+            st.error(f"Attachment error: {exc}")
 
-for m in S.messages:
-    with st.chat_message(m["role"]):
-        st.markdown(m["content"])
+    if attachment_context:
+        S.history.extend(attachment_context)
 
-if S.messages and S.messages[-1]["role"] == "assistant" and "result" in locals():
-    st.divider()
-    with st.expander("Investigation Pipeline", expanded=False):
-        for event in result.get("events", []):
-            st.write("✓ " + event)
+    if prompt or attachment_context:
 
-    with st.expander("Knowledge Base Evidence", expanded=False):
-        items = result.get("rag", {}).get("evidence", [])
-        if items:
-            for item in items:
-                source_card(item)
+        if prompt:
+            display_prompt = prompt
         else:
-            st.caption("No matching internal evidence was retrieved.")
+            display_prompt = "\n".join(attachment_context)
 
-    with st.expander("Web Evidence", expanded=False):
-        items = result.get("web", {}).get("items", [])
-        if items:
-            for item in items:
-                source_card(item)
-        else:
-            st.caption("No web evidence was retrieved.")
+        S.messages.append(
+            {
+                "role": "user",
+                "content": display_prompt,
+            }
+        )
 
-st.markdown("""
-<div class="card" style="margin-top:24px;text-align:center">
-<span class="muted">🔒 Evidence is treated as untrusted data. ScamHunter AI provides investigation support and does not guarantee the authenticity or safety of any person, site, message, or offer.</span>
-</div>
-""", unsafe_allow_html=True)
+        S.history.append(display_prompt)
+
+        with st.chat_message("user"):
+            st.markdown(display_prompt)
+
+        # -----------------------------------------------------------
+        # INVESTIGATION
+        # -----------------------------------------------------------
+
+        with st.chat_message("assistant"):
+
+            with st.spinner("Investigating evidence…"):
+
+                try:
+
+                    result = orchestrator.run(display_prompt)
+
+                    answer = result.get(
+                        "answer",
+                        "No investigation result was returned.",
+                    )
+
+                    st.markdown(answer)
+
+                    S.messages.append(
+                        {
+                            "role": "assistant",
+                            "content": answer,
+                        }
+                    )
+
+                except Exception as exc:
+
+                    answer = (
+                        "Investigation could not be completed.\n\n"
+                        f"`{exc}`"
+                    )
+
+                    st.error(answer)
+
+                    S.messages.append(
+                        {
+                            "role": "assistant",
+                            "content": answer,
+                        }
+                    )
+
+                    result = {
+                        "events": [],
+                        "rag": {"evidence": []},
+                        "web": {"items": []},
+                    }
+
+
+        # -----------------------------------------------------------
+        # EVIDENCE
+        # -----------------------------------------------------------
+
+        st.divider()
+
+        with st.expander(
+            "Investigation Pipeline",
+            expanded=False,
+        ):
+            for event in result.get("events", []):
+                st.write("✓ " + event)
+
+        with st.expander(
+            "Knowledge Base Evidence",
+            expanded=False,
+        ):
+            items = result.get("rag", {}).get("evidence", [])
+
+            if items:
+                for item in items:
+                    source_card(item)
+            else:
+                st.caption(
+                    "No matching internal evidence was retrieved."
+                )
+
+        with st.expander(
+            "Web Evidence",
+            expanded=False,
+        ):
+            items = result.get("web", {}).get("items", [])
+
+            if items:
+                for item in items:
+                    source_card(item)
+            else:
+                st.caption(
+                    "No web evidence was retrieved."
+                )
+
+
+# -------------------------------------------------------------------
+# FOOTER
+# -------------------------------------------------------------------
+
+st.markdown(
+    """
+    <div class="card footer-card">
+        <span class="muted">
+            🔒 Evidence is treated as untrusted data.
+            ScamHunter AI provides investigation support and does not
+            guarantee the authenticity or safety of any person, site,
+            message, or offer.
+        </span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
