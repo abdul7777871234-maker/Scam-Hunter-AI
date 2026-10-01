@@ -1058,6 +1058,28 @@ html body div[role="listbox"] [role="option"][aria-selected="true"] {
   color:var(--sh-text)!important;
 }
 
+/* MODERN STREAMLIT SELECTBOX POPUP — current Streamlit uses a portaled
+   stSelectboxVirtualDropdown instead of the older BaseWeb menu. */
+html body [data-testid="stSelectboxVirtualDropdown"],
+html body [data-testid="stSelectboxVirtualDropdown"] > div,
+html body [data-testid="stSelectboxVirtualDropdown"] > div > div,
+html body [data-testid="stSelectboxVirtualDropdown"] ul,
+html body [data-testid="stSelectboxVirtualDropdown"] li,
+html body [data-testid="stSelectboxVirtualDropdown"] [role="listbox"],
+html body [data-testid="stSelectboxVirtualDropdown"] [role="option"] {
+  background:var(--sh-menu)!important;
+  background-color:var(--sh-menu)!important;
+  color:var(--sh-text)!important;
+  color-scheme:var(--sh-scheme)!important;
+}
+
+html body [data-testid="stSelectboxVirtualDropdown"] [role="option"]:hover,
+html body [data-testid="stSelectboxVirtualDropdown"] [role="option"][aria-selected="true"] {
+  background:var(--sh-menu-hover)!important;
+  background-color:var(--sh-menu-hover)!important;
+  color:var(--sh-text)!important;
+}
+
 /* FINAL SELECTBOX OUTER CONTROL — outer box only. Inner content and dropdown stay native. */
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div {
   min-height:44px!important;
