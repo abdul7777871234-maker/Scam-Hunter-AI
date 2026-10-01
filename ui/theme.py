@@ -1016,6 +1016,18 @@ html body .stApp [data-testid="stChatMessage"] [data-testid="stChatMessageConten
 
 
 
+/* SELECTBOX DROPDOWN SURFACE — menu background only; option rows remain native. */
+html body div[data-baseweb="popover"],
+html body div[data-baseweb="popover"] > div,
+html body div[data-baseweb="menu"],
+html body div[data-baseweb="menu"] > div,
+html body ul[role="listbox"] {
+  background:var(--sh-menu)!important;
+  background-color:var(--sh-menu)!important;
+  color:var(--sh-text)!important;
+  color-scheme:var(--sh-scheme)!important;
+}
+
 /* FINAL SELECTBOX OUTER CONTROL — outer box only. Inner content and dropdown stay native. */
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div {
   min-height:44px!important;
