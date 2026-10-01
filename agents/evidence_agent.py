@@ -13,17 +13,48 @@ class EvidenceAgent:
 
         evidence = []
 
+        # Preserve the complete RAG metadata at the top level
+        # so the UI citation cards can display filename/page/chunk.
         for item in rag_items:
-            evidence.append({
-                "source_type": "knowledge_base",
-                "source": item,
-            })
+            if isinstance(item, dict):
+                evidence.append({
+                    "source_type": "knowledge_base",
+                    "filename": item.get("filename"),
+                    "file_type": item.get("file_type"),
+                    "document_id": item.get("document_id"),
+                    "page": item.get("page"),
+                    "section": item.get("section"),
+                    "chunk_id": item.get("chunk_id"),
+                    "text": item.get("text"),
+                    "excerpt": item.get("excerpt") or item.get("text", ""),
+                    "score": item.get("score"),
+                    "source": item,
+                })
+            else:
+                evidence.append({
+                    "source_type": "knowledge_base",
+                    "source": item,
+                    "text": str(item),
+                    "excerpt": str(item),
+                })
 
+        # Preserve web evidence separately.
         for item in web_items:
-            evidence.append({
-                "source_type": "web",
-                "source": item,
-            })
+            if isinstance(item, dict):
+                evidence.append({
+                    "source_type": "web",
+                    "title": item.get("title"),
+                    "url": item.get("url"),
+                    "snippet": item.get("snippet"),
+                    "excerpt": item.get("excerpt") or item.get("snippet", ""),
+                    "source": item,
+                })
+            else:
+                evidence.append({
+                    "source_type": "web",
+                    "source": item,
+                    "excerpt": str(item),
+                })
 
         evidence_text = self._format_evidence(evidence)
 
@@ -81,27 +112,41 @@ AVAILABLE EVIDENCE:
 
         for index, item in enumerate(evidence, start=1):
             source_type = item.get("source_type", "unknown")
-            source = item.get("source", {})
 
-            if isinstance(source, dict):
-                title = source.get("title", "")
+            if source_type == "knowledge_base":
+                title = item.get("filename") or "Knowledge Base Document"
+                page = item.get("page") or "Unknown"
+                section = item.get("section") or "General"
+                chunk_id = item.get("chunk_id") or ""
                 content = (
-                    source.get("content")
-                    or source.get("text")
-                    or source.get("snippet")
-                    or str(source)
+                    item.get("text")
+                    or item.get("excerpt")
+                    or ""
                 )
-                url = source.get("url", "")
-            else:
-                title = ""
-                content = str(source)
-                url = ""
 
-            lines.append(
-                f"[Evidence {index} | {source_type}]\n"
-                f"Title: {title}\n"
-                f"URL: {url}\n"
-                f"Content: {content}"
-            )
+                lines.append(
+                    f"[Evidence {index} | knowledge_base]\n"
+                    f"File: {title}\n"
+                    f"Page: {page}\n"
+                    f"Section: {section}\n"
+                    f"Chunk: {chunk_id}\n"
+                    f"Content: {content}"
+                )
+
+            else:
+                title = item.get("title") or "Web source"
+                url = item.get("url", "")
+                content = (
+                    item.get("snippet")
+                    or item.get("excerpt")
+                    or ""
+                )
+
+                lines.append(
+                    f"[Evidence {index} | web]\n"
+                    f"Title: {title}\n"
+                    f"URL: {url}\n"
+                    f"Content: {content}"
+                )
 
         return "\n\n".join(lines)
