@@ -56,6 +56,8 @@ def scan_text(text):
     add("reward","Unexpected prize or reward","Do not pay a fee or provide sensitive information to claim an unexpected reward.","medium","Reward")
     add("investment","Investment or guaranteed-return language","Do not send funds based on guaranteed returns or zero-risk claims. Verify licensing and the firm independently.","high","Investment")
     add("external_contact","External messaging request","Verify the sender before moving the conversation to another messaging platform.","low","External contact")
+    add("phone","Phone number detected","A phone number is not proof of legitimacy. Verify it through an official source before calling or sending information.","low","Phone number")
+    add("wallet","Crypto wallet address detected","A wallet address alone does not prove fraud, but irreversible transfers should be independently verified before sending funds.","high","Crypto wallet")
     if urls:
         flags.append(_flag("Link detected","Inspect and independently verify the destination before opening it.","medium",len(urls)))
         categories.append("Link")
@@ -70,6 +72,8 @@ def scan_text(text):
     score += min(counts["reward"]*10,25)
     score += min(counts["investment"]*14,40)
     score += min(counts["external_contact"]*4,8)
+    score += min(counts["phone"]*4,8)
+    score += min(counts["wallet"]*18,36)
     score += min(len(urls)*8,20)
     score=min(score,100)
 
@@ -81,7 +85,7 @@ def scan_text(text):
 
 def format_signals(scan):
     if not scan: return "No instant scan was performed."
-    lines=[f"Instant heuristic scan level: {scan.get('level','none')}",f"Heuristic signal score: {scan.get('score',0)}/100",f"Summary: {scan.get('headline','')}"]
+    lines=[f"Instant heuristic scan level: {scan.get('level','none')}",f"Heuristic signal score: {scan.get('score',0)}/100",f"Summary: {scan.get('headline','')}", "This score is a heuristic hint only; it is not proof of fraud."]
     for f in scan.get("flags",[])[:10]: lines.append(f"- {f.get('label','Signal')}: {f.get('advice','')}")
     for u in scan.get("urls",[])[:10]:
         if u.get("flags"): lines.append(f"- URL {u.get('url')}: "+"; ".join(u["flags"]))
