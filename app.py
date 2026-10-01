@@ -101,7 +101,7 @@ apply_theme(S.dark, accent)
 # -------------------------------------------------------------------
 
 
-@st.cache_resource(show_spinner="Loading models and knowledge base…")
+@st.cache_resource
 def get_runtime():
     runtime_settings = Settings.from_runtime()
     kb = KnowledgeBase(runtime_settings)
