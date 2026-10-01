@@ -6,6 +6,7 @@ import streamlit as st
 
 from ui.history_store import (
     delete_all,
+    delete_chat,
     load_chats,
     new_id,
 )
@@ -353,8 +354,10 @@ def render_footer(
             key="btn_clear",
         ):
 
+            delete_chat(uid, st.session_state.get("chat_id", ""))
             st.session_state.messages = []
             st.session_state.chat_id = new_id()
+            st.session_state.last_result = None
 
             st.rerun()
 
