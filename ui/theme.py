@@ -40,6 +40,31 @@ CSS = """
   --sh-scheme:@@SCHEME@@;\n  color-scheme:var(--sh-scheme);
 }
 
+
+/* Delete-history confirmation dialog: keep text and surface theme-aware. */
+div[role="dialog"],
+div[role="dialog"] > div,
+div[role="dialog"] [data-testid="stModal"],
+div[role="dialog"] [data-testid="stModal"] > div {
+  background:var(--sh-panel)!important;
+  background-color:var(--sh-panel)!important;
+  color:var(--sh-text)!important;
+  border-color:var(--sh-border)!important;
+  color-scheme:var(--sh-scheme)!important;
+}
+div[role="dialog"] p,
+div[role="dialog"] span,
+div[role="dialog"] label,
+div[role="dialog"] [data-testid="stMarkdownContainer"],
+div[role="dialog"] [data-testid="stMarkdownContainer"] * {
+  color:var(--sh-text)!important;
+  -webkit-text-fill-color:var(--sh-text)!important;
+}
+div[role="dialog"] button {
+  color:var(--sh-text)!important;
+  border-color:var(--sh-border)!important;
+}
+
 /* GLOBAL */
 html,body,.stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"]{
   background:var(--sh-bg)!important; color:var(--sh-text)!important; color-scheme:var(--sh-scheme)!important;}
