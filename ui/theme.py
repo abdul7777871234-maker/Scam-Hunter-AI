@@ -801,7 +801,7 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [d
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="ststSelectbox"] [data-baseweb="select"] [role="button"] {
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
   background:var(--sh-select-bg)!important;
   background-color:var(--sh-select-bg)!important;
   background-image:none!important;
