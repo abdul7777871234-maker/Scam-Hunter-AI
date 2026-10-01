@@ -94,6 +94,19 @@ def render():
         )
 
         # -----------------------------------------------------
+        # RESPONSE LANGUAGE
+        # -----------------------------------------------------
+
+        language = st.selectbox(
+            "RESPONSE LANGUAGE",
+            ["English", "Urdu", "Roman Urdu"],
+            index=["English", "Urdu", "Roman Urdu"].index(
+                st.session_state.get("language", "English")
+            ),
+            key="language",
+        )
+
+        # -----------------------------------------------------
         # ACCENT
         # -----------------------------------------------------
 
