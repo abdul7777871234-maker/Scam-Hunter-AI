@@ -1,4 +1,3 @@
-```python
 import streamlit as st
 
 
@@ -662,4 +661,3 @@ def apply_theme(dark: bool, accent: str):
         """,
         unsafe_allow_html=True,
     )
-```
