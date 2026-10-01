@@ -44,18 +44,27 @@ def risk_meter(scan):
         return
     level = scan.get("level", "none")
     score = max(0, min(100, int(scan.get("score", 0) or 0)))
-    labels = {"high": "High signal", "medium": "Moderate signal", "low": "Low signal", "none": "No automatic signals"}
-    label = labels.get(level, level.title())
-    if score == 0 or level == "none":
-        tone = "safe"
-    elif score < 40 or level == "low":
+
+    # A non-zero heuristic score means a signal was detected. The old
+    # presentation used the threshold label "none" for scores below 10,
+    # which made a result such as 8/100 look contradictory.
+    if score > 0 and level == "none":
+        label = "Low signal"
         tone = "low"
-    elif score < 70 or level == "medium":
-        tone = "medium"
-    elif score < 85:
-        tone = "elevated"
     else:
-        tone = "high"
+        labels = {"high": "High signal", "medium": "Moderate signal", "low": "Low signal", "none": "No automatic signals"}
+        label = labels.get(level, level.title())
+        if score == 0 or level == "none":
+            tone = "safe"
+        elif score < 40 or level == "low":
+            tone = "low"
+        elif score < 70 or level == "medium":
+            tone = "medium"
+        elif score < 85:
+            tone = "elevated"
+        else:
+            tone = "high"
+
     st.markdown(
         f'<div class="risk-meter-card risk-{tone}"><div class="risk-meter-top"><div><span class="risk-meter-title">⚡ Instant Scan</span><span class="risk-meter-level">{html.escape(label)}</span></div><strong>{score}/100</strong></div><div class="risk-meter-track"><div class="risk-meter-fill" style="width:{score}%;"></div></div><div class="risk-meter-scale"><span>0</span><span>50</span><span>100</span></div><div class="risk-meter-note">{html.escape(scan.get("headline",""))} · Heuristic hint only — not proof of fraud.</div></div>',
         unsafe_allow_html=True,
