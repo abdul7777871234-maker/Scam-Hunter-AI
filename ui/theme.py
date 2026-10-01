@@ -1029,6 +1029,21 @@ section[data-testid="stSidebar"] [data-testid="stSelectbox"]{margin-bottom:11px!
 section[data-testid="stSidebar"] [data-testid="stSelectbox"] label{margin-bottom:5px!important;padding-left:3px!important;font-size:10px!important;letter-spacing:.65px!important;text-transform:uppercase!important;color:var(--sh-muted)!important;}
 section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]{min-height:44px!important;border-radius:14px!important;background:var(--sh-select-bg)!important;background-image:none!important;border:1px solid var(--sh-select-border)!important;outline:none!important;box-shadow:0 8px 22px rgba(0,0,0,.08)!important;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease!important;}
 section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:hover{transform:translateY(-1px)!important;border-color:@@ACCENT@@70!important;box-shadow:0 12px 28px rgba(0,0,0,.12),0 0 22px @@ACCENT@@09!important;}
+/* Sidebar selected controls: theme-aware border for every selectbox. */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
+  border-color:var(--sh-select-border)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus-visible {
+  border-color:var(--sh-select-border)!important;
+  outline:none!important;
+  box-shadow:0 0 0 1px var(--sh-select-border)!important;
+}
+
 section[data-testid="stSidebar"] .sidebar-active-theme{margin:8px 1px 2px!important;padding:9px 11px!important;border:1px solid var(--sh-border)!important;border-radius:11px!important;background:linear-gradient(145deg,@@ACCENT@@09,var(--sh-panel2))!important;color:var(--sh-muted)!important;font-size:10px!important;text-align:center!important;}
 section[data-testid="stSidebar"] .sidebar-provider-card,section[data-testid="stSidebar"] .sidebar-status-card{min-height:58px!important;padding:11px 12px!important;border-radius:15px!important;border:1px solid var(--sh-border)!important;background:radial-gradient(circle at 0% 0%,@@ACCENT@@10,transparent 45%),linear-gradient(145deg,var(--sh-panel2),var(--sh-panel))!important;box-shadow:0 12px 28px rgba(0,0,0,.09),inset 0 1px 0 rgba(255,255,255,.06)!important;}
 
