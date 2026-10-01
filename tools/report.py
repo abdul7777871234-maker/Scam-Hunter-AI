@@ -260,9 +260,9 @@ def _user_content(text, styles, language):
 
 def _markdown_inline(text, language):
     value = _text_markup(text,language)
-    value = re.sub(r"\\*\\*(.+?)\\*\\*",r"<b>\\1</b>",value)
-    value = re.sub(r"__(.+?)__",r"<b>\\1</b>",value)
-    value = re.sub(r"\\x60([^\\x60]+)\\x60",r"<i>\\1</i>",value)
+    value = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", value)
+    value = re.sub(r"__(.+?)__", r"<b>\1</b>", value)
+    value = re.sub(r"`([^`]+)`", r"<i>\1</i>", value)
     return value
 
 
@@ -271,7 +271,7 @@ def _investigation_sections(answer, styles, language):
     sections=[]; current=None
     for raw in str(answer or "").replace("\r","").split("\n"):
         line=raw.strip()
-        normalized=re.sub(r"^[#*\\-\\s]+","",line).rstrip(":").strip().lower()
+        normalized=re.sub(r"^[#*\-\s]+", "", line).rstrip(":").strip().lower()
         if normalized in headings:
             current=headings[normalized]; sections.append((current,[])); continue
         if current is None:
@@ -285,7 +285,7 @@ def _investigation_sections(answer, styles, language):
         for line in lines:
             s=line.strip()
             if not s: continue
-            m=re.match(r"^(?:[-*•]|\\d+[.)])\\s+(.*)$",s)
+            m=re.match(r"^(?:[-*•]|\d+[.)])\s+(.*)$", s)
             cleaned.append(("• "+m.group(1)) if m else s)
         if not cleaned: continue
         flow=[Paragraph(_esc(heading.upper()),styles["section"])]
