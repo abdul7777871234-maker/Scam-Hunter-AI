@@ -25,13 +25,12 @@ from tools.indicators import format_signals, scan_text
 from tools.report import build_report
 from agents.orchestrator import InvestigationOrchestrator
 from ui.theme import apply_theme
-from ui.sidebar import render as render_sidebar, render_footer
+from ui.sidebar import render as render_sidebar, render_footer, render_provider_status
 from ui.components import (
     example_prompts,
     hero,
     risk_meter,
     scan_details,
-    setup_banner,
     source_card,
     stat_strip,
 )
@@ -446,7 +445,7 @@ if not S.messages:
         ]
     )
 
-setup_banner(bool(settings.groq_api_key), bool(settings.gemini_api_key))
+render_provider_status(bool(settings.groq_api_key), bool(settings.gemini_api_key))
 
 # -------------------------------------------------------------------
 # CHAT HISTORY
