@@ -16,240 +16,365 @@ def apply_theme(dark: bool, accent: str):
     accent_color = ACCENTS.get(accent, ACCENTS["Cyan"])
 
     if dark:
-        bg = "#050811"
+        background = "#050811"
         panel = "#0B1120"
-        panel2 = "#111827"
-        input_bg = "#0F172A"
+        panel_alt = "#111827"
+        input_background = "#0F172A"
         text = "#F8FAFC"
         muted = "#94A3B8"
-        border = "rgba(148,163,184,0.20)"
+        border = "rgba(148, 163, 184, 0.20)"
         hover = "#172033"
-        menu = "#0B1120"
-        menu_hover = "#172033"
     else:
-        bg = "#F8FAFC"
+        background = "#F8FAFC"
         panel = "#FFFFFF"
-        panel2 = "#F1F5F9"
-        input_bg = "#FFFFFF"
+        panel_alt = "#F1F5F9"
+        input_background = "#FFFFFF"
         text = "#0F172A"
         muted = "#64748B"
-        border = "rgba(15,23,42,0.14)"
+        border = "rgba(15, 23, 42, 0.14)"
         hover = "#E8EEF7"
-        menu = "#FFFFFF"
-        menu_hover = "#EEF4FA"
 
-    css = f"""
+    css = """
     <style>
 
-    html, body, [data-testid="stAppViewContainer"] {{
-        background: {bg} !important;
-        color: {text} !important;
-    }}
+    /* =========================
+       GLOBAL
+       ========================= */
 
-    [data-testid="stHeader"] {{
-        background: {bg} !important;
-        border-bottom: 1px solid {border};
-    }}
+    html,
+    body,
+    [data-testid="stAppViewContainer"] {
+        background: __BACKGROUND__ !important;
+        color: __TEXT__ !important;
+    }
 
-    [data-testid="stSidebar"] {{
-        background: {panel} !important;
-        border-right: 1px solid {border};
-    }}
+    [data-testid="stApp"] {
+        background: __BACKGROUND__ !important;
+    }
 
-    [data-testid="stSidebar"] > div {{
-        background: {panel} !important;
-    }}
+    [data-testid="stHeader"] {
+        background: __BACKGROUND__ !important;
+        border-bottom: 1px solid __BORDER__ !important;
+    }
 
-    .block-container {{
+    .main {
         background: transparent !important;
-        color: {text} !important;
-    }}
+    }
 
-    h1, h2, h3, h4, h5, h6,
-    p, span, label, div {{
+    .block-container {
+        background: transparent !important;
+        color: __TEXT__ !important;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+
+    /* =========================
+       TEXT
+       ========================= */
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: __TEXT__ !important;
+    }
+
+    p,
+    label,
+    span {
         color: inherit;
-    }}
+    }
 
-    .hero {{
+    .muted {
+        color: __MUTED__ !important;
+    }
+
+    /* =========================
+       HERO
+       ========================= */
+
+    .hero {
         background: linear-gradient(
             135deg,
-            {panel},
-            {panel2}
+            __PANEL__,
+            __PANEL_ALT__
         ) !important;
-        border: 1px solid {border};
+
+        border: 1px solid __BORDER__ !important;
         border-radius: 24px;
         padding: 30px;
         margin-bottom: 24px;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
-    }}
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
 
-    .hero h1 {{
-        margin: 0;
-        color: {text} !important;
+    .hero .logo {
+        font-size: 42px;
+        line-height: 1;
+        margin-bottom: 10px;
+    }
+
+    .hero h1 {
+        color: __TEXT__ !important;
         font-size: 42px;
         font-weight: 800;
-    }}
+        margin: 0;
+    }
 
-    .hero p {{
-        color: {muted} !important;
+    .hero p {
+        color: __MUTED__ !important;
         font-size: 16px;
-    }}
+        line-height: 1.6;
+        margin-top: 10px;
+    }
 
-    .logo {{
-        font-size: 42px;
-        margin-bottom: 8px;
-    }}
-
-    .badge {{
+    .badge {
         display: inline-block;
         padding: 8px 14px;
         border-radius: 999px;
-        background: {accent_color}22;
-        border: 1px solid {accent_color}66;
-        color: {accent_color} !important;
-        font-weight: 700;
+        background: __ACCENT_ALPHA__ !important;
+        border: 1px solid __ACCENT_BORDER__ !important;
+        color: __ACCENT__ !important;
         font-size: 13px;
-    }}
+        font-weight: 700;
+    }
+
+    /* =========================
+       CARDS
+       ========================= */
 
     .card,
     .source,
     .source-card,
     .footer-card,
-    .verdict-card {{
-        background: {panel} !important;
-        color: {text} !important;
-        border: 1px solid {border} !important;
+    .verdict-card {
+        background: __PANEL__ !important;
+        color: __TEXT__ !important;
+        border: 1px solid __BORDER__ !important;
         border-radius: 18px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-    }}
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
 
     .source,
-    .source-card {{
+    .source-card {
         padding: 18px;
         margin: 10px 0;
-    }}
+    }
 
-    .footer-card {{
-        padding: 18px;
-        margin-top: 25px;
-    }}
+    .footer-card {
+        padding: 20px;
+        margin-top: 28px;
+    }
 
-    .muted {{
-        color: {muted} !important;
-    }}
+    /* =========================
+       SIDEBAR
+       ========================= */
 
-    textarea,
-    input {{
-        background: {input_bg} !important;
-        color: {text} !important;
-        border-color: {border} !important;
-    }}
+    [data-testid="stSidebar"] {
+        background: __PANEL__ !important;
+        border-right: 1px solid __BORDER__ !important;
+    }
 
-    textarea::placeholder,
-    input::placeholder {{
-        color: {muted} !important;
-    }}
+    [data-testid="stSidebar"] > div {
+        background: __PANEL__ !important;
+    }
 
-    [data-baseweb="select"] > div {{
-        background: {menu} !important;
-        color: {text} !important;
-        border-color: {border} !important;
-    }}
-
-    [data-baseweb="select"] * {{
-        color: {text} !important;
-    }}
-
-    [role="listbox"] {{
-        background: {menu} !important;
-        color: {text} !important;
-        border: 1px solid {border} !important;
-    }}
-
-    [role="option"] {{
-        background: {menu} !important;
-        color: {text} !important;
-    }}
-
-    [role="option"]:hover {{
-        background: {menu_hover} !important;
-    }}
-
-    button {{
-        border-radius: 12px !important;
-    }}
-
-    .stButton > button {{
-        background: {panel2} !important;
-        color: {text} !important;
-        border: 1px solid {border} !important;
-    }}
-
-    .stButton > button:hover {{
-        border-color: {accent_color} !important;
-        color: {accent_color} !important;
-    }}
-
-    [data-testid="stFileUploader"] {{
-        background: {panel} !important;
-        border: 1px solid {border} !important;
-        border-radius: 16px;
-        padding: 10px;
-    }}
-
-    [data-testid="stFileUploader"] section {{
-        background: {panel} !important;
-        border-color: {border} !important;
-    }}
-
-    [data-testid="stFileUploader"] * {{
-        color: {text} !important;
-    }}
-
-    [data-testid="stChatInput"] {{
-        background: {panel} !important;
-        border-color: {border} !important;
-    }}
-
-    [data-testid="stChatInput"] textarea {{
-        background: {input_bg} !important;
-        color: {text} !important;
-    }}
-
-    [data-testid="stExpander"] {{
-        background: {panel} !important;
-        border: 1px solid {border} !important;
-        border-radius: 14px;
-    }}
-
-    [data-testid="stExpander"] * {{
-        color: {text} !important;
-    }}
-
-    .sidebar-brand {{
+    .sidebar-brand {
         padding: 18px 8px 24px 8px;
         text-align: center;
-    }}
+    }
 
-    .sidebar-brand-icon {{
-        font-size: 38px;
-        margin-bottom: 5px;
-    }}
+    .sidebar-brand-icon {
+        font-size: 40px;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
 
-    .sidebar-brand-title {{
-        font-size: 22px;
+    .sidebar-brand-title {
+        color: __TEXT__ !important;
+        font-size: 23px;
         font-weight: 800;
-        color: {text} !important;
-    }}
+    }
 
-    .sidebar-brand-subtitle {{
+    .sidebar-brand-subtitle {
+        color: __MUTED__ !important;
         font-size: 12px;
-        color: {muted} !important;
-        margin-top: 4px;
-    }}
+        margin-top: 5px;
+    }
+
+    /* =========================
+       SELECTBOX
+       ========================= */
+
+    [data-baseweb="select"] > div {
+        background: __PANEL_ALT__ !important;
+        color: __TEXT__ !important;
+        border: 1px solid __BORDER__ !important;
+        border-radius: 10px !important;
+    }
+
+    [data-baseweb="select"] input {
+        color: __TEXT__ !important;
+    }
+
+    [data-baseweb="select"] span {
+        color: __TEXT__ !important;
+    }
+
+    [role="listbox"] {
+        background: __PANEL__ !important;
+        border: 1px solid __BORDER__ !important;
+        color: __TEXT__ !important;
+    }
+
+    [role="option"] {
+        background: __PANEL__ !important;
+        color: __TEXT__ !important;
+    }
+
+    [role="option"]:hover {
+        background: __HOVER__ !important;
+    }
+
+    /* =========================
+       BUTTONS
+       ========================= */
+
+    .stButton > button {
+        background: __PANEL_ALT__ !important;
+        color: __TEXT__ !important;
+        border: 1px solid __BORDER__ !important;
+        border-radius: 12px !important;
+        min-height: 42px;
+    }
+
+    .stButton > button:hover {
+        background: __HOVER__ !important;
+        border-color: __ACCENT__ !important;
+        color: __ACCENT__ !important;
+    }
+
+    /* =========================
+       INPUTS
+       ========================= */
+
+    textarea,
+    input {
+        background: __INPUT__ !important;
+        color: __TEXT__ !important;
+        border-color: __BORDER__ !important;
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+        color: __MUTED__ !important;
+    }
+
+    [data-testid="stChatInput"] {
+        background: __PANEL__ !important;
+        border-color: __BORDER__ !important;
+    }
+
+    [data-testid="stChatInput"] textarea {
+        background: __INPUT__ !important;
+        color: __TEXT__ !important;
+    }
+
+    /* =========================
+       FILE UPLOADER
+       ========================= */
+
+    [data-testid="stFileUploader"] {
+        background: __PANEL__ !important;
+        border: 1px solid __BORDER__ !important;
+        border-radius: 16px !important;
+        padding: 10px;
+    }
+
+    [data-testid="stFileUploader"] section {
+        background: __PANEL__ !important;
+        border-color: __BORDER__ !important;
+    }
+
+    [data-testid="stFileUploader"] * {
+        color: __TEXT__ !important;
+    }
+
+    /* =========================
+       EXPANDERS
+       ========================= */
+
+    [data-testid="stExpander"] {
+        background: __PANEL__ !important;
+        border: 1px solid __BORDER__ !important;
+        border-radius: 14px !important;
+    }
+
+    [data-testid="stExpander"] * {
+        color: __TEXT__ !important;
+    }
+
+    /* =========================
+       DIVIDERS
+       ========================= */
+
+    hr {
+        border-color: __BORDER__ !important;
+    }
+
+    /* =========================
+       FOOTER
+       ========================= */
+
+    .footer-card,
+    .footer-card span,
+    .footer-card p {
+        color: __MUTED__ !important;
+    }
+
+    /* =========================
+       SCROLLBAR
+       ========================= */
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: __BACKGROUND__;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: __PANEL_ALT__;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: __ACCENT__;
+    }
 
     </style>
     """
+
+    css = css.replace("__BACKGROUND__", background)
+    css = css.replace("__PANEL__", panel)
+    css = css.replace("__PANEL_ALT__", panel_alt)
+    css = css.replace("__INPUT__", input_background)
+    css = css.replace("__TEXT__", text)
+    css = css.replace("__MUTED__", muted)
+    css = css.replace("__BORDER__", border)
+    css = css.replace("__HOVER__", hover)
+    css = css.replace("__ACCENT__", accent_color)
+    css = css.replace(
+        "__ACCENT_ALPHA__",
+        accent_color + "22",
+    )
+    css = css.replace(
+        "__ACCENT_BORDER__",
+        accent_color + "66",
+    )
 
     st.markdown(css, unsafe_allow_html=True)
 
