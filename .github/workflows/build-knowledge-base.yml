@@ -9,12 +9,15 @@ on:
       - "rag/**"
       - "config/**"
 
-permissions:
-  contents: write
+concurrency:
+  group: build-knowledge-base
+  cancel-in-progress: false
 
 jobs:
   build-knowledge-base:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
