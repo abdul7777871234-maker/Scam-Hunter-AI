@@ -10,24 +10,40 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @dataclass(frozen=True)
 class Settings:
+
+    # ---------------------------------------------------------
+    # API KEYS
+    # ---------------------------------------------------------
+
     groq_api_key: str = ""
     gemini_api_key: str = ""
 
+    # ---------------------------------------------------------
+    # PRIMARY GROQ MODEL
+    # ---------------------------------------------------------
+
     groq_model: str = "openai/gpt-oss-120b"
+
+    # ---------------------------------------------------------
+    # GEMINI FALLBACK CHAIN
+    # ---------------------------------------------------------
 
     gemini_models: tuple[str, ...] = (
         "gemini-3.8-flash",
         "gemini-3.7-flash",
         "gemini-3.6-flash",
         "gemini-3.5-flash",
-        "gemini-flash-latest",
-        "gemini-flash-lite-latest",
+        "gemini-3.5-flash-lite",
         "gemini-3.1-flash-lite",
-        "gemini-2.5-flash",
-        "gemini-2.5-flash-lite",
     )
 
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    # ---------------------------------------------------------
+    # RAG
+    # ---------------------------------------------------------
+
+    embedding_model: str = (
+        "sentence-transformers/all-MiniLM-L6-v2"
+    )
 
     chunk_size: int = 850
     chunk_overlap: int = 120
@@ -35,11 +51,28 @@ class Settings:
     rag_top_k: int = 15
     rerank_top_k: int = 5
 
+    # ---------------------------------------------------------
+    # WEB SEARCH
+    # ---------------------------------------------------------
+
     max_web_results: int = 6
-    max_memory_items: int = 5
     search_ttl_hours: int = 24
 
+    # ---------------------------------------------------------
+    # MEMORY
+    # ---------------------------------------------------------
+
+    max_memory_items: int = 5
+
+    # ---------------------------------------------------------
+    # UPLOADS
+    # ---------------------------------------------------------
+
     max_upload_mb: int = 10
+
+    # ---------------------------------------------------------
+    # DIRECTORIES
+    # ---------------------------------------------------------
 
     data_dir: Path = field(
         default=ROOT / "knowledge_base"
@@ -53,29 +86,46 @@ class Settings:
         default=ROOT / "memory_data"
     )
 
+    # ---------------------------------------------------------
+    # RUNTIME SECRETS
+    # ---------------------------------------------------------
+
     @classmethod
     def from_runtime(cls):
+
         def secret(name: str) -> str:
+
+            # Streamlit Secrets
             try:
                 import streamlit as st
 
                 value = st.secrets.get(name)
 
                 if value:
-                    return str(value)
+                    return str(value).strip()
 
             except Exception:
                 pass
 
-            return os.getenv(name, "")
+            # Environment variables
+            return os.getenv(
+                name,
+                "",
+            ).strip()
 
         settings = cls(
-            groq_api_key=secret("GROQ_API_KEY"),
-            gemini_api_key=secret("GEMINI_API_KEY"),
+            groq_api_key=secret(
+                "GROQ_API_KEY"
+            ),
+
+            gemini_api_key=secret(
+                "GEMINI_API_KEY"
+            ),
+
             groq_model=os.getenv(
                 "GROQ_MODEL",
                 "openai/gpt-oss-120b",
-            ),
+            ).strip(),
         )
 
         settings.data_dir.mkdir(
