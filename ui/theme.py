@@ -302,6 +302,52 @@ html body div[data-baseweb="popover"] li[role="option"]:hover {
 .sidebar-provider-title {color:var(--sh-text)!important;font-size:11px;font-weight:800;}
 .sidebar-provider-list {margin-top:2px;color:var(--sh-muted)!important;font-size:10px;}
 .sidebar-provider-offline .sidebar-provider-dot {background:var(--sh-muted);box-shadow:none;}
+/* ---- FINAL BASEWEB PORTAL OVERRIDE: light/dark dropdowns ---- */
+body > div [data-baseweb="popover"],
+body > div [data-baseweb="popover"] > div,
+body > div [data-baseweb="popover"] [data-baseweb="menu"],
+body > div [data-baseweb="popover"] ul[role="listbox"],
+body > div [data-baseweb="popover"] li[role="option"] {
+  background:@@MENU@@ !important;
+  background-color:@@MENU@@ !important;
+  color:@@TEXT@@ !important;
+  color-scheme:@@SCHEME@@ !important;
+  border-color:@@BORDER@@ !important;
+}
+body > div [data-baseweb="popover"] [role="option"],
+body > div [data-baseweb="popover"] [role="option"] span,
+body > div [data-baseweb="popover"] [role="option"] div,
+body > div [data-baseweb="popover"] li[role="option"] * {
+  background:transparent !important;
+  background-color:transparent !important;
+  color:@@TEXT@@ !important;
+  -webkit-text-fill-color:@@TEXT@@ !important;
+}
+body > div [data-baseweb="popover"] [role="option"]:hover,
+body > div [data-baseweb="popover"] [role="option"][aria-selected="true"],
+body > div [data-baseweb="popover"] li[role="option"]:hover {
+  background:@@MENUHOVER@@ !important;
+  background-color:@@MENUHOVER@@ !important;
+  color:@@ACCENT@@ !important;
+}
+body > div [data-baseweb="popover"] [role="option"]:hover *,
+body > div [data-baseweb="popover"] [role="option"][aria-selected="true"] * {
+  background:transparent !important;
+  color:@@ACCENT@@ !important;
+  -webkit-text-fill-color:@@ACCENT@@ !important;
+}
+/* The trigger itself must follow the active palette, including nested BaseWeb wrappers. */
+html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"] > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-baseweb="select"] > div > div > div {
+  background:@@INPUT@@ !important;
+  background-color:@@INPUT@@ !important;
+  box-shadow:none !important;
+  color:@@TEXT@@ !important;
+  -webkit-text-fill-color:@@TEXT@@ !important;
+  color-scheme:@@SCHEME@@ !important;
+}
 </style>
 """
 
