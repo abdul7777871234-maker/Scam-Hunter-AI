@@ -6,9 +6,9 @@ from pathlib import Path
 from typing import Union
 
 
-# -------------------------------------------------------------
-# FILE TYPES
-# -------------------------------------------------------------
+# ============================================================
+# SUPPORTED FILE TYPES
+# ============================================================
 
 TEXT_TYPES = {
     ".pdf",
@@ -24,11 +24,6 @@ IMAGE_TYPES = {
     ".webp",
 }
 
-ALLOWED_EXTENSIONS = (
-    TEXT_TYPES
-    | IMAGE_TYPES
-)
-
 IMAGE_MIME = {
     ".png": "image/png",
     ".jpg": "image/jpeg",
@@ -36,10 +31,12 @@ IMAGE_MIME = {
     ".webp": "image/webp",
 }
 
+ALLOWED_TYPES = TEXT_TYPES | IMAGE_TYPES
 
-# -------------------------------------------------------------
+
+# ============================================================
 # UPLOAD VALIDATION
-# -------------------------------------------------------------
+# ============================================================
 
 def validate_upload(
     path: Union[str, Path],
@@ -47,130 +44,132 @@ def validate_upload(
     size_bytes: int | None = None,
 ) -> str:
     """
-    Validate an uploaded file and return a safe filename.
+    Validate an uploaded file.
 
-    Supports both:
-        validate_upload("file.pdf")
-        validate_upload("file.pdf", size_bytes=12345)
+    Returns a sanitized filename.
 
-    The explicit size_bytes argument is important for Streamlit's
-    UploadedFile objects because their temporary filesystem path
-    may not exist.
+    Compatible with:
+        validate_upload(filename, max_mb)
+        validate_upload(filename, max_mb, size_bytes=...)
     """
 
-    p = Path(path)
+    filename = Path(path).name
+    suffix = Path(filename).suffix.lower()
 
-    suffix = p.suffix.lower()
-
-    if suffix not in ALLOWED_EXTENSIONS:
+    if suffix not in ALLOWED_TYPES:
         raise ValueError(
-            "Unsupported file type: "
-            f"{suffix or 'unknown'}"
+            f"Unsupported file type: {suffix or 'unknown'}"
         )
 
-    # ---------------------------------------------------------
-    # Determine file size
-    # ---------------------------------------------------------
+    # --------------------------------------------------------
+    # Determine size
+    # --------------------------------------------------------
 
-    actual_size = size_bytes
+    if size_bytes is None:
+        candidate = Path(path)
 
-    if actual_size is None:
-        if p.exists() and p.is_file():
-            actual_size = p.stat().st_size
+        if candidate.exists() and candidate.is_file():
+            size_bytes = candidate.stat().st_size
 
-    if actual_size is not None:
-        max_bytes = (
-            max(1, int(max_mb))
-            * 1024
-            * 1024
-        )
+    if size_bytes is not None:
+        max_bytes = max(
+            1,
+            int(max_mb),
+        ) * 1024 * 1024
 
-        if actual_size > max_bytes:
+        if int(size_bytes) > max_bytes:
             raise ValueError(
-                f"File exceeds the {max_mb} MB limit."
+                f"File is too large. Maximum allowed size is "
+                f"{max_mb} MB."
             )
 
-        if actual_size < 0:
-            raise ValueError(
-                "Invalid file size."
-            )
-
-    # ---------------------------------------------------------
+    # --------------------------------------------------------
     # Sanitize filename
-    # ---------------------------------------------------------
+    # --------------------------------------------------------
 
     safe_name = re.sub(
         r"[^A-Za-z0-9._-]+",
         "_",
-        p.name,
+        filename,
     )
 
-    safe_name = safe_name.strip(
-        "._"
-    )
+    safe_name = safe_name.strip("._")
 
     if not safe_name:
         raise ValueError(
             "Invalid filename."
         )
 
-    # Keep extension after sanitization.
-    if "." not in safe_name:
+    # Make sure extension remains supported.
+    final_suffix = Path(
+        safe_name
+    ).suffix.lower()
+
+    if final_suffix not in ALLOWED_TYPES:
         raise ValueError(
-            "Filename must include a supported extension."
+            f"Unsupported file type: {final_suffix or 'unknown'}"
         )
 
     return safe_name
 
 
-# -------------------------------------------------------------
+# ============================================================
 # TEXT EXTRACTION
-# -------------------------------------------------------------
+# ============================================================
 
 def extract_upload_text(
     filename: Union[str, Path],
     data: bytes,
 ) -> str:
     """
-    Extract text from an uploaded PDF, DOCX, TXT, or Markdown file.
-
-    Returns plain text suitable for adding to the investigation
-    prompt.
+    Extract text from PDF, DOCX, TXT, or Markdown uploads.
     """
 
     if not data:
         return ""
 
-    path = Path(filename)
-    suffix = path.suffix.lower()
+    suffix = Path(
+        filename
+    ).suffix.lower()
 
-    if suffix == ".txt" or suffix == ".md":
+    # --------------------------------------------------------
+    # TXT / Markdown
+    # --------------------------------------------------------
+
+    if suffix in {".txt", ".md"}:
         return data.decode(
             "utf-8",
             errors="ignore",
         ).strip()
 
+    # --------------------------------------------------------
+    # PDF
+    # --------------------------------------------------------
+
     if suffix == ".pdf":
-        return _extract_pdf_bytes(
+        return _extract_pdf(
             data
         ).strip()
 
+    # --------------------------------------------------------
+    # DOCX
+    # --------------------------------------------------------
+
     if suffix == ".docx":
-        return _extract_docx_bytes(
+        return _extract_docx(
             data
         ).strip()
 
     raise ValueError(
-        f"Text extraction is not supported "
-        f"for {suffix or 'unknown'} files."
+        f"Cannot extract text from {suffix or 'unknown'} files."
     )
 
 
-# -------------------------------------------------------------
-# PDF
-# -------------------------------------------------------------
+# ============================================================
+# PDF EXTRACTION
+# ============================================================
 
-def _extract_pdf_bytes(
+def _extract_pdf(
     data: bytes,
 ) -> str:
 
@@ -178,7 +177,7 @@ def _extract_pdf_bytes(
         from pypdf import PdfReader
     except ImportError as exc:
         raise RuntimeError(
-            "PDF support requires the 'pypdf' package."
+            "PDF support requires pypdf."
         ) from exc
 
     try:
@@ -186,7 +185,7 @@ def _extract_pdf_bytes(
             io.BytesIO(data)
         )
 
-        pages = []
+        pages: list[str] = []
 
         for page_number, page in enumerate(
             reader.pages,
@@ -212,11 +211,11 @@ def _extract_pdf_bytes(
         ) from exc
 
 
-# -------------------------------------------------------------
-# DOCX
-# -------------------------------------------------------------
+# ============================================================
+# DOCX EXTRACTION
+# ============================================================
 
-def _extract_docx_bytes(
+def _extract_docx(
     data: bytes,
 ) -> str:
 
@@ -224,7 +223,7 @@ def _extract_docx_bytes(
         from docx import Document
     except ImportError as exc:
         raise RuntimeError(
-            "DOCX support requires the 'python-docx' package."
+            "DOCX support requires python-docx."
         ) from exc
 
     try:
@@ -232,11 +231,13 @@ def _extract_docx_bytes(
             io.BytesIO(data)
         )
 
-        paragraphs = [
-            paragraph.text.strip()
-            for paragraph in document.paragraphs
-            if paragraph.text.strip()
-        ]
+        paragraphs: list[str] = []
+
+        for paragraph in document.paragraphs:
+            text = paragraph.text.strip()
+
+            if text:
+                paragraphs.append(text)
 
         return "\n\n".join(
             paragraphs
@@ -248,9 +249,9 @@ def _extract_docx_bytes(
         ) from exc
 
 
-# -------------------------------------------------------------
-# OPTIONAL HELPERS
-# -------------------------------------------------------------
+# ============================================================
+# HELPER FUNCTIONS
+# ============================================================
 
 def is_supported_file(
     filename: Union[str, Path],
@@ -259,7 +260,7 @@ def is_supported_file(
         Path(filename)
         .suffix
         .lower()
-        in ALLOWED_EXTENSIONS
+        in ALLOWED_TYPES
     )
 
 
@@ -288,6 +289,7 @@ def is_text_file(
 def get_image_mime(
     filename: Union[str, Path],
 ) -> str:
+
     suffix = (
         Path(filename)
         .suffix
@@ -300,8 +302,7 @@ def get_image_mime(
 
     if not mime:
         raise ValueError(
-            f"Unsupported image type: "
-            f"{suffix or 'unknown'}"
+            f"Unsupported image type: {suffix}"
         )
 
     return mime
