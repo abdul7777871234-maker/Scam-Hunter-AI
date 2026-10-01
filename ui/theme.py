@@ -244,6 +244,22 @@ html body .stApp [data-testid="stChatInputTextArea"]{background:@@PANEL@@!import
 
 html body .stApp [data-baseweb="select"] *:not(svg):not(path){background-color:@@INPUT@@!important;background-image:none!important;}
 html body .stApp [data-baseweb="select"] svg{background:transparent!important;fill:@@MUTED@@!important;color:@@MUTED@@!important;}
+
+/* ---- round 3: selectbox black value area ---- */
+html body .stApp [data-baseweb="select"],
+html body .stApp [data-baseweb="select"] *{color-scheme:@@SCHEME@@!important;}
+html body .stApp [data-baseweb="select"] > div,
+html body .stApp [data-baseweb="select"] > div > div,
+html body .stApp [data-baseweb="select"] > div > div > div,
+html body .stApp [data-baseweb="select"] input,
+html body .stApp [data-baseweb="select"] [value]{
+  background:@@INPUT@@!important;background-color:@@INPUT@@!important;background-image:none!important;
+  box-shadow:inset 0 0 0 100px @@INPUT@@!important;
+  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;opacity:1!important;filter:none!important;}
+html body .stApp [data-baseweb="select"] > div::before,
+html body .stApp [data-baseweb="select"] > div::after{background:transparent!important;display:none!important;}
+html body .stApp [data-baseweb="select"] > div{border:1px solid @@BORDER@@!important;border-radius:12px!important;overflow:hidden;}
+html body .stApp [data-baseweb="select"] svg{color:@@MUTED@@!important;fill:@@MUTED@@!important;}
 </style>
 """
 
