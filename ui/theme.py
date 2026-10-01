@@ -664,6 +664,63 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] di
   color:@@SELECT_ARROW@@!important;
   fill:@@SELECT_ARROW@@!important;
 }
+/* FINAL NATIVE BOX THEME LOCK
+   Streamlit/BaseWeb can apply its own light surface to nested controls.
+   Keep every interactive box tied to the active Light/Dark palette. */
+html body .stApp input,
+html body .stApp textarea,
+html body .stApp [data-baseweb="input"],
+html body .stApp [data-baseweb="base-input"],
+html body .stApp [data-baseweb="textarea"],
+html body .stApp [data-baseweb="textarea"] > div,
+html body .stApp [data-testid="stTextInput"] input,
+html body .stApp [data-testid="stTextArea"] textarea,
+html body .stApp [data-testid="stNumberInput"] input {
+  background:var(--sh-input)!important;
+  background-color:var(--sh-input)!important;
+  color:var(--sh-text)!important;
+  -webkit-text-fill-color:var(--sh-text)!important;
+  border-color:var(--sh-border)!important;
+  color-scheme:var(--sh-scheme)!important;
+}
+
+html body .stApp [data-testid="stTextInput"] > div,
+html body .stApp [data-testid="stTextArea"] > div,
+html body .stApp [data-testid="stNumberInput"] > div,
+html body .stApp [data-testid="stDateInput"] > div,
+html body .stApp [data-testid="stTimeInput"] > div {
+  background:var(--sh-input)!important;
+  background-color:var(--sh-input)!important;
+  border-color:var(--sh-border)!important;
+  color:var(--sh-text)!important;
+}
+
+html body .stApp [data-testid="stFileUploaderDropzone"],
+html body .stApp section[data-testid="stFileUploaderDropzone"] {
+  background:var(--sh-input)!important;
+  background-color:var(--sh-input)!important;
+  color:var(--sh-text)!important;
+  border-color:var(--sh-border)!important;
+}
+
+html body .stApp [data-testid="stFileUploaderDropzone"] *,
+html body .stApp [data-testid="stTextInput"] *,
+html body .stApp [data-testid="stTextArea"] *,
+html body .stApp [data-testid="stNumberInput"] * {
+  color:var(--sh-text)!important;
+}
+
+html body .stApp [data-baseweb="select"],
+html body .stApp [data-baseweb="select"] > div,
+html body .stApp [data-baseweb="select"] > div > div {
+  background:var(--sh-select-bg)!important;
+  background-color:var(--sh-select-bg)!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+  border-color:var(--sh-select-border)!important;
+  color-scheme:var(--sh-scheme)!important;
+}
+
 </style>
 """
 
