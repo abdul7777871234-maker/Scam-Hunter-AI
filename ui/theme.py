@@ -819,4 +819,4 @@ def apply_theme(dark: bool, accent: str):
     for key, value in palette.items():
         css = css.replace(f"@@{key}@@", value)
 
-    st.markdown(css, unsafe_allow_html=True)
+    # Explicit theme marker lets CSS target Dark mode without touching Light mode.\n    marker = "<div class=\\\"sh-theme-dark\\\"></div>" if dark else "<div class=\\\"sh-theme-light\\\"></div>"\n    st.markdown(css, unsafe_allow_html=True)\n    st.markdown(marker, unsafe_allow_html=True)
