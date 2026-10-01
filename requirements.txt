@@ -1,4 +1,4 @@
-streamlit>=1.43,<2
+streamlit>=1.43,<1.59
 groq>=0.13
 google-genai>=1.0
 faiss-cpu>=1.8
