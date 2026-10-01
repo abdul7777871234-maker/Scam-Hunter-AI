@@ -27,6 +27,10 @@ class InvestigationOrchestrator:
         self.judge = JudgeAgent(router)
         self.response = ResponseAgent(router)
 
+    def detect_intent(self, user_text: str) -> dict:
+        """Route ordinary conversation away from the scam investigation pipeline."""
+        return self.classifier.run(user_text)
+
     def run_quick(self, user_text: str, mode="Quick Check", style="Balanced", language="English", signals="") -> dict:
         events = []
         classification = self.classifier.run(user_text)
