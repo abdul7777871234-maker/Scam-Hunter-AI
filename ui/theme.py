@@ -260,6 +260,48 @@ html body .stApp [data-baseweb="select"] > div::before,
 html body .stApp [data-baseweb="select"] > div::after{background:transparent!important;display:none!important;}
 html body .stApp [data-baseweb="select"] > div{border:1px solid @@BORDER@@!important;border-radius:12px!important;overflow:hidden;}
 html body .stApp [data-baseweb="select"] svg{color:@@MUTED@@!important;fill:@@MUTED@@!important;}
+
+/* ---- FINAL THEME LOCK: sidebar select controls + dropdown menus ---- */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div {
+  background:@@INPUT@@!important;background-color:@@INPUT@@!important;background-image:none!important;
+  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;border-color:@@BORDER@@!important;
+  box-shadow:none!important;opacity:1!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
+  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;fill:@@MUTED@@!important;
+}
+html body div[data-baseweb="popover"],
+html body div[data-baseweb="popover"] > div,
+html body div[data-baseweb="popover"] [data-baseweb="menu"],
+html body div[data-baseweb="popover"] ul[role="listbox"] {
+  background:@@MENU@@!important;background-color:@@MENU@@!important;color:@@TEXT@@!important;
+  border-color:@@BORDER@@!important;box-shadow:0 18px 50px rgba(0,0,0,.16)!important;
+}
+html body div[data-baseweb="popover"] [role="option"],
+html body div[data-baseweb="popover"] li[role="option"],
+html body div[data-baseweb="popover"] [role="option"] * {
+  background:@@MENU@@!important;background-color:@@MENU@@!important;color:@@TEXT@@!important;
+  -webkit-text-fill-color:@@TEXT@@!important;
+}
+html body div[data-baseweb="popover"] [role="option"]:hover,
+html body div[data-baseweb="popover"] [role="option"][aria-selected="true"],
+html body div[data-baseweb="popover"] li[role="option"]:hover {
+  background:@@MENUHOVER@@!important;background-color:@@MENUHOVER@@!important;color:@@ACCENT@@!important;
+  -webkit-text-fill-color:@@ACCENT@@!important;
+}
+.sidebar-provider-card {
+  display:flex;align-items:center;gap:10px;padding:10px 11px;margin:7px 0 4px;
+  border:1px solid var(--sh-border);border-radius:11px;background:var(--sh-panel2);color:var(--sh-text)!important;
+}
+.sidebar-provider-dot {width:8px;height:8px;min-width:8px;border-radius:50%;background:var(--sh-accent);box-shadow:0 0 10px var(--sh-accent);}
+.sidebar-provider-title {color:var(--sh-text)!important;font-size:11px;font-weight:800;}
+.sidebar-provider-list {margin-top:2px;color:var(--sh-muted)!important;font-size:10px;}
+.sidebar-provider-offline .sidebar-provider-dot {background:var(--sh-muted);box-shadow:none;}
 </style>
 """
 
