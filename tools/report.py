@@ -247,7 +247,7 @@ def build_report(
                         pages.append(page)
                         page = []
                         y = 680
-                            page.append(_text(page, 70, y, line, 7.3, MUTED))
+                    page.append(_text(page, 70, y, line, 7.3, MUTED))
                     y -= 11
             y -= 7
 
