@@ -280,7 +280,8 @@ def render_download(index: int, message: dict) -> None:
         verdict=message.get("verdict"),
         scan=scan_text(question),
         sources=message.get("sources", []),
-        mode=mode,
+        mode=message.get("mode", mode),
+        language=message.get("language", language),
     )
 
     st.download_button(
