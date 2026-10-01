@@ -1,4 +1,4 @@
-```python
+
 import streamlit as st
 
 
@@ -322,4 +322,4 @@ div[data-testid="stExpander"] summary * {
         css,
         unsafe_allow_html=True,
     )
-```
+
