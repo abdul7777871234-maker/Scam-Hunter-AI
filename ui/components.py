@@ -1,218 +1,58 @@
 from __future__ import annotations
-
 import html
-
 import streamlit as st
 
+def hero(compact=False):
+    if compact:
+        st.markdown('<div class="hero" style="padding:22px 24px;"><div class="hero-title" style="font-size:32px;">ScamHunter <span>AI</span></div><div class="hero-description">Evidence-first investigation for suspicious messages, links, offers and documents.</div></div>',unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="hero"><div class="hero-logo">🛡️</div><div class="hero-title">ScamHunter <span>AI</span></div><div class="hero-description">Investigate suspicious messages, offers, links and online claims with AI-powered evidence analysis.</div><div class="hero-badge">● Evidence-first AI investigation</div></div>',unsafe_allow_html=True)
 
-def hero():
-    st.markdown(
-        """
-        <div class="hero">
-            <div class="hero-logo">🛡️</div>
+def example_prompts():
+    prompts=["Is this message a scam?","I received this suspicious payment request. Check it.","Can you investigate this link and message?"]
+    cols=st.columns(3)
+    for i,p in enumerate(prompts):
+        with cols[i]:
+            if st.button(p,use_container_width=True,key=f"example_{i}"): return p
+    return None
 
-            <div class="hero-title">
-                ScamHunter <span>AI</span>
-            </div>
+def setup_banner(groq=False,gemini=False):
+    if groq or gemini:
+        st.success("AI providers configured: "+", ".join([x for x,y in (("Groq",groq),("Gemini",gemini)) if y]))
+    else:
+        st.info("No AI API key is configured. Instant heuristic scanning is still available.")
 
-            <div class="hero-description">
-                Investigate suspicious messages, offers, links and online
-                claims with AI-powered evidence analysis.
-            </div>
+def stat_strip(stats):
+    cols=st.columns(len(stats))
+    for col,(label,value) in zip(cols,stats):
+        with col:
+            st.markdown(f'<div class="card"><div class="footer-title">{html.escape(str(label))}</div><div style="font-size:20px;font-weight:800;color:var(--sh-text);margin-top:5px;">{html.escape(str(value))}</div></div>',unsafe_allow_html=True)
 
-            <div class="hero-badge">
-                <span class="hero-badge-dot">●</span>
-                Evidence-first AI investigation
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+def risk_meter(scan):
+    if not scan: return
+    level=scan.get("level","none"); score=scan.get("score",0)
+    st.markdown(f'<div class="card"><b>Instant scan: {html.escape(level.title())}</b> · Signal score <b>{score}/100</b><br><span class="muted">{html.escape(scan.get("headline",""))}</span></div>',unsafe_allow_html=True)
 
+def scan_details(scan):
+    if not scan: return
+    flags=scan.get("flags",[])
+    if not flags:
+        st.caption("No automatic warning signals detected.")
+        return
+    for f in flags:
+        st.markdown(f'<div class="source-card"><b>{html.escape(str(f.get("label","Signal")))}</b><br><span class="muted">{html.escape(str(f.get("advice","")))}</span></div>',unsafe_allow_html=True)
 
 def source_card(item):
-    """
-    Render a safe, theme-aware evidence citation card.
-
-    Supports:
-    - Knowledge Base evidence
-    - Web evidence
-    - Flat evidence dictionaries
-    - Nested source dictionaries
-    """
-
-    if not isinstance(item, dict):
-        item = {"text": str(item)}
-
-    source = item.get("source")
-
-    if isinstance(source, dict):
-        merged = dict(source)
-
-        for key, value in item.items():
-            if key != "source" and value not in (None, ""):
-                merged[key] = value
-
-        item = merged
-
-    source_type = (
-        item.get("source_type")
-        or item.get("type")
-        or ""
-    ).lower()
-
-    # ---------------------------------------------------------
-    # KNOWLEDGE BASE SOURCE
-    # ---------------------------------------------------------
-
-    if source_type == "knowledge_base":
-        filename = (
-            item.get("filename")
-            or item.get("title")
-            or "Knowledge Base Document"
-        )
-
-        page = item.get("page")
-        section = item.get("section") or "General"
-        chunk_id = item.get("chunk_id")
-
-        details = []
-
-        if page is not None:
-            details.append(f"Page {page}")
-
-        if section:
-            details.append(section)
-
-        if chunk_id:
-            details.append(chunk_id)
-
-        detail_text = " · ".join(details)
-
-        excerpt = (
-            item.get("excerpt")
-            or item.get("text")
-            or item.get("content")
-            or ""
-        )
-
-        filename = html.escape(str(filename))
-        detail_text = html.escape(str(detail_text))
-        excerpt = html.escape(str(excerpt)).replace("\n", "<br>")
-
-        st.markdown(
-            f"""
-            <div class="source-card source-card-kb">
-
-                <div class="source-header">
-                    <div class="source-icon">📄</div>
-
-                    <div class="source-heading">
-                        <div class="source-title">
-                            {filename}
-                        </div>
-
-                        <div class="source-meta">
-                            {detail_text}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="source-excerpt">
-                    {excerpt}
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        return
-
-    # ---------------------------------------------------------
-    # WEB SOURCE
-    # ---------------------------------------------------------
-
-    title = (
-        item.get("title")
-        or item.get("url")
-        or "Web source"
-    )
-
-    url = item.get("url", "")
-
-    excerpt = (
-        item.get("snippet")
-        or item.get("excerpt")
-        or item.get("text")
-        or item.get("content")
-        or ""
-    )
-
-    title = html.escape(str(title))
-    url = html.escape(str(url))
-    excerpt = html.escape(str(excerpt)).replace("\n", "<br>")
-
-    st.markdown(
-        f"""
-        <div class="source-card source-card-web">
-
-            <div class="source-header">
-                <div class="source-icon">🌐</div>
-
-                <div class="source-heading">
-                    <div class="source-title">
-                        {title}
-                    </div>
-
-                    <div class="source-meta">
-                        {url}
-                    </div>
-                </div>
-            </div>
-
-            <div class="source-excerpt">
-                {excerpt}
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def section_label(text: str):
-    """Render a small uppercase section label."""
-
-    safe_text = html.escape(str(text))
-
-    st.markdown(
-        f'<div class="section-label">{safe_text}</div>',
-        unsafe_allow_html=True,
-    )
-
-
-def info_card(title: str, body: str, icon: str = "ℹ️"):
-    """Render a generic theme-aware information card."""
-
-    safe_title = html.escape(str(title))
-    safe_body = html.escape(str(body)).replace("\n", "<br>")
-    safe_icon = html.escape(str(icon))
-
-    st.markdown(
-        f"""
-        <div class="info-card">
-
-            <div class="info-card-title">
-                <span class="info-card-icon">{safe_icon}</span>
-                <span>{safe_title}</span>
-            </div>
-
-            <div class="info-card-body">
-                {safe_body}
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    if not isinstance(item,dict): item={"text":str(item)}
+    source=item.get("source")
+    if isinstance(source,dict):
+        merged=dict(source); merged.update({k:v for k,v in item.items() if k!="source" and v not in (None,"")}); item=merged
+    source_type=(item.get("source_type") or item.get("type") or "").lower()
+    title=item.get("filename") or item.get("title") or item.get("url") or ("Knowledge Base Document" if source_type=="knowledge_base" else "Web source")
+    meta=[]
+    if item.get("page") is not None: meta.append(f"Page {item.get('page')}")
+    if item.get("section"): meta.append(str(item.get("section")))
+    if item.get("url") and source_type!="knowledge_base": meta.append(str(item.get("url")))
+    excerpt=item.get("excerpt") or item.get("snippet") or item.get("text") or item.get("content") or ""
+    icon="📄" if source_type=="knowledge_base" else "🌐"
+    st.markdown(f'<div class="source-card"><div class="source-header"><div class="source-icon">{icon}</div><div class="source-heading"><div class="source-title">{html.escape(str(title))}</div><div class="source-meta">{html.escape(" · ".join(meta))}</div></div></div><div class="source-excerpt">{html.escape(str(excerpt)).replace(chr(10),"<br>")}</div></div>',unsafe_allow_html=True)
