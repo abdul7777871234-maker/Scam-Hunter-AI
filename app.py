@@ -1,4 +1,3 @@
-```python
 from __future__ import annotations
 
 import inspect
@@ -549,4 +548,3 @@ render_footer(
     uid,
     S.kb_status,
 )
-```
