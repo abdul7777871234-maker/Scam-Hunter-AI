@@ -7,8 +7,20 @@ class GroqProvider:
         self.model = model
         self.client = None
         if api_key:
-            from groq import Groq
-            self.client = Groq(api_key=api_key)
+            try:
+                from groq import Groq
+                self.client = Groq(api_key=api_key)
+            except Exception:
+                self.client = None
+
+    @staticmethod
+    def _safe_error(exc: Exception) -> str:
+        text = str(exc).lower()
+        if any(x in text for x in ("api key", "authorization", "authentication", "401", "403", "429")):
+            return "provider authentication or rate-limit error"
+        if "timeout" in text or "timed out" in text:
+            return "provider timeout"
+        return "provider request error"
 
     def complete(self, prompt: str, system: str = "", temperature: float = 0.2) -> ModelResult:
         if not self.client:
@@ -17,9 +29,17 @@ class GroqProvider:
         if system:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
-        r = self.client.chat.completions.create(
+        try:
+            r = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
             temperature=temperature,
         )
-        return ModelResult(r.choices[0].message.content or "", "groq", self.model)
+            content = getattr(getattr(r.choices[0], "message", None), "content", "") or ""
+            if not content:
+                raise RuntimeError("Groq returned an empty response.")
+            return ModelResult(content, "groq", self.model)
+        except RuntimeError:
+            raise
+        except Exception as exc:
+            raise RuntimeError(self._safe_error(exc)) from exc
