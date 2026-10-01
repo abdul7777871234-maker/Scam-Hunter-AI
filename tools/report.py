@@ -1,13 +1,14 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 
-def build_report(question, answer, verdict=None, scan=None, sources=None, mode="Quick Check"):
-    lines=["# ScamHunter AI Investigation Report","",f"Generated: {datetime.now(timezone.utc).isoformat()}",f"Mode: {mode}","","## User Content","",question or "(No text provided.)","","## Instant Scan",""]
+def build_report(question, answer, verdict=None, scan=None, sources=None, mode="Quick Check", language="English"):
+    lines=["# ScamHunter AI Investigation Report","",f"Generated: {datetime.now(timezone.utc).isoformat()}",f"Mode: {mode}",f"Response language: {language}","","## User Content","",question or "(No text provided.)","","## Instant Scan",""]
     if scan:
         lines += [f"- Level: {scan.get('level','none')}",f"- Signal score: {scan.get('score',0)}/100",f"- Summary: {scan.get('headline','')}",""]
         lines += [f"- {f.get('label','Signal')}: {f.get('advice','')}" for f in scan.get("flags",[])]
         lines.append("")
     lines += ["## AI Investigation","",answer or "(No answer generated.)",""]
+    lines += ["## Evidence Note","","The Instant Scan score is heuristic and should be treated as a warning signal, not proof of fraud.",""]
     if verdict:
         lines += ["## Verdict","",f"- Level: {verdict.get('level','')}",f"- Category: {verdict.get('category','') or 'Not specified'}",f"- Source: {verdict.get('source','')}",""]
     if sources:
