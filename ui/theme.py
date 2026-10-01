@@ -1291,6 +1291,74 @@ html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [d
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]::after {
   display:none!important;
 }
+
+/* FINAL MODERN STREAMLIT SELECTBOX LAYER
+   Streamlit 1.59+ moved st.selectbox away from BaseWeb.
+   Keep the sidebar controls theme-owned in both DOM implementations. */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="combobox"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"][aria-haspopup="listbox"] {
+  min-height:44px!important;
+  box-sizing:border-box!important;
+  background:var(--sh-select-bg)!important;
+  background-color:var(--sh-select-bg)!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+  border:1px solid var(--sh-select-border)!important;
+  border-radius:14px!important;
+  outline:none!important;
+  box-shadow:none!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="combobox"] *,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"][aria-haspopup="listbox"] * {
+  background:transparent!important;
+  background-color:transparent!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="combobox"]:hover,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"][aria-haspopup="listbox"]:hover {
+  background:var(--sh-hover)!important;
+  background-color:var(--sh-hover)!important;
+  border-color:var(--sh-accent)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="combobox"]:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="combobox"]:focus-visible,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"][aria-haspopup="listbox"]:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"][aria-haspopup="listbox"]:focus-visible {
+  outline:none!important;
+  box-shadow:0 0 0 1px var(--sh-select-border)!important;
+  border-color:var(--sh-select-border)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] input {
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+  background:transparent!important;
+  background-color:transparent!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-testid="stSelectboxIcon"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] svg {
+  color:var(--sh-select-arrow)!important;
+  fill:var(--sh-select-arrow)!important;
+  stroke:var(--sh-select-arrow)!important;
+  opacity:1!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectboxVirtualDropdown"],
+html body .stApp [data-testid="stSelectboxVirtualDropdown"] {
+  color-scheme:var(--sh-scheme)!important;
+  background:var(--sh-menu)!important;
+  background-color:var(--sh-menu)!important;
+  color:var(--sh-text)!important;
+}
+html body .stApp [data-testid="stSelectboxVirtualDropdown"] [role="option"] {
+  background:var(--sh-menu)!important;
+  color:var(--sh-text)!important;
+}
+html body .stApp [data-testid="stSelectboxVirtualDropdown"] [role="option"]:hover,
+html body .stApp [data-testid="stSelectboxVirtualDropdown"] [role="option"][aria-selected="true"] {
+  background:var(--sh-menu-hover)!important;
+  color:var(--sh-text)!important;
+}
+
 </style>
 """
 
