@@ -9,13 +9,18 @@ def hero(compact=False):
         st.markdown('<div class="hero"><div class="hero-logo">🛡️</div><div class="hero-title">ScamHunter <span>AI</span></div><div class="hero-description">Investigate suspicious messages, offers, links and online claims with AI-powered evidence analysis.</div><div class="hero-badge">● Evidence-first AI investigation</div></div>',unsafe_allow_html=True)
 
 def example_prompts():
-    prompts=["Is this message a scam?","I received this suspicious payment request. Check it.","Can you investigate this link and message?"]
-    cols=st.columns(3)
-    for i,p in enumerate(prompts):
+    # Short, balanced sample queries so the buttons never overlap.
+    prompts = [
+        "Is this message a scam?",
+        "Check this payment request.",
+        "Investigate this link.",
+    ]
+    cols = st.columns(3, gap="medium")
+    for i, prompt in enumerate(prompts):
         with cols[i]:
-            if st.button(p,use_container_width=True,key=f"example_{i}"): return p
+            if st.button(prompt, use_container_width=True, key=f"example_{i}"):
+                return prompt
     return None
-
 def setup_banner(groq=False,gemini=False):
     if groq or gemini:
         st.success("AI providers configured: "+", ".join([x for x,y in (("Groq",groq),("Gemini",gemini)) if y]))
