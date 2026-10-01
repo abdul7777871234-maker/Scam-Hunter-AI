@@ -9,18 +9,20 @@ def hero(compact=False):
         st.markdown('<div class="hero"><div class="hero-logo">🛡️</div><div class="hero-title">ScamHunter <span>AI</span></div><div class="hero-description">Investigate suspicious messages, offers, links and online claims with AI-powered evidence analysis.</div><div class="hero-badge">● Evidence-first AI investigation</div></div>',unsafe_allow_html=True)
 
 def example_prompts():
-    # Short, balanced sample queries so the buttons never overlap.
+    """Render compact, responsive sample-query buttons."""
     prompts = [
         "Is this message a scam?",
         "Check this payment request.",
         "Investigate this link.",
     ]
-    cols = st.columns(3, gap="medium")
+    st.markdown('<div class="sample-query-title">SAMPLE QUERIES</div>', unsafe_allow_html=True)
+    cols = st.columns(3, gap="small")
     for i, prompt in enumerate(prompts):
         with cols[i]:
-            if st.button(prompt, use_container_width=True, key=f"example_{i}"):
+            if st.button(prompt, use_container_width=True, key=f"example_{i}", help=prompt):
                 return prompt
     return None
+
 def setup_banner(groq=False,gemini=False):
     if groq or gemini:
         st.success("AI providers configured: "+", ".join([x for x,y in (("Groq",groq),("Gemini",gemini)) if y]))
@@ -28,10 +30,14 @@ def setup_banner(groq=False,gemini=False):
         st.info("No AI API key is configured. Instant heuristic scanning is still available.")
 
 def stat_strip(stats):
-    cols=st.columns(len(stats))
-    for col,(label,value) in zip(cols,stats):
+    cols = st.columns(len(stats), gap="small")
+    for col, (label, value) in zip(cols, stats):
         with col:
-            st.markdown(f'<div class="card"><div class="footer-title">{html.escape(str(label))}</div><div style="font-size:20px;font-weight:800;color:var(--sh-text);margin-top:5px;">{html.escape(str(value))}</div></div>',unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="stat-card"><div class="stat-label">{html.escape(str(label))}</div>'
+                f'<div class="stat-value">{html.escape(str(value))}</div></div>',
+                unsafe_allow_html=True,
+            )
 
 def risk_meter(scan):
     if not scan: return
