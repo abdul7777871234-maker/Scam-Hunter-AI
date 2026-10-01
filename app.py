@@ -542,7 +542,7 @@ if submission:
             display_prompt = prompt
 
             if attachment_names:
-            display_prompt = (
+                display_prompt = (
                 (prompt + "\n\n" if prompt else "")
                 + "📎 "
                 + ", ".join(attachment_names)
@@ -554,132 +554,132 @@ if submission:
             with st.chat_message("user"):
                 st.markdown(display_prompt)
 
-        empty_result = {
-            "answer": "",
-            "events": [],
-            "rag": {"items": [], "evidence": []},
-            "web": {"items": [], "cached": False},
-        }
+            empty_result = {
+                "answer": "",
+                "events": [],
+                "rag": {"items": [], "evidence": []},
+                "web": {"items": [], "cached": False},
+            }
 
-        # -----------------------------------------------------------
-        # INVESTIGATION
-        # -----------------------------------------------------------
+            # -----------------------------------------------------------
+            # INVESTIGATION
+            # -----------------------------------------------------------
 
-        with st.chat_message("assistant"):
-            result = empty_result
-            verdict = None
-            scan = scan_text(prompt)
-            notes: list[str] = []
-            analysis_input = prompt
+            with st.chat_message("assistant"):
+                result = empty_result
+                verdict = None
+                scan = scan_text(prompt)
+                notes: list[str] = []
+                analysis_input = prompt
 
-            # ---- attachments ----
-            if uploaded_files:
-                with st.spinner("📎 Reading attachments…"):
-                    blocks, notes = process_attachments(uploaded_files)
+                # ---- attachments ----
+                if uploaded_files:
+                    with st.spinner("📎 Reading attachments…"):
+                        blocks, notes = process_attachments(uploaded_files)
 
-                if blocks:
-                    analysis_input = (
-                        (prompt + "\n\n" if prompt else "")
-                        + "\n\n".join(blocks)
-                    ).strip()
-                    scan = scan_text(analysis_input)
+                    if blocks:
+                        analysis_input = (
+                            (prompt + "\n\n" if prompt else "")
+                            + "\n\n".join(blocks)
+                        ).strip()
+                        scan = scan_text(analysis_input)
 
-            # ---- instant scan (works without any API key) ----
-            risk_meter(scan)
+                # ---- instant scan (works without any API key) ----
+                risk_meter(scan)
 
-            for note in notes:
-                st.caption(f"⚠️ {note}")
+                for note in notes:
+                    st.caption(f"⚠️ {note}")
 
-            # Uploaded files should not use the normal text-answer cache.
-            use_cache = not uploaded_files
-            cache_key = (mode, style, language, analysis_input)
-            cached = S.answer_cache.get(cache_key) if use_cache else None
-            started = time.perf_counter()
-            elapsed = 0.0
-            from_cache = False
+                # Uploaded files should not use the normal text-answer cache.
+                use_cache = not uploaded_files
+                cache_key = (mode, style, language, analysis_input)
+                cached = S.answer_cache.get(cache_key) if use_cache else None
+                started = time.perf_counter()
+                elapsed = 0.0
+                from_cache = False
 
-            if not analysis_input.strip():
-                answer = (
-                    "Nothing could be analyzed from the attachment. "
-                    "Paste the message text, or check the notes above."
-                )
+                if not analysis_input.strip():
+                    answer = (
+                        "Nothing could be analyzed from the attachment. "
+                        "Paste the message text, or check the notes above."
+                    )
 
-            # ---- cached response ----
-            elif cached:
-                result = cached
-                parsed = extract_verdict(result, result.get("answer", ""))
-                answer = parsed["answer"]
-                verdict = parsed["verdict"]
-                from_cache = True
+                # ---- cached response ----
+                elif cached:
+                    result = cached
+                    parsed = extract_verdict(result, result.get("answer", ""))
+                    answer = parsed["answer"]
+                    verdict = parsed["verdict"]
+                    from_cache = True
 
-            # ---- no AI key: offline scan only ----
-            elif not router.has_any_provider:
-                answer, verdict = offline_answer(scan)
+                # ---- no AI key: offline scan only ----
+                elif not router.has_any_provider:
+                    answer, verdict = offline_answer(scan)
 
-            # ---- new investigation ----
-            else:
-                label = (
-                    "⚡ Quick check…"
-                    if mode == "Quick Check"
-                    else "🔎 Deep investigation…"
-                )
+                # ---- new investigation ----
+                else:
+                    label = (
+                        "⚡ Quick check…"
+                        if mode == "Quick Check"
+                        else "🔎 Deep investigation…"
+                    )
 
-                with st.spinner(label):
-                    try:
-                        result = run_investigation(
-                            analysis_input,
-                            signals=format_signals(scan),
-                        )
+                    with st.spinner(label):
+                        try:
+                            result = run_investigation(
+                                analysis_input,
+                                signals=format_signals(scan),
+                            )
 
-                        raw_answer = result.get(
-                            "answer",
-                            "No investigation result was returned.",
-                        )
+                            raw_answer = result.get(
+                                "answer",
+                                "No investigation result was returned.",
+                            )
 
-                        if use_cache and result.get("answer"):
-                            S.answer_cache[cache_key] = result
+                            if use_cache and result.get("answer"):
+                                S.answer_cache[cache_key] = result
 
-                        parsed = extract_verdict(result, raw_answer)
-                        answer = parsed["answer"]
-                        verdict = parsed["verdict"]
+                            parsed = extract_verdict(result, raw_answer)
+                            answer = parsed["answer"]
+                            verdict = parsed["verdict"]
 
-                    except Exception as exc:
-                        answer = (
-                            "Investigation could not be completed.\n\n"
-                            f"`{exc}`"
-                        )
-                        result = empty_result
-                        verdict = None
+                        except Exception as exc:
+                            answer = (
+                                "Investigation could not be completed.\n\n"
+                                f"`{exc}`"
+                            )
+                            result = empty_result
+                            verdict = None
 
-                elapsed = time.perf_counter() - started
+                    elapsed = time.perf_counter() - started
 
-            if verdict:
-                st.markdown(badge_html(verdict, scan.get("score", 0)), unsafe_allow_html=True)
+                if verdict:
+                    st.markdown(badge_html(verdict, scan.get("score", 0)), unsafe_allow_html=True)
 
-            st.markdown(answer)
+                st.markdown(answer)
 
-            if from_cache:
-                st.caption("⚡ Instant (cached)")
-            elif elapsed:
-                st.caption(f"⏱ {elapsed:.1f}s · {mode}")
+                if from_cache:
+                    st.caption("⚡ Instant (cached)")
+                elif elapsed:
+                    st.caption(f"⏱ {elapsed:.1f}s · {mode}")
 
-            # ---- save assistant message ----
-            assistant_message = {"role": "assistant", "content": answer, "language": language, "mode": mode}
+                # ---- save assistant message ----
+                assistant_message = {"role": "assistant", "content": answer, "language": language, "mode": mode}
 
-            if verdict:
-                assistant_message["verdict"] = verdict
+                if verdict:
+                    assistant_message["verdict"] = verdict
 
-            sources = compact_sources(result)
+                sources = compact_sources(result)
 
-            if sources:
-                assistant_message["sources"] = sources
+                if sources:
+                    assistant_message["sources"] = sources
 
-            S.messages.append(assistant_message)
-            save_chat(uid, S.chat_id, S.messages)
+                S.messages.append(assistant_message)
+                save_chat(uid, S.chat_id, S.messages)
 
-            render_download(len(S.messages) - 1, assistant_message)
+                render_download(len(S.messages) - 1, assistant_message)
 
-        S.last_result = {"result": result, "scan": scan}
+            S.last_result = {"result": result, "scan": scan}
 
         # ===========================================================
         # EVIDENCE SECTION
