@@ -395,6 +395,22 @@ div[data-baseweb="popover"] [role="option"]:hover,div[data-baseweb="popover"] [r
 }
 
 /* ================================================================
+   INSTANT SCAN METER
+================================================================ */
+.risk-meter-card{
+  margin:12px 0 10px;padding:15px 16px;border:1px solid var(--sh-border);
+  border-radius:16px;background:var(--sh-panel)!important;
+}
+.risk-meter-top{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--sh-text)!important;}
+.risk-meter-top strong{font-size:18px;color:var(--sh-accent)!important;}
+.risk-meter-title{font-size:13px;font-weight:800;color:var(--sh-text)!important;}
+.risk-meter-level{margin-left:8px;font-size:11px;color:var(--sh-muted)!important;}
+.risk-meter-track{height:9px;margin-top:11px;border-radius:999px;overflow:hidden;background:var(--sh-panel2)!important;border:1px solid var(--sh-border);}
+.risk-meter-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sh-accent),#ef4444)!important;transition:width .25s ease;}
+.risk-meter-scale{display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--sh-muted)!important;}
+.risk-meter-note{margin-top:9px;font-size:10px;line-height:1.45;color:var(--sh-muted)!important;}
+
+/* ================================================================
    FINAL UI-ONLY PATCH
    Theme-aware sidebar selects + safe hero/stat-card spacing.
 ================================================================ */
