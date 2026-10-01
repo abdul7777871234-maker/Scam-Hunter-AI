@@ -222,7 +222,7 @@ html body .stApp [data-testid="stSidebar"] [data-testid="stExpander"],
 html body .stApp [data-testid="stSidebar"] [data-testid="stExpander"] summary{background:@@PANEL@@!important;background-color:@@PANEL@@!important;color:@@TEXT@@!important;}
 html body .stApp [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] svg{color:@@TEXT@@!important;fill:currentColor!important;}
 </style>
-"""
+
 
 
 def apply_theme(dark: bool, accent: str):
