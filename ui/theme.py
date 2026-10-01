@@ -229,6 +229,25 @@ html body .stApp [data-testid="stFileUploaderDropzone"] * {
   color:var(--sh-text)!important;
 }
 
+/* Remove BaseWeb's native white outline/focus ring from sidebar select controls. */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"] {
+  outline:none!important;
+  outline-color:transparent!important;
+  box-shadow:none!important;
+  border-color:var(--sh-select-border)!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="button"]:focus-visible {
+  outline:none!important;
+  outline-color:transparent!important;
+  box-shadow:none!important;
+  border-color:var(--sh-select-border)!important;
+}
 /* Sidebar selectboxes: one source of truth for Light/Dark surfaces. */
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
