@@ -27,12 +27,10 @@ from agents.orchestrator import InvestigationOrchestrator
 from ui.theme import apply_theme
 from ui.sidebar import render as render_sidebar, render_footer, render_provider_status
 from ui.components import (
-    example_prompts,
     hero,
     risk_meter,
     scan_details,
     source_card,
-    stat_strip,
 )
 from ui.verdict import extract_verdict, badge_html
 from ui.history_store import new_id, valid_uid, load_chats, save_chat
@@ -422,28 +420,10 @@ def process_attachments(uploaded_files: list) -> tuple[list[str], list[str]]:
 
 
 # -------------------------------------------------------------------
-# HERO + DASHBOARD
+# HERO
 # -------------------------------------------------------------------
 
 hero(compact=bool(S.messages))
-
-if not S.messages:
-    providers_online = [
-        name
-        for name, key in (
-            ("Groq", settings.groq_api_key),
-            ("Gemini", settings.gemini_api_key),
-        )
-        if key
-    ]
-    stat_strip(
-        [
-            ("Knowledge base", f"{kb.store.count:,} passages"),
-            ("Reference documents", f"{len(kb.manifest)}"),
-            ("AI engines", " + ".join(providers_online) or "Not configured"),
-            ("Mode", mode),
-        ]
-    )
 
 render_provider_status(bool(settings.groq_api_key), bool(settings.gemini_api_key))
 
