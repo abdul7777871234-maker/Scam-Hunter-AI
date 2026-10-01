@@ -29,9 +29,15 @@ class InvestigationOrchestrator:
 
     def run_quick(self, user_text: str, mode="Quick Check", style="Balanced", language="English", signals="") -> dict:
         events = []
+        classification = self.classifier.run(user_text)
+        events.append("Classifier Agent — Input classified")
         rag = self.rag.run(user_text)
         events.append("RAG Agent — Knowledge base searched")
-        evidence = self.evidence.run(user_text, rag, {"items": [], "cached": False})
+        web = {"items": [], "cached": False}
+        if classification.get("requires_web", False):
+            web = self.web.run(user_text[:2500])
+            events.append("Web Research Agent — Web research completed")
+        evidence = self.evidence.run(user_text, rag, web)
         events.append("Evidence Agent — Evidence analyzed")
         analysis = evidence.get("analysis", "")
         evidence_items = evidence.get("evidence", rag.get("evidence", []))
@@ -43,9 +49,9 @@ class InvestigationOrchestrator:
         return {
             "answer": final,
             "events": events,
-            "classification": {"mode": "quick", "requires_rag": True, "requires_web": False},
+            "classification": classification,
             "rag": {"items": rag.get("items", []), "evidence": evidence_items},
-            "web": {"items": [], "cached": False},
+            "web": web,
             "analysis": analysis,
         }
 
