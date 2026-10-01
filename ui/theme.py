@@ -763,6 +763,38 @@ html body div[data-baseweb="popover"] [role="option"] {
   color-scheme:var(--sh-scheme)!important;
 }
 
+
+/* SIDEBAR SELECTBOX TEXT/SURFACE LOCK
+   Keeps the four sidebar selectors readable in both themes.
+   Uses existing theme tokens only; no layout/state/backend changes. */
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] [role="button"] {
+  background:var(--sh-select-bg)!important;
+  background-color:var(--sh-select-bg)!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+  border-color:var(--sh-select-border)!important;
+  opacity:1!important;
+  box-shadow:none!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] *,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] p,
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input {
+  background:transparent!important;
+  background-color:transparent!important;
+  color:var(--sh-select-text)!important;
+  -webkit-text-fill-color:var(--sh-select-text)!important;
+  opacity:1!important;
+}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
+  color:var(--sh-select-arrow)!important;
+  fill:var(--sh-select-arrow)!important;
+  opacity:1!important;
+}
+
 </style>
 """
 
