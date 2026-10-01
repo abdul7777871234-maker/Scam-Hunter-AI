@@ -47,8 +47,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# -------------------------------------------------------------------
-# SELECTBOX DARK THEME FIX
+
 # -------------------------------------------------------------------
 
 st.markdown(
