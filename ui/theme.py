@@ -269,19 +269,15 @@ html body .stApp [data-baseweb="select"] svg{color:@@MUTED@@!important;fill:@@MU
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"],
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div,
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div > div > div {
-  background:@@SELECT_BG@@!important;background-color:@@SELECT_BG@@!important;background-image:none!important;
-  color:@@SELECT_TEXT@@!important;-webkit-text-fill-color:@@SELECT_TEXT@@!important;
-  border:1px solid @@SELECT_BORDER@@!important;border-color:@@SELECT_BORDER@@!important;
-  border-radius:12px!important;box-shadow:none!important;opacity:1!important;
-  color-scheme:@@SCHEME@@!important;
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="stSelectbox"] > div > div > div {
+  background:@@INPUT@@!important;background-color:@@INPUT@@!important;background-image:none!important;
+  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;border-color:@@BORDER@@!important;
+  box-shadow:none!important;opacity:1!important;
 }
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] span,
-html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input {
-  color:@@SELECT_TEXT@@!important;-webkit-text-fill-color:@@SELECT_TEXT@@!important;
-}
+html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] input,
 html body .stApp section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] svg {
-  background:transparent!important;color:@@SELECT_ARROW@@!important;fill:@@SELECT_ARROW@@!important;
+  color:@@TEXT@@!important;-webkit-text-fill-color:@@TEXT@@!important;fill:@@MUTED@@!important;
 }
 html body div[data-baseweb="popover"],
 html body div[data-baseweb="popover"] > div,
@@ -289,7 +285,6 @@ html body div[data-baseweb="popover"] [data-baseweb="menu"],
 html body div[data-baseweb="popover"] ul[role="listbox"] {
   background:@@MENU@@!important;background-color:@@MENU@@!important;color:@@TEXT@@!important;
   border-color:@@BORDER@@!important;box-shadow:0 18px 50px rgba(0,0,0,.16)!important;
-  color-scheme:@@SCHEME@@!important;
 }
 html body div[data-baseweb="popover"] [role="option"],
 html body div[data-baseweb="popover"] li[role="option"],
