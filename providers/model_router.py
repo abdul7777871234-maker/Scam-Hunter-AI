@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-from providers.groq_provider import GroqProvider
-from providers.gemini_provider import GeminiProvider
-from config.settings import Settings
 from config.models import ModelResult
+from config.settings import Settings
+from providers.gemini_provider import GeminiProvider
+from providers.groq_provider import GroqProvider
 
 
 class ModelRouter:
     """
-    Provider router with bidirectional fallback.
+    Central model router.
 
-    Preferred order:
-        Gemini -> Groq
-    or:
-        Groq -> Gemini
+    Text generation:
+        Groq <-> Gemini fallback
 
-    This prevents one provider/network restriction from breaking
-    the entire investigation pipeline.
+    Image analysis:
+        Gemini with automatic model fallback
+
+    The router never exposes API keys in returned errors.
     """
 
     def __init__(self, settings: Settings):
@@ -31,6 +31,10 @@ class ModelRouter:
             settings.gemini_api_key,
             settings.gemini_models,
         )
+
+    # ---------------------------------------------------------
+    # DIRECT PROVIDER CALLS
+    # ---------------------------------------------------------
 
     def groq_complete(
         self,
@@ -56,14 +60,19 @@ class ModelRouter:
             temperature,
         )
 
+    # ---------------------------------------------------------
+    # BEST AVAILABLE TEXT MODEL
+    # ---------------------------------------------------------
+
     def best_available(
         self,
         prompt: str,
         system: str = "",
         prefer_gemini: bool = False,
+        temperature: float = 0.2,
     ) -> ModelResult:
 
-        attempts = []
+        attempts: list[str] = []
 
         if prefer_gemini:
             providers = [
@@ -78,7 +87,11 @@ class ModelRouter:
 
         for provider_name, provider_call in providers:
             try:
-                result = provider_call(prompt, system)
+                result = provider_call(
+                    prompt,
+                    system,
+                    temperature,
+                )
 
                 if result and result.text and result.text.strip():
                     if attempts:
@@ -91,13 +104,11 @@ class ModelRouter:
                 )
 
             except Exception as exc:
-                error = str(exc).strip()
+                message = self._safe_error(exc)
 
                 attempts.append(
-                    f"{provider_name}: {error}"
+                    f"{provider_name}: {message}"
                 )
-
-                continue
 
         details = " | ".join(attempts)
 
@@ -105,3 +116,67 @@ class ModelRouter:
             "All AI providers failed. "
             f"Attempts: {details}"
         )
+
+    # ---------------------------------------------------------
+    # IMAGE ANALYSIS
+    # ---------------------------------------------------------
+
+    def describe_image(
+        self,
+        image_bytes: bytes,
+        mime_type: str,
+        prompt: str,
+    ) -> ModelResult:
+        """
+        Analyze an image with Gemini.
+
+        Gemini is used directly because the Groq provider in this
+        repository is configured for text completion.
+        """
+
+        if not image_bytes:
+            raise ValueError(
+                "The uploaded image is empty."
+            )
+
+        return self.gemini.describe_image(
+            image_bytes=image_bytes,
+            mime_type=mime_type,
+            prompt=prompt,
+        )
+
+    # ---------------------------------------------------------
+    # ERROR SANITIZATION
+    # ---------------------------------------------------------
+
+    @staticmethod
+    def _safe_error(exc: Exception) -> str:
+        """
+        Keep provider errors useful without leaking secrets.
+        """
+
+        message = str(exc).strip()
+
+        if not message:
+            return exc.__class__.__name__
+
+        # Never expose obvious API-key material.
+        sensitive_markers = (
+            "gsk_",
+            "AIza",
+            "sk-",
+            "Bearer ",
+        )
+
+        for marker in sensitive_markers:
+            if marker in message:
+                return (
+                    f"{exc.__class__.__name__}: "
+                    "provider authentication/request error"
+                )
+
+        # Avoid huge SDK trace payloads in the UI.
+        if len(message) > 500:
+            message = message[:500] + "..."
+
+        return message
